@@ -6,10 +6,6 @@
 template <class PointType, class NetType>
 class TridimensionalMesh : public IMesh<PointType, NetType> {
 protected:
-	bool readFromFiles(const char* info) {
-		
-		return true;
-	};
 	bool convertToObj() {};
 public:
 	TridimensionalMesh() {};

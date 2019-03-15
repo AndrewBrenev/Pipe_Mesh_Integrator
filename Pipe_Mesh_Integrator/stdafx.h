@@ -111,3 +111,18 @@ struct Plane {
 
 };
 
+struct NVTR_2D
+{
+public:
+	int material;
+	int id;
+	int n[4];
+	NVTR_2D() {};
+	NVTR_2D(const int a,const int b,const int c,const int d,const int e) {
+		n[0] = a;
+		n[1] = b;
+		n[2] = c;
+		n[3] = d;
+		material = e;
+	};
+};

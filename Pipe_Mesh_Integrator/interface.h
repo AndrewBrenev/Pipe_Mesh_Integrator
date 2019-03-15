@@ -124,7 +124,7 @@ public:
 		nodes_size = 0;
 		el_size = 0;
 	};
-	~IMesh() {};
+	~IMesh() { coord.clear(); nvtr.clear(); };
 	void buildNet() {};
 };
 
