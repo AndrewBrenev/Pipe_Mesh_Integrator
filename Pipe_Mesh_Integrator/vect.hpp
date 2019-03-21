@@ -8,10 +8,10 @@ template <class PointType>
 class vect {
 private: 
 	real x, y, z;
+public:
+
 	//Происходит поворот по, либо против часовой стрелки
 	bool clockwiseZ, clockwiseX, clockwiseY;
-public:
-	
 	// поворот точки на вектор
 	PointType rotatePoint(PointType A, PointType v) {
 

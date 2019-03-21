@@ -8,7 +8,7 @@ template <class PointType, class NetType, class SectionType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 protected:
 	TridimensionalMesh<PointType, NetType> incomingNet;
-	PipeMesh<PointType, NVTR_2D, SectionType> tube;
+	PipeMesh<PointType, NetType, SectionType> tube;
 	bool readFromFiles() {};
 public:
 	CombinedMesh() {};

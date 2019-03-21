@@ -70,9 +70,10 @@ protected:
 			t = fwrite(tmp, sizeof(int), el_size, fout);
 			if (t == el_size) fclose(fout); else return false;
 		}
+		delete tmp;
 
 		//nver
-		int *tmp = new int[el_size * 14];
+		tmp = new int[el_size * 14];
 		for (int i = 0, k = 0; k < el_size; k++, i = i + 14)
 			for (int j = 0; j < 8; j++)
 				tmp[i + j] = nvtr[k].n[j];
@@ -81,16 +82,17 @@ protected:
 		if (fopen_s(&fout, nver, "wb"))  return false;
 		t = fwrite(tmp, sizeof(int), el_size * 14, fout);
 		fclose(fout);
+		delete tmp;
 
 		//xyz
-		double *tmp = new double[3 * nodes_size];
+		double *tmp_xyz = new double[3 * nodes_size];
 		for (int i = 0, k = 0; k < nodes_size; k++, i = i + 3) {
-			tmp[i] = coord[k].x;
-			tmp[i + 1] = coord[k].y;
-			tmp[i + 2] = coord[k].z;
+			tmp_xyz[i] = coord[k].x;
+			tmp_xyz[i + 1] = coord[k].y;
+			tmp_xyz[i + 2] = coord[k].z;
 		}
 		if (fopen_s(&fout, xyz, "wb")) return false;
-		t = fwrite(tmp, sizeof(double), 3 * nodes_size, fout);
+		t = fwrite(tmp_xyz, sizeof(double), 3 * nodes_size, fout);
 		fclose(fout);
 
 		//inftry
@@ -116,8 +118,6 @@ protected:
 			return true;
 		}
 		else return false; };
-	size_t getNodesSize() { return nodes_size; };
-	size_t getElemsSize() { return el_size; }
 
 public:
 	IMesh() {
@@ -125,6 +125,8 @@ public:
 		el_size = 0;
 	};
 	~IMesh() { coord.clear(); nvtr.clear(); };
+	size_t getNodesSize() { return nodes_size; };
+	size_t getElemsSize() { return el_size; }
 	void buildNet() {};
 };
 

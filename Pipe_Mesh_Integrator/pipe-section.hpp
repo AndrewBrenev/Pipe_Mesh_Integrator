@@ -10,16 +10,16 @@ private:
 	SectionType face;
 	// Число разбиений по стороне квадрата, кол-во внутренних окружностей
 	int n, l;
-	
+
 	size_t start_ind;		//кол-во вершин в окружностях
-	
+
 	size_t coor_on_layer; // кол-во вершин в сечении
 
 	// поиск  точки пересечения прямой, заданной двумя точками, и окружностью
 	void circle_point(real &res_x, real &res_y,
-		const real x1,const real y1,
-		const real x2,const real y2,
-		const real x0,const real y0,const real r) {
+		const real x1, const real y1,
+		const real x2, const real y2,
+		const real x0, const real y0, const real r) {
 		if (x1 == x2) {
 			res_x = x1;
 			res_y = y0 + r;
@@ -156,7 +156,7 @@ private:
 	};
 
 public:
-	PipeSection() {	
+	PipeSection() {
 		SectionType A(0, 0, 0, 1, 0.8);
 		face = A;
 	};
@@ -166,6 +166,11 @@ public:
 		l = 5;
 	};
 	~PipeSection() {};
+	
+	void getParam(int &frst, int &sec) { frst = n; sec = l; };
+	vector<NetType> getSectionNVTR(){
+		return PipeSection<PointType, NetType, SectionType>::nvtr;
+	};
 	//Нахождение координат трубы в сечении
 	vector<PointType> coordTubeOnly(SectionType c, int id) {
 
@@ -334,10 +339,10 @@ public:
 	}
 	void buildNet() {
 		if (readFromFiles("./input-info/input_cut.txt")) {
-				PipeSection<PointType, NetType,SectionType>::coord = coordTubeOnly(face,0);
-				PipeSection<PointType, NetType, SectionType>::nvtr = nvtrTubeOnly();
-				PipeSection<PointType, NetType, SectionType>::setNodesSize(coor_on_layer);
-				PipeSection<PointType, NetType, SectionType>::setElemsSize(PipeSection<PointType, NetType, SectionType>::nvtr.size());
+				PipeSection::coord = coordTubeOnly(face,0);
+				PipeSection::nvtr = nvtrTubeOnly();
+				PipeSection::setNodesSize(coor_on_layer);
+				PipeSection::setElemsSize(PipeSection::nvtr.size());
 		}
 	};
 };
