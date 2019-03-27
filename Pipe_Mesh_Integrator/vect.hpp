@@ -64,6 +64,10 @@ public:
 		return res;
 
 	};
+	PointType getCoord(){ 
+		PointType res(x, y,z);
+		return res;
+	};
 
 	const real length() {
 		return sqrt(x*x + y * y + z * z);

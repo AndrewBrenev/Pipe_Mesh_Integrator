@@ -43,6 +43,51 @@ private:
 		}
 	}
 
+	// Вычисление определителся матрицы 3х3
+	real countMatrixDeterminant(const real a[][3]) {
+		return  a[0][0] * a[1][1] * a[2][2] + a[1][0] * a[2][1] * a[0][2] + a[0][1] * a[1][2] * a[2][0] -
+			a[2][0] * a[1][1] * a[0][2] - a[2][1] * a[1][2] * a[0][0] - a[1][0] * a[0][1] * a[2][2];
+	}
+
+	// Нахождения точки вращения при повороте
+	PointType findPointOfRotation(const PointType &A,const PointType &B,
+		const Plane &rotatePlane, const real &alfa, const int &i,
+		const PointType &curNorm,const PointType &nextNorm) {
+
+		PointType O;
+
+		real gamma = M_PI_2 - alfa / 2.0;
+		real la = sqrt((A.x - path[i + 1].O.x)*(A.x - path[i + 1].O.x) + (A.y - path[i + 1].O.y)*(A.y - path[i + 1].O.y) + (A.z - path[i + 1].O.z)*(A.z - path[i + 1].O.z));
+
+		real k1 = -curNorm.x*A.x - curNorm.y*A.y - curNorm.z*A.z;
+		real k2 = -nextNorm.x*B.x - nextNorm.y*B.y - nextNorm.z*B.z;
+
+		// Построим матрицу
+		real M[3][3], b[3];
+		M[0][0] = curNorm.x; M[0][1] = curNorm.y; M[0][2] = curNorm.z; b[0] = -k1;
+		M[1][0] = nextNorm.x; M[1][1] = nextNorm.y; M[1][2] = nextNorm.z; b[1] = -k2;
+		M[2][0] = rotatePlane.A; M[2][1] = rotatePlane.B; M[2][2] = rotatePlane.C; b[2] = -rotatePlane.D;
+		// Решим матрицу методом Крамера
+		real det = countMatrixDeterminant(M);
+
+		M[0][0] = -k1;	M[1][0] = -k2;	M[2][0] = -rotatePlane.D;
+		real detX = countMatrixDeterminant(M);
+
+		M[0][0] = curNorm.x; M[0][1] = -k1;
+		M[1][0] = nextNorm.x; M[1][1] = -k2;
+		M[2][0] = rotatePlane.A; M[2][1] = -rotatePlane.D;
+		real detY = countMatrixDeterminant(M);
+
+		M[0][1] = curNorm.y; M[0][2] = -k1;
+		M[1][1] = nextNorm.y; M[1][2] = -k2;
+		M[2][1] = rotatePlane.B; M[2][2] = -rotatePlane.D;
+		real detZ = countMatrixDeterminant(M);
+
+		O.x = detX / det; O.y = detY / det; O.z = detZ / det;
+		return O;
+		
+	}
+
    // Построение сетки на слое
 	void calculate2DLayer(const SectionType c, int norma) {
 		//Вычисляем
@@ -78,6 +123,8 @@ private:
 				PipeMesh::nvtr.push_back(tmp_FE);
 			}
 	}
+
+
 	//Построение 3-х мерной сетки
 	void combine3DNet() {
 
@@ -86,7 +133,7 @@ private:
 		// Шаг по прямой
 		int j = 0;
 
-		//
+		// 
 		int n, l;
 		cut.getParam(n, l);
 		// флаг окончания движения по данной прямой
@@ -107,28 +154,31 @@ private:
 				real nz = j * dz;
 				vect< PointType> tmp(nx, ny, nz, normals[i].clockwiseZ, normals[i].clockwiseX, normals[i].clockwiseY);
 
-				if (normals[i].length() - tmp.length() <= stretch_coeff * path[i + 1].R && i != n_path - 2) {}
-				/*
-					// Если попали в поворот
+				if (normals[i].length() - tmp.length() <= stretch_coeff * path[i + 1].R && i != n_path - 2)
+					// Вошли в поворот
 				{
 
-					real alfa = acos((normals[i].x*normals[i + 1].x + normals[i].y*normals[i + 1].y + normals[i].z*normals[i + 1].z) /
-						(sqrt(normals[i].x*normals[i].x + normals[i].y*normals[i].y + normals[i].z*normals[i].z)*
-							sqrt(normals[i + 1].x*normals[i + 1].x + normals[i + 1].y*normals[i + 1].y + normals[i + 1].z*normals[i + 1].z)));
+					PointType curNorm = normals[i].getCoord();
+					PointType nextNorm = normals[i+1].getCoord();
+
+					// Если попали в поворот
+					real alfa = acos((curNorm.x*nextNorm.x + curNorm.y*nextNorm.y + curNorm.z*nextNorm.z) /
+						(sqrt(curNorm.x*curNorm.x + curNorm.y*curNorm.y + curNorm.z*curNorm.z)*
+							sqrt(nextNorm.x*nextNorm.x + nextNorm.y*nextNorm.y + nextNorm.z*nextNorm.z)));
 
 					//Находим точки на прямых
 					real Ax, Ay, Az;
 					real Bx, By, Bz;
 
-					Ax = path[i + 1].O.x - (normals[i].x * stretch_coeff * path[i + 1].R) / normals[i].length();
-					Ay = path[i + 1].O.y - (normals[i].y * stretch_coeff * path[i + 1].R) / normals[i].length();
-					Az = path[i + 1].O.z - (normals[i].z * stretch_coeff * path[i + 1].R) / normals[i].length();
+					Ax = path[i + 1].O.x - (curNorm.x * stretch_coeff * path[i + 1].R) / normals[i].length();
+					Ay = path[i + 1].O.y - (curNorm.y * stretch_coeff * path[i + 1].R) / normals[i].length();
+					Az = path[i + 1].O.z - (curNorm.z * stretch_coeff * path[i + 1].R) / normals[i].length();
 
-					Bx = path[i + 1].O.x + (normals[i + 1].x * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
-					By = path[i + 1].O.y + (normals[i + 1].y * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
-					Bz = path[i + 1].O.z + (normals[i + 1].z * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
+					Bx = path[i + 1].O.x + (nextNorm.x * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
+					By = path[i + 1].O.y + (nextNorm.y * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
+					Bz = path[i + 1].O.z + (nextNorm.z * stretch_coeff * path[i + 1].R) / normals[i + 1].length();
 
-					Point A(Ax, Ay, Az), B(Bx, By, Bz), O;
+					PointType A(Ax, Ay, Az), B(Bx, By, Bz), O;
 
 					// Выисляем плоскость, в которой они лежат
 					real Nx, Ny, Nz, D;
@@ -146,7 +196,7 @@ private:
 					Plane rotatePlane(Nx, Ny, Nz, D);
 
 					//Находим точку поворота
-					O = findPointOfRotation(A, B, rotatePlane, i);
+					O = findPointOfRotation(A, B, rotatePlane, i, alfa,curNorm,nextNorm);
 
 					//Нормируем ветор нормали для поворота точек вокруг произвольного единичного вектора
 					real N_length = sqrt(Nx*Nx + Ny * Ny + Nz * Nz);
@@ -157,7 +207,7 @@ private:
 					//Вычисляем шаг по углу
 					real alfa_step = alfa / m;
 
-					Circle Res_old, Res;
+					SectionType Res_old, Res;
 					Res_old.O.x = path[i].O.x; Res_old.O.y = path[i].O.y; Res_old.O.z = path[i].O.z;
 					Res_old.R = path[i].R; Res_old.r = path[i].r;
 
@@ -179,9 +229,9 @@ private:
 						if (Res.O.x - Res_old.O.x >= 0) X = true; else X = false;
 						if (Res.O.z - Res_old.O.z >= 0) Z = true; else Z = false;
 						//Добавляем вектор, в направлении которого движимся
-						vect norml(Res.O.x - Res_old.O.x, Res.O.y - Res_old.O.y, Res.O.z - Res_old.O.z, Z, X, Y);
+						vect<PointType> norml(Res.O.x - Res_old.O.x, Res.O.y - Res_old.O.y, Res.O.z - Res_old.O.z, Z, X, Y);
 						normals.push_back(norml);
-
+						/*
 						{
 							// Если попали в стыковку с внешней сеткой
 							int n_centers = circle_centers.size() - 1;
@@ -194,7 +244,7 @@ private:
 								calculate2DLayer(oneMore, normals.size() - 1);
 								iter++;
 							}
-						}
+						}*/
 						//Строим слой
 						calculate2DLayer(Res, normals.size() - 1);
 
@@ -215,15 +265,16 @@ private:
 						nx = w * dx;
 						ny = w * dy;
 						nz = w * dz;
-						vect tmp1(nx, ny, nz, normals[i].clockwiseZ, normals[i].clockwiseX, normals[i].clockwiseY);
+						vect<PointType> tmp1(nx, ny, nz, normals[i].clockwiseZ, normals[i].clockwiseX, normals[i].clockwiseY);
 						if (tmp1.length() >= stretch_coeff * path[i + 1].R) {
 							j = w;
 							j_f = false;
 						}
 					}
 					end = true;
+
 				}
-				*/else
+				else
 					// Если движемся по прямой
 				{
 					//Если мы вошли в радиус поворота
