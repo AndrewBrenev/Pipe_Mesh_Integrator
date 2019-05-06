@@ -41,3 +41,12 @@ Pipe_Mesh_Integrator/x64/
 *.exe
 *.out
 *.app
+
+# Folders
+Pipe_Mesh_Integrator/.vs/
+Pipe_Mesh_Integrator/Debug
+Pipe_Mesh_Integrator/x64/Debug/
+x64
+.vs/
+Debug/
+

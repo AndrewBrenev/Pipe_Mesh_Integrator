@@ -20,6 +20,7 @@
 #define IRON		1
 #define OIL			2
 #define GROUND		3
+#define AIR			4
 
 using namespace std;
 

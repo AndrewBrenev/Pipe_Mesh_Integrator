@@ -127,7 +127,8 @@ public:
 	~IMesh() { coord.clear(); nvtr.clear(); };
 	size_t getNodesSize() { return nodes_size; };
 	size_t getElemsSize() { return el_size; }
-	void buildNet() {};
+
+	virtual void buildNet() = 0;
 };
 
 #endif

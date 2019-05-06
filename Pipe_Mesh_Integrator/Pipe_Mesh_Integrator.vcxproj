@@ -23,6 +23,8 @@
     <ClInclude Include="interface.h" />
     <ClInclude Include="pipe-mesh.hpp" />
     <ClInclude Include="pipe-section.hpp" />
+    <ClInclude Include="round-section.hpp" />
+    <ClInclude Include="square-section.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tridimensional-mesh.hpp" />
     <ClInclude Include="vect.hpp" />

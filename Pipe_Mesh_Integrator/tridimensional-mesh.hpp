@@ -36,6 +36,7 @@ public:
 			int nZ = (Zn - Z0) / Zh;
 			int el_layer = (nZ + 1)*(nX + 1);
 			int t_el = 0;
+
 			// Движение по OY
 			for (int j = 0; j <= nY; j++) {
 				// Движени по OZ

@@ -2,7 +2,8 @@
 #define _PIPE_MESH_HPP_
 
 #include "interface.h"
-#include "pipe-section.hpp"
+#include "square-section.hpp"
+#include "round-section.hpp"
 #include "vect.hpp"
 
 
@@ -20,7 +21,7 @@ class PipeMesh : public TridimensionalMesh<PointType, NetType> {
 private:
 	
 	sort_coord_vector <PointType> sort_coord_vect;	//Класс для сортировки
-	PipeSection<PointType, NVTR_2D, SectionType> cut; // шаблонное сечение 
+	PipeSection<PointType, NVTR_2D, SectionType> *cut; // шаблонное сечение 
 	int  m, p;  // кол-во разбиений при повороте, кол-во разбиений в траншее
 	int n_path; //кол-во КТ
 	real stretch_coeff;  // Коэфициент при поворотое
@@ -92,7 +93,7 @@ private:
 	void calculate2DLayer(const SectionType c, int norma) {
 		//Вычисляем
 		size_t node = PipeMesh::coord.size();
-		vector<PointType> newCut = cut.coordTubeOnly(c,node);
+		vector<PointType> newCut = cut->coordTubeOnly(c,node);
 		PointType A(c.O.x, c.O.y, c.O.z, c.R);
 		circle_centers.push_back(c);
 		rotateSection(newCut,norma);
@@ -102,9 +103,9 @@ private:
 	};
 	// построение КЭ, зная чило слоёв
 	template <class NetType, class CutNetType> void compyteTubeFE(const int k) {
-		size_t el_on_layer = cut.getElemsSize();
-		size_t coor_on_layer = cut.getNodesSize();
-		vector<CutNetType> nv = cut.getSectionNVTR();
+		size_t el_on_layer = cut->getElemsSize();
+		size_t coor_on_layer = cut->getNodesSize();
+		vector<CutNetType> nv = cut->getSectionNVTR();
 		for (int q = 1; q < k; q++)
 			for (int j = 0; j < el_on_layer; j++)
 			{
@@ -135,7 +136,7 @@ private:
 
 		// 
 		int n, l;
-		cut.getParam(n, l);
+		cut->getParam(n, l);
 		// флаг окончания движения по данной прямой
 		bool end = false;
 		for (int i = 0; i < n_path - 1; i++) {
@@ -391,11 +392,13 @@ public:
 	~PipeMesh() {};
 	void buildNet() {
 
+		cut = new SquareSection<PointType, NVTR_2D, SectionType>();
+
 		if(!IMesh<PointType,NetType>::readFromFiles("./incoming-pipe/inftry.dat", "./incoming-pipe/nvkat.dat", "./incoming-pipe/xyz.dat", "./incoming-pipe/nver.dat"))
 			if(!readFromFiles("./input-info/input_pipe.txt")) 
 				cout << "Error : Unable to read pipe mesh or its parameters" << endl;
 
-		cut.buildNet();
+		cut->buildNet();
 		combine3DNet();
 
 	};
