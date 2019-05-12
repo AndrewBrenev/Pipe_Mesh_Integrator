@@ -3,16 +3,18 @@
 // are changed infrequently
 //
 
-#define _USE_MATH_DEFINES
 #define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include<fstream>
 #pragma once
-
-#include <windows.h>
 #include <cmath>
+#include <math.h>
+#include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <omp.h>
+#include <iomanip>
 
 
 

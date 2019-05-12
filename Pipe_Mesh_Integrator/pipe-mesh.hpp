@@ -1,6 +1,8 @@
 #ifndef _PIPE_MESH_HPP_
 #define _PIPE_MESH_HPP_
 
+
+
 #include "interface.h"
 #include "square-section.hpp"
 #include "round-section.hpp"
@@ -215,7 +217,7 @@ private:
 					//Нашли крайние точки, теперь реализуем сам поворот
 					for (int section = 0; section <= m; section++) {
 
-						real aop = section * alfa_step*180.0 / M_PI;
+						real aop = section * alfa_step*180.0 / M_PI ;
 						real sn = sin(section*alfa_step);
 						real cs = cos(section*alfa_step);
 
@@ -338,8 +340,8 @@ private:
 
 		IMesh<PointType, NetType>::setNodesSize(PipeMesh::coord.size());
 		IMesh<PointType, NetType>::setElemsSize(PipeMesh::nvtr.size());
-		IMesh<PointType,NetType>::writeToFile("./Glass/Test/inftry.dat","./Glass/Test/nvkat.dat",
-			"./Glass/Test/xyz.dat", "./Glass/Test//nver.dat");
+		//IMesh<PointType,NetType>::writeToFile("./Glass/Test/inftry.dat","./Glass/Test/nvkat.dat",
+		//	"./Glass/Test/xyz.dat", "./Glass/Test//nver.dat");
 
 	}
 
@@ -392,7 +394,7 @@ public:
 	~PipeMesh() {};
 	void buildNet() {
 
-		cut = new SquareSection<PointType, NVTR_2D, SectionType>();
+		cut = new RoundeSection<PointType, NVTR_2D, SectionType>();
 
 		if(!IMesh<PointType,NetType>::readFromFiles("./incoming-pipe/inftry.dat", "./incoming-pipe/nvkat.dat", "./incoming-pipe/xyz.dat", "./incoming-pipe/nver.dat"))
 			if(!readFromFiles("./input-info/input_pipe.txt")) 

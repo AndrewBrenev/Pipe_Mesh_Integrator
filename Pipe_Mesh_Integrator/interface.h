@@ -38,7 +38,7 @@ protected:
 
 		//ѕреобразуем считанные данные в массивы
 		PointType a;
-		for (int i = 0; i < nodes_size; i++) {
+		for (int i = 0; i < 3*nodes_size; i+=3) {
 			a.x = tmp1[i];
 			a.y = tmp1[i + 1];
 			a.z = tmp1[i + 2] ;
@@ -50,9 +50,9 @@ protected:
 		for (int i = 0, k = 0; k < el_size; k++, i = i + 14) {
 			for (int j = 0; j < 8; j++) {
 				b.n[j] = tmp2[i + j];
-				b.id = k;
-				b.material = tmp[k];
 			}
+			b.id = k+1;
+			b.material = tmp[k];
 			nvtr.push_back(b);
 		}
 
@@ -126,8 +126,9 @@ public:
 	};
 	~IMesh() { coord.clear(); nvtr.clear(); };
 	size_t getNodesSize() { return nodes_size; };
-	size_t getElemsSize() { return el_size; }
-
+	size_t getElemsSize() { return el_size; };
+	PointType getNode(int i) { return coord[i]; };
+	NetType getElem(int i) { return nvtr[i]; };
 	virtual void buildNet() = 0;
 };
 
