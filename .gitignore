@@ -1,6 +1,16 @@
 # Prerequisites
 *.d
 
+
+#foldesr
+.vs/
+Debug/
+x64/
+Pipe_Mesh_Integrator/.vs/
+Pipe_Mesh_Integrator/Debug/
+Pipe_Mesh_Integrator/x64/
+
+
 # Compiled Object files
 *.slo
 *.lo
@@ -16,6 +26,7 @@
 *.dylib
 *.dll
 
+*.vcxproj.user
 # Fortran module files
 *.mod
 *.smod
