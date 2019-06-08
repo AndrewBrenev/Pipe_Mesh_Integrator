@@ -53,7 +53,7 @@ private:
 			{
 				 
 				if (i == l) material = OIL; else
-					if ( RoundeSection::insert && ( i == l - 1 || i==0 ))  material = IRON; else material = AIR;
+					if (  i > 6 || i < 2 )  material = IRON; else material = AIR;
 				//Склейка конца с началом
 				if (k == 4 * n - 1) {
 					a = (l + 2)*k + i;

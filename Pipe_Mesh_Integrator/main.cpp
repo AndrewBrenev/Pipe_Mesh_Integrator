@@ -4,4 +4,5 @@ int main()
 {
 	CombinedMesh <Point, NVTR, Circle> A;
 	A.buildNet();
-}
+	system("pause");
+ }
