@@ -3,18 +3,20 @@
 
 
 #include "interface.h"
-
 #include "tridimensional-mesh.hpp"
 #include "pipe-mesh.hpp"
 
-template <class PointType, class NetType, class SectionType>
+template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
-protected:
+private:
+	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
-	void renumberingMeshes() {
 
+	//перенумерация объектов, находящихся в objectsMeshes
+	void buildCombinedMesh() {
 		if (objectsMeshes.size())
 		{
+			cout << "Renumbering objects meshes, while building the resulting combined mesh..." << endl;
 			int coord_size(0), mesh_size(0);
 			for (int i = 0; i < objectsMeshes.size(); i++) {
 				mesh_size += objectsMeshes[i]->getElemsSize();
@@ -33,8 +35,7 @@ protected:
 				
 				vector<NetType> curMesh;
 				for (int j = 0; j < objectsMeshes[i]->getElemsSize(); j++) curMesh.push_back(objectsMeshes[i]->getElem(j));
-				
-
+			
 				for (int k = objectsMeshes[i]->getNodesSize() -1; k >= 0; k--) {
 				
 					PointType cur = objectsMeshes[i]->getNode(k);
@@ -47,7 +48,6 @@ protected:
 						}
 					}
 				}
-
 				//Добавим элементы
 				for (int k = 0; k < objectsMeshes[i]->getElemsSize(); k++) CombinedMesh::nvtr[k + start_elem] = curMesh[k];
 
@@ -57,19 +57,46 @@ protected:
 			}
 			CombinedMesh::setNodesSize(CombinedMesh::coord.size());
 			CombinedMesh::setElemsSize(CombinedMesh::nvtr.size());
-
+			cout << "Done!" << endl;
 		}
 	};
-	bool readFromFiles() {};
+
+	//Подпрограмма вывода результата
+	void saveResultMesh(){
+		cout << "Saving Combined Mesh into files: " << endl;
+		if (outputInfo["mesh"]["format"] == "Glass") {
+			string inftry = outputInfo["mesh"]["paths"]["inftry"];
+			string nver = outputInfo["mesh"]["paths"]["nver"];
+			string nvkat = outputInfo["mesh"]["paths"]["nvkat"];
+			string xyz = outputInfo["mesh"]["paths"]["xyz"];
+
+			cout << inftry << endl << nver << endl << nvkat << endl << xyz << endl;
+			const char *output_inftry = inftry.c_str();
+			const char *output_nver = nver.c_str();
+			const char *output_nvkat = nvkat.c_str();
+			const char *output_xyz = xyz.c_str();
+
+		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles(output_inftry, output_nvkat, output_xyz, output_nver);
+		}
+		cout << "Done! " << endl;
+	}
 public:
-	CombinedMesh() {
+	CombinedMesh(json input) {
 		
+		outputInfo = input["output"];
 
-		objectsMeshes.resize(2);
+		objectsMeshes.reserve(input["incoming"]["objects_coount"]);
+		objectsMeshes.resize(input["incoming"]["objects_coount"]);
+
 				
-		objectsMeshes[0] = new PipeMesh<PointType, NetType, SectionType>;
-		objectsMeshes[1] = new TridimensionalMesh<PointType, NetType>;
-
+		for (int i = 0; i < objectsMeshes.size(); i++) {
+			string current_object_type = input["incoming"]["objects"][i]["type"];
+			if (current_object_type == "Tube")
+				objectsMeshes[i] = new PipeMesh< PointType, NetType>(input["incoming"]["objects"][i]);
+			if (current_object_type == "Outer")
+				objectsMeshes[i] = new TridimensionalMesh<PointType, NetType>(input["incoming"]["objects"][i]);
+		}
+		
 	};
 	~CombinedMesh() {};
 	void buildNet() {
@@ -78,9 +105,11 @@ public:
 		#pragma omp parallel for
 		for (int i = 0; i < objectsMeshes.size(); i++) 
 			objectsMeshes[i]->buildNet();
-		//renumberingMeshes();
-		IMesh<PointType, NetType>::writeToFile("./Glass/Test/inftry.dat", "./Glass/Test/nvkat.dat",
-			"./Glass/Test/xyz.dat", "./Glass/Test//nver.dat");
+		
+		// Перенумеруем полученные объекты и построим выходную сетку.
+		buildCombinedMesh();
+
+		saveResultMesh();
 	};
 };
 #endif

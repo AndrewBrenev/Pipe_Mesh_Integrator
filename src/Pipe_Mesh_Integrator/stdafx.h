@@ -5,9 +5,14 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
-#include <iostream>
-#include<fstream>
+
 #pragma once
+
+#include <exception>
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include <cmath>
 #include <math.h>
 #include <windows.h>
@@ -16,8 +21,8 @@
 #include <omp.h>
 #include <iomanip>
 
-
-
+#include <array>
+#include "nlohmann/json.hpp"
 
 #define IRON		1
 #define OIL			2
@@ -25,9 +30,9 @@
 #define AIR			4
 
 using namespace std;
+using json = nlohmann::json;
 
 typedef double real;
-
 
 struct Point {
 	//координаты, глобальный номер вершины

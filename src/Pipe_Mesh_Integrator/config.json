@@ -1,0 +1,47 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+      {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "X": {
+            "min": -20,
+            "max": 20,
+            "h": 5
+          },
+          "Y": {
+            "min": -20,
+            "max": 20,
+            "h": 5
+          },
+          "Z": {
+            "min": -20,
+            "max": 20,
+            "h": 5
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../Glass/Test/inftry.dat",
+        "nver": "../../Glass/Test/nver.dat",
+        "nvkat": "../../Glass/Test/nvkat.dat",
+        "xyz": "../../Glass/Test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="combined-mesh.hpp" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="json-deserializer.hpp" />
     <ClInclude Include="pipe-mesh.hpp" />
     <ClInclude Include="pipe-section.hpp" />
     <ClInclude Include="round-section.hpp" />
@@ -31,6 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

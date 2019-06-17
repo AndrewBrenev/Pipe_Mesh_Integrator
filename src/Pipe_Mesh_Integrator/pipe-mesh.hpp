@@ -18,7 +18,9 @@ public:
 	}
 };
 
-template <class PointType, class NetType, class SectionType>
+typedef Circle SectionType;
+
+template <class PointType, class NetType>
 class PipeMesh : public TridimensionalMesh<PointType, NetType> {
 private:
 	
@@ -32,13 +34,13 @@ private:
 	int iter;
 
 	// Поворот заданных точек на ветор
-	void rotateSection(vector<PointType> &tmp,const int j) {
+	void rotateSection(vector<PointType>&tmp, const int j) {
 		Point normal(0, 1, 0, 0);
 		for (int i = 0; i < tmp.size(); i++)
 			tmp[i] = normals[j].rotatePoint(tmp[i], normal);
 	}
 	// Сдвиг вектора точек на вектор
-	void moveSection(vector<PointType> &tmp,const PointType A) {
+	void moveSection(vector<PointType> &tmp, const PointType A) {
 		for (int i = 0; i < tmp.size(); i++) {
 			tmp[i].x += A.x;
 			tmp[i].y += A.y;
@@ -347,7 +349,6 @@ private:
 
 
 	bool buildPath(const char *dir) {
-
 		//считываем тректорию 
 		FILE* file = fopen(dir, "r");
 		if (file == NULL) return false;
@@ -379,10 +380,7 @@ private:
 		FILE* file = fopen(path, "r");
 		if (file == NULL) return false;
 		fscanf(file, "p = %d m = %d k = %lf\n",&p, &m, &stretch_coeff);
-
 		return true;
-		
-
 	};
 
 protected:
@@ -390,13 +388,13 @@ protected:
 	std::vector <vect<PointType>> normals; //Вектор нормалей
 
 public:
-	PipeMesh() {};
+	PipeMesh(json input_configs) {};
 	~PipeMesh() {};
 	void buildNet() {
 
-		cut = new RoundeSection<PointType, NVTR_2D, SectionType>();
+		cut = new RoundeSection<PointType, NVTR_2D, Circle>();
 
-		if(!IMesh<PointType,NetType>::readFromFiles("./incoming-pipe/inftry.dat", "./incoming-pipe/nvkat.dat", "./incoming-pipe/xyz.dat", "./incoming-pipe/nver.dat"))
+		if(!IMesh<PointType,NetType>::readMeshInGlassFormatFromFiles("./incoming-pipe/inftry.dat", "./incoming-pipe/nvkat.dat", "./incoming-pipe/xyz.dat", "./incoming-pipe/nver.dat"))
 			if(!readFromFiles("./input-info/input_pipe.txt")) 
 				cout << "Error : Unable to read pipe mesh or its parameters" << endl;
 

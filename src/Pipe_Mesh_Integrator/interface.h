@@ -12,7 +12,7 @@ protected:
 	//Кол-во узлов, и конечных элементов в сетке
 	size_t nodes_size, el_size;
 
-	bool readFromFiles(const char* inf, const char *nvkat, const char *xyz, const char *nver) {
+	bool readMeshInGlassFormatFromFiles(const char* inf, const char *nvkat, const char *xyz, const char *nver) {
 		FILE* file = fopen(inf, "r");
 		if (file == NULL ) return false;
 		fscanf(file, " ISLAU=       0 INDKU1=       0 INDFPO=       0\nKUZLOV=%8d   KPAR=%8d    KT1=       0   KTR2=       0   KTR3=       0\nKISRS1=       0 KISRS2=       0 KISRS3=       0   KBRS=       0\n   KT7=       0   KT10=       0   KTR4=       0  KTSIM=       0\n   KT6=       0\n", &nodes_size, &el_size);
@@ -58,7 +58,7 @@ protected:
 
 		return true;
 	};
-	bool writeToFile(const char* inf, const char *nvkat, const char *xyz, const char *nver) {
+	bool writeMeshInGlassFormatIntoFiles(const char* inf, const char *nvkat, const char *xyz, const char *nver) {
 
 		// nvkat
 		int *tmp = new int[el_size];
@@ -102,7 +102,6 @@ protected:
 
 		return true;
 	};
-	bool convertToObj() {};
 	bool setNodesSize(const size_t &n) {
 		if (coord.size() == n)
 		{
