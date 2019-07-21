@@ -48,10 +48,15 @@ public:
 		SquareSection::n = 6;
 		SquareSection::l = 5;
 	};
+	SquareSection(SectionType round,int _n,int _l) {
+		SquareSection::face = round;
+		SquareSection::n = _n;
+		SquareSection::l = _l;
+	};
 	~SquareSection() {};
 
 	//Ќахождение координат трубы в сечении
-	vector<PointType> coordTubeOnly(SectionType c, int id) {
+	vector<PointType> coordTubeOnly( int id) {
 
 		int n = SquareSection::n;
 		int l = SquareSection::l;
@@ -59,7 +64,7 @@ public:
 		PointType T(0,0,0,0);
 		vector<PointType> tmp;
 		
-		real b = c.R*2;
+		real b = SquareSection::face.R*2;
 		real a = n*b / l;
 		real a_step = a / n;
 		real b_step = b / l;

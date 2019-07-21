@@ -9,7 +9,8 @@ protected:
 
 	SectionType face;
 	// „исло разбиений по стороне квадрата, кол-во внутренних окружностей
-	int n, l = 2;
+	int n=6, l = 3;
+
 	int coor_on_layer;
 	//¬ложенность труб
 	int insert;
@@ -35,10 +36,10 @@ public:
 		return PipeSection::nvtr;
 	};
 	//Ќахождение координат трубы в сечении
-	virtual vector<PointType> coordTubeOnly(SectionType c, int id) = 0;
+	virtual vector<PointType> coordTubeOnly(const int start_id) = 0;
 	void buildNet() {
 		if (readFromFiles("./input-info/input_cut.txt")) {
-				PipeSection::coord = coordTubeOnly(face,0);
+				PipeSection::coord = coordTubeOnly(0);
 				PipeSection::nvtr = nvtrTubeOnly();
 				PipeSection::setNodesSize(coor_on_layer);
 				PipeSection::setElemsSize(PipeSection::nvtr.size());

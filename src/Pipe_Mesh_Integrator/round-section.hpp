@@ -6,12 +6,8 @@
 template <class PointType, class NetType, class SectionType>
 class RoundeSection :public PipeSection <PointType, NetType, SectionType > {
 private:
-
-
-
 	size_t start_ind;		//кол-во вершин в окружност€х
-
-
+	
 	// поиск  точки пересечени€ пр€мой, заданной двум€ точками, и окружностью
 	void circle_point(real &res_x, real &res_y,
 		const real x1, const real y1,
@@ -158,10 +154,15 @@ public:
 		RoundeSection::n = 6;
 		RoundeSection::l = 5;
 	};
+	RoundeSection(SectionType circle,int _n,int _l) {
+		RoundeSection::face = circle;
+		RoundeSection::n = _n;
+		RoundeSection::l = _l;
+	};
 	~RoundeSection() {};
 
 	//Ќахождение координат трубы в сечении
-	vector<PointType> coordTubeOnly(SectionType c, int id) {
+	vector<PointType> coordTubeOnly(const int id) {
 
 		int n = RoundeSection::n;
 		int l = RoundeSection::l;
@@ -169,13 +170,13 @@ public:
 		PointType Temp(0, 0, 0, 0);
 		vector<PointType> tmp;
 		int i, j;
-		real a = c.R*1.1;
-		real b = c.r*0.6;
+		real a = RoundeSection::face.R*1.1;
+		real b = (RoundeSection::face.R- RoundeSection::face.d)*0.6;
 		real a_step = 2 * a / (int)n;
 		real b_step = 2 * b / (int)n;
 		real p = a / a_step;
 
-		real step = (c.R - c.r) / (int)l;
+		real step = RoundeSection::face.d / (int)l;
 
 		//“очки на внутреннем квадрате
 		for (int k = 0; k < n; k++)
@@ -214,21 +215,21 @@ public:
 				{
 					//¬ертикальна€ верх
 					Temp.x = 0;
-					Temp.z = c.R - i * step;
+					Temp.z = RoundeSection::face.R - i * step;
 					Temp.id = (l + 2)*k + i + id;
 					tmp.push_back(Temp);
 					//√оризонтальна€ лево
-					Temp.x = -c.R + i * step;
+					Temp.x = -RoundeSection::face.R + i * step;
 					Temp.z = 0;
 					Temp.id = (l + 2) * n + (l + 2)*k + i + id;
 					tmp.push_back(Temp);
 					//¬ертикальна€ низ
 					Temp.x = 0;
-					Temp.z = -c.R + i * step;
+					Temp.z = -RoundeSection::face.R + i * step;
 					Temp.id = 2 * n *(l + 2) + (l + 2)*k + i + id;
 					tmp.push_back(Temp);
 					//√оризонтальна€ право
-					Temp.x = c.R - i * step;
+					Temp.x = RoundeSection::face.R - i * step;
 					Temp.z = 0;
 					Temp.id = 3 * n*(l + 2) + (l + 2)*k + i + id;
 					tmp.push_back(Temp);
@@ -245,8 +246,8 @@ public:
 				y2 = b;
 
 				real r_x, r_z, R_x, R_z;
-				circle_point(R_x, R_z, x1, y1, x2, y2, 0.0, 0.0, c.R);
-				circle_point(r_x, r_z, x1, y1, x2, y2, 0.0, 0.0, c.r);
+				circle_point(R_x, R_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R);
+				circle_point(r_x, r_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R);
 
 				real x_step = abs(R_x - r_x) / l;
 				real z_step = abs(R_z - r_z) / l;

@@ -56,6 +56,11 @@ struct Point {
 		y = p2;
 		z = p3;
 	};
+	void setValue(real p1, real p2, real p3) {
+		x = p1;
+		y = p2;
+		z = p3;
+	};
 };
 
 class NVTR {
@@ -83,20 +88,20 @@ public:
 struct Circle {
 	//Координаты центра окружности
 	Point O;
-	//Внешний и внутренний радиусы
-	real R, r;
+	//Внешний радиус и толщина стенки
+	real R, d;
 	Circle() {};
 	Circle(real x0, real y0, real z0, real R0, real r0) {
 		O.x = x0;
 		O.y = y0;
 		O.z = z0;
 		R = R0;
-		r = r0;
+		d = r0;
 	};
 	Circle(Point Center, real R0, real r0) {
 		O = Center;
 		R = R0;
-		r = r0;
+		d = r0;
 	};
 };
 

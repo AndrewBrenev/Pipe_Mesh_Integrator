@@ -3,23 +3,49 @@
     "objects_coount": 1,
     "objects": [
       {
-        "type": "Outer",
+        "type": "Tube",
         "action": "build",
         "parameters": {
-          "X": {
-            "min": -20,
-            "max": 20,
-            "h": 5
+          "cut": {
+            "type": "circle",
+            "splits": 6,
+            "insetry": 2,
+            "layer_splits": 5
           },
-          "Y": {
-            "min": -20,
-            "max": 20,
-            "h": 5
+          "straight": {
+            "count": 1,
+            "segments": [
+              {
+                "from": {
+                  "point": {
+                    "x": 10,
+                    "y": 10,
+                    "z": 10
+                  }
+                },
+                "to": {
+                  "point": {
+                    "x": 10,
+                    "y": 20,
+                    "z": 10
+                  }
+                },
+                "splits": 10,
+                "sections": [
+                  {
+                    "R": 1,
+                    "d": 0.1
+                  },
+                  {
+                    "R": 0.6,
+                    "d": 0.05
+                  }
+                ]
+              }
+            ]
           },
-          "Z": {
-            "min": -20,
-            "max": 20,
-            "h": 5
+          "turns": {
+           
           }
         }
       }
@@ -29,10 +55,10 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "inftry": "../../Glass/Test/inftry.dat",
-        "nver": "../../Glass/Test/nver.dat",
-        "nvkat": "../../Glass/Test/nvkat.dat",
-        "xyz": "../../Glass/Test/xyz.dat"
+        "infitry": "../../Glass/Test",
+        "nver": "../../Glass/Test",
+        "nvkat": "../../Glass/Test",
+        "xyz": "../../Glass/Test"
       }
     },
     "t-matrix": {
