@@ -24,7 +24,7 @@ public:
 
 		int iter = 0;
 
-		bool Z, X, Y;
+		bool  X, Y, Z;
 		if (StraightPart::end.x - StraightPart::begin.x >= 0) X = true; else X = false;
 		if (StraightPart::end.y - StraightPart::begin.y > 0) Y = true; else Y = false;
 		if (StraightPart::end.z - StraightPart::begin.z >= 0) Z = true; else Z = false;
@@ -38,38 +38,32 @@ public:
 		real dy = (StraightPart::end.y - StraightPart::begin.y) / StraightPart::section_count;
 		real dz = (StraightPart::end.z - StraightPart::begin.z) / StraightPart::section_count;
 
-		for (int j = 0, i = 0; j < StraightPart::section_count; i++, j++) {
+		for (int j = 0; j <= StraightPart::section_count; j++) {
 
 			// Вычисляется точка на прямой
 			real nx = j * dx;
 			real ny = j * dy;
 			real nz = j * dz;
-			vect< PointType> tmp(nx, ny, nz, StraightPart::normals[i].clockwiseZ, StraightPart::normals[i].clockwiseX, StraightPart::normals[i].clockwiseY);
-
+		
 			// находим нужную точку
 			PointType Res( StraightPart::begin.x + nx ,  StraightPart::begin.y + ny,  StraightPart::begin.z + nz);
 
 			// Если мы на пути следования трубы
-			StraightPart::calculate2DLayer(Res, i);
+			StraightPart::calculate2DLayer(Res, 0);
 
 			iter++;
 		}
 
-
-		//Отдельно обработаем последнюю точку
-		//calculate2DLayer(path[n_path - 1], n_path - 2);
-		//iter++;
-		//считаем все остальные точки
 		StraightPart::compyteTubeFE<NetType, NVTR_2D>(iter);
-
-
 
 		//Сортируем точки
 		std::sort(StraightPart::coord.begin(), StraightPart::coord.end(), StraightPart::sort_coord_vect);
-
-
+		
 		IMesh<PointType, NetType>::setNodesSize(StraightPart::coord.size());
 		IMesh<PointType, NetType>::setElemsSize(StraightPart::nvtr.size());
+
+	//	IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../Glass/Test/inftry.dat", "../../Glass/Test/nvkat.dat",
+	//		"../../Glass/Test/xyz.dat", "../../Glass/Test/nver.dat");
 
 	}
 	

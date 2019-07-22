@@ -247,7 +247,7 @@ public:
 
 				real r_x, r_z, R_x, R_z;
 				circle_point(R_x, R_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R);
-				circle_point(r_x, r_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R);
+				circle_point(r_x, r_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R- RoundeSection::face.d);
 
 				real x_step = abs(R_x - r_x) / l;
 				real z_step = abs(R_z - r_z) / l;
