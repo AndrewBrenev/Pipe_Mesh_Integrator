@@ -285,31 +285,42 @@ protected:
 	sort_coord_vector <PointType> sort_coord_vect;	//Класс для сортировки
 	PipeSection<PointType, NVTR_2D, SectionType> *cut; // шаблонное сечение
 
-	std::vector <SectionType> path;	//вектор 3-мерных конечных элементов
 	std::vector <vect<PointType>> normals; //Вектор нормалей
 
 	int section_count;
 	PointType begin, end; //Точки начала и конца секции
 
 	// Поворот заданных точек на ветор
-	void rotateSection(vector<PointType>&tmp, const int j) {
+	void rotateSection(vector<PointType>&tmp, vect<PointType> &norma) {
 		Point normal(0, 1, 0, 0);
 		for (int i = 0; i < tmp.size(); i++)
-			tmp[i] = normals[j].rotatePoint(tmp[i], normal);
+			tmp[i] = norma.rotatePoint(tmp[i], normal);
 	}
+
+	vect<PointType> getNorm(PointType begin, PointType end) {
+		bool  X, Y, Z;
+		if (end.x - begin.x >= 0) X = true; else X = false;
+		if (end.y - begin.y > 0) Y = true; else Y = false;
+		if (end.z - begin.z >= 0) Z = true; else Z = false;
+		vect<PointType> temp(end.x - begin.x,end.y - begin.y,end.z - begin.z, Z, X, Y);
+		return temp;
+	}
+
 	// Сдвиг вектора точек на вектор
+	// TO DO : здесь же добавлять id
 	void moveSection(vector<PointType> &tmp, const PointType A) {
 		for (int i = 0; i < tmp.size(); i++) {
 			tmp[i].x += A.x;
 			tmp[i].y += A.y;
 			tmp[i].z += A.z;
+			tmp[i].id += A.id;
 		}
 	}
 	 // Построение сетки на слое
-	void calculate2DLayer(const PointType current_cut_center, int norma) {
+	void calculate2DLayer(const PointType current_cut_center, vect<PointType> &norma) {
 		//Вычисляем
 		size_t node = TubePart::coord.size();
-		vector<PointType> newCut = cut->coordTubeOnly(node);
+		vector<PointType> newCut =cut->coordTubeOnly(node);
 		//circle_centers.push_back(c);
 		rotateSection(newCut, norma);
 		moveSection(newCut, current_cut_center);

@@ -55,6 +55,7 @@ struct Point {
 		x = p1;
 		y = p2;
 		z = p3;
+		id = 0;
 	};
 	void setValue(real p1, real p2, real p3) {
 		x = p1;

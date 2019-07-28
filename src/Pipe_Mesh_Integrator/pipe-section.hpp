@@ -6,11 +6,12 @@
 template <class PointType, class NetType, class SectionType>
 class PipeSection : public IMesh<PointType, NetType> {
 protected:
-
+	
 	SectionType face;
 	// Число разбиений по стороне квадрата, кол-во внутренних окружностей
-	int n=6, l = 3;
+	int n, l;
 
+	//колличество точек в одном сечении
 	int coor_on_layer;
 	//Вложенность труб
 	int insert;
@@ -31,20 +32,24 @@ public:
 	
 	virtual ~PipeSection() {};
 	
-	void getParam(int &frst, int &sec) { frst = n; sec = l; };
 	vector<NetType> getSectionNVTR(){
 		return PipeSection::nvtr;
 	};
 	//Нахождение координат трубы в сечении
 	virtual vector<PointType> coordTubeOnly(const int start_id) = 0;
 	void buildNet() {
-		if (readFromFiles("./input-info/input_cut.txt")) {
+		try {
 				PipeSection::coord = coordTubeOnly(0);
 				PipeSection::nvtr = nvtrTubeOnly();
 				PipeSection::setNodesSize(coor_on_layer);
 				PipeSection::setElemsSize(PipeSection::nvtr.size());
 		}
-		else throw("Cut Input File Not Found in : ./input-info/input_cut.txt");
+		catch (exception& e)
+		{
+			throw e;
+			cout << "Failed! Found an exeption: " << e.what() << endl;
+		}
+		
 	};
 };
 

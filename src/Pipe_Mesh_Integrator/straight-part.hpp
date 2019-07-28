@@ -49,7 +49,7 @@ public:
 			PointType Res( StraightPart::begin.x + nx ,  StraightPart::begin.y + ny,  StraightPart::begin.z + nz);
 
 			// Если мы на пути следования трубы
-			StraightPart::calculate2DLayer(Res, 0);
+			StraightPart::calculate2DLayer(Res, StraightPart::normals[0]);
 
 			iter++;
 		}

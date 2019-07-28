@@ -1,6 +1,6 @@
 {
   "incoming": {
-    "objects_coount": 1,
+    "objects_coount": 3,
     "objects": [
       {
         "type": "Tube",
@@ -13,7 +13,7 @@
             "layer_splits": 5
           },
           "straight": {
-            "count": 1,
+            "count": 2,
             "segments": [
               {
                 "from": {
@@ -30,7 +30,34 @@
                     "z": 10
                   }
                 },
-                "splits": 2,
+                "splits": 10,
+                "sections": [
+                  {
+                    "R": 1,
+                    "d": 0.1
+                  },
+                  {
+                    "R": 0.6,
+                    "d": 0.05
+                  }
+                ]
+              },
+              {
+                "from": {
+                  "point": {
+                    "x": 12,
+                    "y": 22,
+                    "z": 10
+                  }
+                },
+                "to": {
+                  "point": {
+                    "x": 20,
+                    "y": 22,
+                    "z": 10
+                  }
+                },
+                "splits": 10,
                 "sections": [
                   {
                     "R": 1,
@@ -45,7 +72,67 @@
             ]
           },
           "turns": {
-           
+            "count": 1,
+            "segments": [
+              {
+                "splits": 10,
+                "between": {
+                  "start": 1,
+                  "end": 2
+                },
+                "sections": [
+                  {
+                    "R": 1,
+                    "d": 0.1
+                  },
+                  {
+                    "R": 0.6,
+                    "d": 0.05
+                  }
+                ],
+                "rotationPoint": {
+                  "point": {
+                    "x": 12,
+                    "y": 20,
+                    "z": 10
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "Outer",
+        "action": "read",
+        "parameters": {
+          "format": "Glass",
+          "paths": {
+            "infitry": "./incoming-net/inftry.dat",
+            "nver": "./incoming-net/nver.dat",
+            "nvkat": "./incoming-net/nvkat.dat",
+            "xyz": "./incoming-net/xyz.dat"
+          }
+        }
+      },
+      {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "X": {
+            "min": -20,
+            "max": 20,
+            "h": 2
+          },
+          "Y": {
+            "min": -20,
+            "max": 20,
+            "h": 2
+          },
+          "Z": {
+            "min": -20,
+            "max": 20,
+            "h": 2
           }
         }
       }
