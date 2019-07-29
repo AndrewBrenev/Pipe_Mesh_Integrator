@@ -117,8 +117,11 @@ protected:
 			return true;
 		}
 		else return false; };
+	
+
 
 public:
+
 	IMesh() {
 		nodes_size = 0;
 		el_size = 0;
@@ -127,6 +130,20 @@ public:
 	size_t getNodesSize() { return nodes_size; };
 	size_t getElemsSize() { return el_size; };
 	PointType getNode(int i) { return coord[i]; };
+	std::vector<PointType> getNodes() { return coord; };
+	void moveMesh(PointType O) {
+		for (int i = 0; i < nodes_size; i++) {
+			coord[i].x += O.x;
+			coord[i].y += O.y;
+			coord[i].z += O.z;
+			coord[i].id += O.id;
+		}
+		for (int i = 0; i < el_size; i++) {
+			for (int j = 0; j < 8; j++)
+				nvtr[i].n[j] += O.id;
+		}
+	}
+	std::vector<NetType> getElems() { return nvtr; }
 	NetType getElem(int i) { return nvtr[i]; };
 	virtual void buildNet() = 0;
 };

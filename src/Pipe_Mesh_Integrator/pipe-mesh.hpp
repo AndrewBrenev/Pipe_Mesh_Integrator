@@ -21,43 +21,26 @@ private:
 	void dockingPipeParts() {
 		if (tube_parts.size())
 		{
-			cout << "Renumbering objects meshes, while building the resulting combined mesh..." << endl;
-			int coord_size(0), mesh_size(0);
-			for (int i = 0; i < tube_parts.size(); i++) {
-				mesh_size += tube_parts[i]->getElemsSize();
-				coord_size += tube_parts[i]->getNodesSize();
-			}
-			 PipeMesh::coord.resize(coord_size);
-			 PipeMesh::nvtr.resize(mesh_size);
-
+			cout << "The process of assembling a pipe from its sections has been launched..." << endl;
+			
 			//Полностью сохраним первый объект
-			for (int i = 0; i < tube_parts[0]->getElemsSize(); i++)  PipeMesh::nvtr[i] = tube_parts[0]->getElem(i);
-			for (int i = 0; i < tube_parts[0]->getNodesSize(); i++)  PipeMesh::coord[i] = tube_parts[0]->getNode(i);
+			std::vector<PointType> currentPoints = tube_parts[0]->getNodes();
+			std::vector<NetType> currentElems = tube_parts[0]->getElems();
+			PipeMesh::nvtr.insert(PipeMesh::nvtr.end(), currentElems.begin(), currentElems.end());
+			PipeMesh::coord.insert(PipeMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
-			int start_id = tube_parts[0]->getNodesSize();
-			int start_elem = tube_parts[0]->getElemsSize();
+			int start_id;
 			for (int i = 1; i < tube_parts.size(); i++) {
+				currentPoints.clear();
+				currentElems.clear();
+				start_id = PipeMesh::coord.size();
+				PointType bias(0, 0, 0, start_id);
 
-				vector<NetType> curMesh;
-				for (int j = 0; j < tube_parts[i]->getElemsSize(); j++) curMesh.push_back(tube_parts[i]->getElem(j));
-
-				for (int k = tube_parts[i]->getNodesSize() - 1; k >= 0; k--) {
-
-					PointType cur = tube_parts[i]->getNode(k);
-					cur.id = k + start_id;
-					 PipeMesh::coord[k + start_id] = cur;
-
-					for (int j = 0; j < tube_parts[i]->getElemsSize(); j++) {
-						for (int l = 0; l < 8; l++) {
-							if (curMesh[j].n[l] == k + 1) curMesh[j].n[l] = cur.id + 1;
-						}
-					}
-				}
-				//Добавим элементы
-				for (int k = 0; k < tube_parts[i]->getElemsSize(); k++)  PipeMesh::nvtr[k + start_elem] = curMesh[k];
-
-				start_elem += tube_parts[i]->getElemsSize();
-				start_id += tube_parts[i]->getNodesSize();
+				tube_parts[i]->moveMesh(bias);
+				std::vector<PointType> currentPoints = tube_parts[i]->getNodes();
+				std::vector<NetType> currentElems = tube_parts[i]->getElems();
+				PipeMesh::nvtr.insert(PipeMesh::nvtr.end(), currentElems.begin(), currentElems.end());
+				PipeMesh::coord.insert(PipeMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
 			}
 			 PipeMesh::setNodesSize( PipeMesh::coord.size());
@@ -134,8 +117,9 @@ public:
 		for (int i = 0; i < tube_parts.size(); i++)
 			tube_parts[i]->buildNet();
 		dockingPipeParts();
-		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../Glass/Test/inftry.dat", "../../Glass/Test/nvkat.dat",
-					"../../Glass/Test/xyz.dat", "../../Glass/Test/nver.dat");
+		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../external-libs/glass/test/inftry.dat",
+			"../../external-libs/glass/test/nvkat.dat",
+					"../../external-libs/glass/test/xyz.dat", "../../external-libs/glass/test/nver.dat");
 	};
 	
 };

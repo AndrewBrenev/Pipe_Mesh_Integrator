@@ -22,7 +22,7 @@
 #include <iomanip>
 
 #include <array>
-#include "nlohmann/json.hpp"
+#include "../../external-libs/nlohmann/json.hpp"
 
 #define IRON		1
 #define OIL			2
