@@ -118,8 +118,6 @@ protected:
 		}
 		else return false; };
 	
-
-
 public:
 
 	IMesh() {

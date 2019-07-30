@@ -18,15 +18,8 @@ protected:
 
 	//Задание конечных элементов на слое
 	virtual vector<NetType> nvtrTubeOnly() = 0;
-
-	bool readFromFiles(const char *path) {
-		FILE* file = fopen(path, "r");
-		if (file == NULL) return false;
-
-		fscanf(file, "n = %d l = %d inserty = %d\n", &n, &l, &insert);
-
-		return true;
-	};
+	//Нахождение координат трубы в сечении
+	virtual vector<PointType> coordTubeOnly() = 0;
 
 public:
 	
@@ -35,11 +28,10 @@ public:
 	vector<NetType> getSectionNVTR(){
 		return PipeSection::nvtr;
 	};
-	//Нахождение координат трубы в сечении
-	virtual vector<PointType> coordTubeOnly(const int start_id) = 0;
+	
 	void buildNet() {
 		try {
-				PipeSection::coord = coordTubeOnly(0);
+				PipeSection::coord = coordTubeOnly();
 				PipeSection::nvtr = nvtrTubeOnly();
 				PipeSection::setNodesSize(coor_on_layer);
 				PipeSection::setElemsSize(PipeSection::nvtr.size());

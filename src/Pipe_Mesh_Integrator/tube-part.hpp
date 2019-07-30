@@ -58,11 +58,12 @@ protected:
 		}
 	}
 	 // Построение сетки на слое
-	void calculate2DLayer(const PointType current_cut_center, vect<PointType> &norma) {
+	void calculate2DLayer(PointType current_cut_center, vect<PointType> &norma) {
 		//Вычисляем
 		size_t node = TubePart::coord.size();
-		//vector<PointType> newCut = cut->getNodes();
-		vector<PointType> newCut =cut->coordTubeOnly(node);
+		vector<PointType> newCut = cut->getNodes();
+		current_cut_center.id = node;
+		//vector<PointType> newCut =cut->coordTubeOnly(node);
 		//circle_centers.push_back(c);
 		rotateSection(newCut, norma);
 		moveSection(newCut, current_cut_center);

@@ -116,10 +116,13 @@ public:
 
 		for (int i = 0; i < tube_parts.size(); i++)
 			tube_parts[i]->buildNet();
+
 		dockingPipeParts();
-		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../external-libs/glass/test/inftry.dat",
-			"../../external-libs/glass/test/nvkat.dat",
-					"../../external-libs/glass/test/xyz.dat", "../../external-libs/glass/test/nver.dat");
+
+		//Debug only!
+		//IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../external-libs/glass/test/inftry.dat",
+		//	"../../external-libs/glass/test/nvkat.dat",
+		//			"../../external-libs/glass/test/xyz.dat", "../../external-libs/glass/test/nver.dat");
 	};
 	
 };

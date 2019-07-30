@@ -9,10 +9,8 @@ class BendingPart : public TubePart<PointType, NetType> {
 private:
 	PointType rotationPoint;
 	vect<PointType> prev_straight_norm, next_straight_norm;
-
 	
 protected:
-
 
 public:
 	BendingPart(json input_configs) {

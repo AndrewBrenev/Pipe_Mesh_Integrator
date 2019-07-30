@@ -37,7 +37,50 @@ private:
 			}
 		return nv;
 	};
+	//Нахождение координат трубы в сечении
+	vector<PointType> coordTubeOnly() {
 
+		int n = SquareSection::n;
+		int l = SquareSection::l;
+
+		PointType T(0, 0, 0, 0);
+		vector<PointType> tmp;
+
+		real b = SquareSection::face.R * 2;
+		real a = n * b / l;
+		real a_step = a / n;
+		real b_step = b / l;
+
+
+		T.z = b / 2;
+		int start_id = 0;
+
+		// Движение вниз по Oy вправо по Ox
+		for (int j = 0; j <= l; j++) {
+			//Движение по OX
+			T.x = -a / 2;
+
+			if (j == l)
+				T.z = -b / 2;
+			else
+				if (j)
+					T.z -= b_step;
+
+			for (int i = 0; i <= n; i++)
+			{
+				T.id = start_id;
+				if (i == n) T.x = a / 2;
+				else
+					if (i) T.x += a_step;
+
+				tmp.push_back(T);
+				start_id++;
+			}
+
+		}
+		SquareSection::coor_on_layer = tmp.size();
+		return tmp;
+	}
 public:
 	SquareSection() {
 		SectionType A(0, 0, 0, 1, 0.8);
@@ -55,50 +98,6 @@ public:
 	};
 	~SquareSection() {};
 
-	//Нахождение координат трубы в сечении
-	vector<PointType> coordTubeOnly( int id) {
-
-		int n = SquareSection::n;
-		int l = SquareSection::l;
-
-		PointType T(0,0,0,0);
-		vector<PointType> tmp;
-		
-		real b = SquareSection::face.R*2;
-		real a = n*b / l;
-		real a_step = a / n;
-		real b_step = b / l;
-		
-
-		T.z = b / 2;
-		int start_id = 0;
-
-		// Движение вниз по Oy вправо по Ox
-		for (int j = 0; j <= l; j++) {
-			//Движение по OX
-			T.x =  - a/2;
-
-			if (j == l )
-				T.z = - b / 2; 
-			else
-				if (j)
-					T.z -= b_step; 
-
-			for (int i = 0; i <= n; i++)
-			{
-				T.id = start_id + id;
-				if (i == n) T.x = a / 2;
-				else
-					if (i) T.x += a_step; 
-				
-				tmp.push_back(T);
-				start_id++;
-			}
-
-		}
-		SquareSection::coor_on_layer = tmp.size();
-		return tmp;
-	}
 };
 
 #endif //_SQUARE_SECTION_HPP_
