@@ -61,7 +61,7 @@ public:
 		real N_length = sqrt(Nx*Nx + Ny * Ny + Nz * Nz);
 		Nx = -Nx / N_length;
 		Ny = -Ny / N_length;
-		Nz = Nz / N_length;
+		Nz = -Nz / N_length;
 
 		//Вычисляем шаг по углу
 		real alfa_step = alfa / BendingPart::section_count;

@@ -82,8 +82,8 @@
                 },
                 "sections": [
                   {
-                    "R": 1,
-                    "d": 0.1
+                    "R": 1.2,
+                    "d": 0.2
                   },
                   {
                     "R": 0.6,
@@ -108,10 +108,10 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "infitry": "../../external-libs/glass/test",
-        "nver": "../../external-libs/glass/test",
-        "nvkat": "../../external-libs/glass/test",
-        "xyz": "../../external-libs/glass/test"
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
       }
     },
     "t-matrix": {

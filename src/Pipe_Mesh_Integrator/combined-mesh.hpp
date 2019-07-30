@@ -76,6 +76,7 @@ private:
 			const char *output_nvkat = nvkat.c_str();
 			const char *output_xyz = xyz.c_str();
 
+		
 		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles(output_inftry, output_nvkat, output_xyz, output_nver);
 		}
 		cout << "Done! " << endl;

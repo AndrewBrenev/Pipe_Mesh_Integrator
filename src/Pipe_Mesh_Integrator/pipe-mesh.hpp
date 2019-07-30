@@ -39,6 +39,7 @@ private:
 				tube_parts[i]->moveMesh(bias);
 				std::vector<PointType> currentPoints = tube_parts[i]->getNodes();
 				std::vector<NetType> currentElems = tube_parts[i]->getElems();
+				delete tube_parts[i];
 				PipeMesh::nvtr.insert(PipeMesh::nvtr.end(), currentElems.begin(), currentElems.end());
 				PipeMesh::coord.insert(PipeMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
@@ -46,6 +47,7 @@ private:
 			 PipeMesh::setNodesSize( PipeMesh::coord.size());
 			 PipeMesh::setElemsSize( PipeMesh::nvtr.size());
 			cout << "Done!" << endl;
+
 		}
 	};
 
@@ -58,6 +60,7 @@ public:
 
 			json cut = input_configs["parameters"];
 
+		
 			for (int i = 0; i < input_configs["parameters"]["straight"]["count"]; i++) {
 
 				json straight_part_params = input_configs["parameters"]["straight"]["segments"][i];
@@ -114,6 +117,9 @@ public:
 	~PipeMesh() {};
 	void buildNet() {
 
+
+		omp_set_num_threads(4);
+		#pragma omp parallel for
 		for (int i = 0; i < tube_parts.size(); i++)
 			tube_parts[i]->buildNet();
 

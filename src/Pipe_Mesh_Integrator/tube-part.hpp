@@ -63,12 +63,9 @@ protected:
 		size_t node = TubePart::coord.size();
 		vector<PointType> newCut = cut->getNodes();
 		current_cut_center.id = node;
-		//vector<PointType> newCut =cut->coordTubeOnly(node);
-		//circle_centers.push_back(c);
 		rotateSection(newCut, norma);
 		moveSection(newCut, current_cut_center);
 		TubePart::coord.insert(TubePart::coord.end(), newCut.begin(), newCut.end());
-
 	};
 	// построение КЭ, зная чило слоёв
 	template <class NetType, class CutNetType> void compyteTubeFE(const int k) {
