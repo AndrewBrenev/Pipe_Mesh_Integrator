@@ -34,6 +34,11 @@ private:
 		}
 	};
 
+	vector<PointType> calculatePointsOnCircle(real& R,real& d) {
+		vector<PointType> points;
+
+		return points;
+	}
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 		//Займёмся сеткой
