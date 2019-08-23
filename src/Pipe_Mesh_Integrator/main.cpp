@@ -1,4 +1,4 @@
-#include "combined-mesh.hpp"
+#include "./meshes/combined-mesh.hpp"
 #include "json-deserializer.hpp"
 
 int main()

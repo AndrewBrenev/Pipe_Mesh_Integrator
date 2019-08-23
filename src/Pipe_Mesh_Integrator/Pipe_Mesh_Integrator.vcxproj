@@ -19,18 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bending-part.hpp" />
-    <ClInclude Include="combined-mesh.hpp" />
     <ClInclude Include="interface.h" />
     <ClInclude Include="json-deserializer.hpp" />
-    <ClInclude Include="pipe-mesh.hpp" />
-    <ClInclude Include="pipe-section.hpp" />
-    <ClInclude Include="round-section.hpp" />
-    <ClInclude Include="square-section.hpp" />
+    <ClInclude Include="meshes\combined-mesh.hpp" />
+    <ClInclude Include="meshes\pipe-mesh.hpp" />
+    <ClInclude Include="meshes\tridimensional-mesh.hpp" />
+    <ClInclude Include="parts\bending-part.hpp" />
+    <ClInclude Include="parts\straight-part.hpp" />
+    <ClInclude Include="parts\tube-part.hpp" />
+    <ClInclude Include="sections\pipe-section.hpp" />
+    <ClInclude Include="sections\round-section.hpp" />
+    <ClInclude Include="sections\square-section.hpp" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="straight-part.hpp" />
-    <ClInclude Include="tridimensional-mesh.hpp" />
-    <ClInclude Include="tube-part.hpp" />
     <ClInclude Include="vect.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,10 @@ private:
 	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
 
+	void deleteOverlappingFE() {
+		//Процедура удаления пересекающихся КЭ в  объектах
+	}
+
 	//перенумерация объектов, находящихся в objectsMeshes
 	void buildCombinedMesh() {
 		if (objectsMeshes.size())
@@ -88,8 +92,7 @@ public:
 
 		objectsMeshes.reserve(input["incoming"]["objects_coount"]);
 		objectsMeshes.resize(input["incoming"]["objects_coount"]);
-
-				
+	
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			string current_object_type = input["incoming"]["objects"][i]["type"];
 			if (current_object_type == "Tube")
@@ -107,6 +110,8 @@ public:
 		for (int i = 0; i < objectsMeshes.size(); i++) 
 			objectsMeshes[i]->buildNet();
 		
+		deleteOverlappingFE();
+
 		// Перенумеруем полученные объекты и построим выходную сетку.
 		buildCombinedMesh();
 

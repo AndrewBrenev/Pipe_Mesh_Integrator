@@ -13,20 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\meshes">
+      <UniqueIdentifier>{7d8f6a3b-d596-4dea-8a02-4627e4f337d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\sections">
+      <UniqueIdentifier>{9b186f92-ebb9-4664-95ae-bcfbbbf4427e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\parts">
+      <UniqueIdentifier>{0c26c60e-889b-42cf-9ccb-5ccdf8bca0e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="combined-mesh.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="pipe-mesh.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="pipe-section.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="tridimensional-mesh.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="vect.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -36,23 +33,35 @@
     <ClInclude Include="stdafx.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="round-section.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="square-section.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="json-deserializer.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="bending-part.hpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="meshes\combined-mesh.hpp">
+      <Filter>Файлы заголовков\meshes</Filter>
     </ClInclude>
-    <ClInclude Include="straight-part.hpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="meshes\pipe-mesh.hpp">
+      <Filter>Файлы заголовков\meshes</Filter>
     </ClInclude>
-    <ClInclude Include="tube-part.hpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="meshes\tridimensional-mesh.hpp">
+      <Filter>Файлы заголовков\meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="sections\pipe-section.hpp">
+      <Filter>Файлы заголовков\sections</Filter>
+    </ClInclude>
+    <ClInclude Include="sections\round-section.hpp">
+      <Filter>Файлы заголовков\sections</Filter>
+    </ClInclude>
+    <ClInclude Include="sections\square-section.hpp">
+      <Filter>Файлы заголовков\sections</Filter>
+    </ClInclude>
+    <ClInclude Include="parts\bending-part.hpp">
+      <Filter>Файлы заголовков\parts</Filter>
+    </ClInclude>
+    <ClInclude Include="parts\straight-part.hpp">
+      <Filter>Файлы заголовков\parts</Filter>
+    </ClInclude>
+    <ClInclude Include="parts\tube-part.hpp">
+      <Filter>Файлы заголовков\parts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

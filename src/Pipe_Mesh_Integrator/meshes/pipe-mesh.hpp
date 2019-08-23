@@ -5,8 +5,8 @@
 
 #include "interface.h"
 #include "vect.hpp"
-#include "bending-part.hpp"
-#include "straight-part.hpp"
+#include "../parts/bending-part.hpp" 
+#include "../parts/straight-part.hpp"
 
 
 typedef Circle SectionType;
@@ -55,6 +55,9 @@ protected:
 
 
 public:
+	//диапозон id вершин, которые являются внешними
+	int outterIdEnd, sectionsCount;
+
 	PipeMesh(json input_configs) {
 		if (input_configs["action"] == "build") {
 

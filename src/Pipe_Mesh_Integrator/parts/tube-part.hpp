@@ -4,8 +4,8 @@
 
 
 #include "interface.h"
-#include "square-section.hpp"
-#include "round-section.hpp"
+#include "../sections/square-section.hpp"
+#include "../sections/round-section.hpp"
 #include "vect.hpp"
 
 
