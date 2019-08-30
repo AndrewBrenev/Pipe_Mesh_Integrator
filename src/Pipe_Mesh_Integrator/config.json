@@ -1,7 +1,28 @@
 {
   "incoming": {
-    "objects_coount": 1,
+    "objects_coount": 2,
     "objects": [
+      {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "X": {
+            "min": -10,
+            "max": 10,
+            "h": 1
+          },
+          "Y": {
+            "min": 0,
+            "max": 10,
+            "h": 1
+          },
+          "Z": {
+            "min": -5,
+            "max": 5,
+            "h": 1
+          }
+        }
+      },
       {
         "type": "Tube",
         "action": "build",
@@ -18,16 +39,16 @@
               {
                 "from": {
                   "point": {
-                    "x": 10,
-                    "y": 10,
-                    "z": 10
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
                   }
                 },
                 "to": {
                   "point": {
-                    "x": 10,
-                    "y": 20,
-                    "z": 10
+                    "x": 0,
+                    "y": 5,
+                    "z": 0
                   }
                 },
                 "splits": 10,
@@ -45,19 +66,19 @@
               {
                 "from": {
                   "point": {
-                    "x": 12,
-                    "y": 22,
-                    "z": 10
+                    "x": 2,
+                    "y": 7,
+                    "z": 0
                   }
                 },
                 "to": {
                   "point": {
-                    "x": 20,
-                    "y": 22,
-                    "z": 10
+                    "x": 10,
+                    "y": 7,
+                    "z": 0
                   }
                 },
-                "splits": 10,
+                "splits": 12,
                 "sections": [
                   {
                     "R": 1,
@@ -92,16 +113,16 @@
                 ],
                 "rotationPoint": {
                   "point": {
-                    "x": 12,
-                    "y": 20,
-                    "z": 10
+                    "x": 2,
+                    "y": 5,
+                    "z": 0
                   }
                 }
               }
             ]
           }
         }
-      }  
+      }
     ]
   },
   "output": {

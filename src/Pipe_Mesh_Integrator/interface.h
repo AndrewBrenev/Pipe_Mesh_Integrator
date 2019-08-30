@@ -127,8 +127,21 @@ public:
 	~IMesh() { coord.clear(); nvtr.clear(); };
 	size_t getNodesSize() { return nodes_size; };
 	size_t getElemsSize() { return el_size; };
+
 	PointType getNode(int i) { return coord[i]; };
+	NetType getElem(int i) { return nvtr[i]; };
+
+	void deleteElem(const int& id) {
+		if (id < el_size) {
+			nvtr.erase(nvtr.begin() + id);
+			setElemsSize(nvtr.size());
+		}
+	else 
+			throw runtime_error("Unable to delete elment with id");
+	};
+
 	std::vector<PointType> getNodes() { return coord; };
+	std::vector<NetType> getElems() { return nvtr; }
 	void moveMesh(PointType O) {
 		for (int i = 0; i < nodes_size; i++) {
 			coord[i].x += O.x;
@@ -141,8 +154,8 @@ public:
 				nvtr[i].n[j] += O.id;
 		}
 	}
-	std::vector<NetType> getElems() { return nvtr; }
-	NetType getElem(int i) { return nvtr[i]; };
+	
+	
 	virtual void buildNet() = 0;
 };
 

@@ -12,56 +12,108 @@ private:
 	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
 
+
+	//функция возвращает центр КЭ и радиус описывающей окружности
+	pair<PointType, real> countFeCenterPoint(const NetType & meshFE, const int& objId) {
+		real Ox{ 0 }, Oy{ 0 }, Oz{ 0 };
+		PointType A;
+		for (int k = 0; k < 8; k++) {
+			A = objectsMeshes[objId]->getNode(meshFE.n[k] - 1);
+			Ox += A.x;
+			Oy += A.y;
+			Oz += A.z;
+		}
+		Ox /= 8.; Oy /= 8.; Oz /= 8.;
+
+		A = objectsMeshes[objId]->getNode(meshFE.n[0] - 1);
+		PointType O{ Ox,Oy,Oz };
+
+
+		// Радиус описывающей окружности
+		real R{ sqrt(
+			(O.x - A.x)*(O.x - A.x) +
+			(O.y - A.y)*(O.y - A.y) +
+			(O.z - A.z)*(O.z - A.z)
+		) };
+
+		return pair<PointType, real>(O, R);
+	}
+
+	bool analyzeFE(const pair<PointType, real>& inner, const pair<PointType, real>& outter) {
+		
+		real distanceBetweenСenters = sqrt((inner.first.x - outter.first.x)*(inner.first.x - outter.first.x) +
+			(inner.first.y - outter.first.y)*(inner.first.y - outter.first.y) +
+			(inner.first.z - outter.first.z)*(inner.first.z - outter.first.z)
+		);
+
+		if (distanceBetweenСenters > (inner.second + outter.second))
+			// точно не пересекаются
+			return false;
+		else 
+			//но это не точно
+			// если ==, то нужна доп обработка, но об этом позже.
+		return true;
+	}
+
+	//Процедура удаления пересекающихся КЭ в  объектах
 	void deleteOverlappingFE() {
-		//Процедура удаления пересекающихся КЭ в  объектах
+
+		cout << "--delete overlapping FE..." ; 
+
+		for (int i = 0; i < objectsMeshes.size() -1; i++) {
+
+			for (int j = 0; j < objectsMeshes[i]->getElemsSize();) {
+				pair<PointType, real> outter = countFeCenterPoint(objectsMeshes[i]->getElem(j), i);
+
+				auto innerElSize{ objectsMeshes[i + 1]->getElemsSize() };
+				bool deleteFlag = false;
+				int k = 0;
+				for (; k < innerElSize && !deleteFlag; k++) {
+					pair<PointType, real> inner = countFeCenterPoint(objectsMeshes[i + 1]->getElem(k), i + 1);
+					deleteFlag = analyzeFE(inner, outter);
+				}
+
+				if (deleteFlag)
+					objectsMeshes[i]->deleteElem(j);
+				else j++;
+
+			}
+		}
+
+		cout << "Done!" << endl;
 	}
 
 	//перенумерация объектов, находящихся в objectsMeshes
 	void buildCombinedMesh() {
 		if (objectsMeshes.size())
 		{
-			cout << "Renumbering objects meshes, while building the resulting combined mesh..." << endl;
-			int coord_size(0), mesh_size(0);
-			for (int i = 0; i < objectsMeshes.size(); i++) {
-				mesh_size += objectsMeshes[i]->getElemsSize();
-				coord_size += objectsMeshes[i]->getNodesSize();
-			}
-			CombinedMesh::coord.resize(coord_size);
-			CombinedMesh::nvtr.resize(mesh_size);
+			cout << "-- renumbering objects meshes" << endl;
 
 			//Полностью сохраним первый объект
-			for (int i = 0; i < objectsMeshes[0]->getElemsSize(); i++) CombinedMesh::nvtr[i] = objectsMeshes[0]->getElem(i);
-			for (int i = 0; i < objectsMeshes[0]->getNodesSize(); i++) CombinedMesh::coord[i] = objectsMeshes[0]->getNode(i);
+			std::vector<PointType> currentPoints = objectsMeshes[0]->getNodes();
+			std::vector<NetType> currentElems = objectsMeshes[0]->getElems();
+			CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
+			CombinedMesh::coord.insert(CombinedMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
-			int start_id = objectsMeshes[0]->getNodesSize();
-			int start_elem = objectsMeshes[0]->getElemsSize();
+			int start_id;
 			for (int i = 1; i < objectsMeshes.size(); i++) {
-				
-				vector<NetType> curMesh;
-				for (int j = 0; j < objectsMeshes[i]->getElemsSize(); j++) curMesh.push_back(objectsMeshes[i]->getElem(j));
-			
-				for (int k = objectsMeshes[i]->getNodesSize() -1; k >= 0; k--) {
-				
-					PointType cur = objectsMeshes[i]->getNode(k);
-					cur.id = k + start_id;
-					CombinedMesh::coord[k + start_id] = cur;
+				currentPoints.clear();
+				currentElems.clear();
+				start_id = CombinedMesh::coord.size();
+				PointType bias(0, 0, 0, start_id);
 
-					for (int j = 0; j < objectsMeshes[i]->getElemsSize(); j++) {
-						for (int l = 0; l < 8; l++) {
-							if (curMesh[j].n[l] == k + 1) curMesh[j].n[l] = cur.id + 1;
-						}
-					}
-				}
-				//Добавим элементы
-				for (int k = 0; k < objectsMeshes[i]->getElemsSize(); k++) CombinedMesh::nvtr[k + start_elem] = curMesh[k];
-
-				start_elem += objectsMeshes[i]->getElemsSize();
-				start_id += objectsMeshes[i]->getNodesSize();
+				objectsMeshes[i]->moveMesh(bias);
+				std::vector<PointType> currentPoints = objectsMeshes[i]->getNodes();
+				std::vector<NetType> currentElems = objectsMeshes[i]->getElems();
+				delete objectsMeshes[i];
+				CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
+				CombinedMesh::coord.insert(CombinedMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
 			}
 			CombinedMesh::setNodesSize(CombinedMesh::coord.size());
 			CombinedMesh::setElemsSize(CombinedMesh::nvtr.size());
 			cout << "Done!" << endl;
+
 		}
 	};
 
@@ -104,6 +156,8 @@ public:
 	};
 	~CombinedMesh() {};
 	void buildNet() {
+
+		cout << "Building the combined mesh: " << endl;
 
 		omp_set_num_threads(4);
 		#pragma omp parallel for
