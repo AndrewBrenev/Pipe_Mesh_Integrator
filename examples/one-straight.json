@@ -1,0 +1,75 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+        {
+        "type": "Tube",
+        "action": "build",
+        "parameters": {
+          "cut": {
+            "type": "circle",
+            "splits": 6,
+            "insetry": 2,
+            "layer_splits": 5
+          },
+          "straight": {
+            "count": 1,
+            "segments": [
+              {
+                "from": {
+                  "point": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  }
+                },
+                "to": {
+                  "point": {
+                    "x": 0,
+                    "y": 5,
+                    "z": 0
+                  }
+                },
+                "splits": 10,
+                "sections": [
+                  {
+                    "R": 1,
+                    "d": 0.1
+                  },
+                  {
+                    "R": 0.6,
+                    "d": 0.05
+                  }
+                ]
+              }
+            ]
+          },
+          "turns": {
+            "count": 0,
+            "segments": [
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../Glass/Test/inftry.dat",
+        "nver": "../../Glass/Test/nver.dat",
+        "nvkat": "../../Glass/Test/nvkat.dat",
+        "xyz": "../../Glass/Test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

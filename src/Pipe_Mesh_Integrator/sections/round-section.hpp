@@ -34,11 +34,12 @@ private:
 		}
 	};
 
-	vector<PointType> calculatePointsOnCircle(real& R,real& d) {
+	vector<PointType> findPointsOfTheUnitCircle() {
 		vector<PointType> points;
 
 		return points;
 	}
+
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 		//Займёмся сеткой
@@ -200,7 +201,7 @@ private:
 			if (k == p && (a - p * a_step <= 2))
 				for (i = 0; i <= l; i++)
 				{
-					//Вертикальная верх
+					//Вертикальная верх 
 					Temp.x = 0;
 					Temp.z = RoundeSection::face.R - i * step;
 					Temp.id = (l + 2)*k + i;

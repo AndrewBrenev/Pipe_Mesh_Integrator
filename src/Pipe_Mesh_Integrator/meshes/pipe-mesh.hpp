@@ -120,8 +120,6 @@ public:
 	~PipeMesh() {};
 	void buildNet() {
 
-
-		omp_set_num_threads(4);
 		#pragma omp parallel for
 		for (int i = 0; i < tube_parts.size(); i++)
 			tube_parts[i]->buildNet();

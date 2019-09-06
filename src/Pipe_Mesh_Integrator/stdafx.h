@@ -32,6 +32,7 @@
 using namespace std;
 using json = nlohmann::json;
 
+
 typedef double real;
 
 struct Point {
