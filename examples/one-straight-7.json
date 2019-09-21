@@ -8,7 +8,7 @@
         "parameters": {
           "cut": {
             "type": "circle",
-            "splits": 4,
+            "splits": 7,
             "insetry": 2,
             "layer_splits": 5
           },

@@ -10,7 +10,7 @@ int main()
 
 		cout << "Program is running using " << numberOfThreads <<" parallel threads."<< endl;
 				
-		string configPath = "../../examples/one-straight-3.json";
+		string configPath = "../../examples/one-straight-8.json";
 		cout << "Reading the system configuration file : " << configPath << endl;
 		TaskConfig currentConfigs;
 		auto taskParametrs = currentConfigs.deserializeJsonFile(configPath.c_str());

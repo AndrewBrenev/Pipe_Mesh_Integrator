@@ -14,7 +14,7 @@ private:
 		int n = RoundeSection::n;
 		int p = n / (int)2;
 		real alfa_step = 90 / n;
-		
+
 		{
 			real sn = sin(45 * M_PI / 180.0);
 			//первая четверть
@@ -43,195 +43,167 @@ private:
 		}
 
 		//Точки на радиусе
-		for (int k = 1; k <= p; k++){
-			real s_alfa = sin((45 + k * alfa_step) * M_PI / 180.0);
-			real c_alfa = cos((45 + k * alfa_step) * M_PI / 180.0);
+		for (int k = 1; k <= p; k++)
+			if ((n % 2) == 0 && k == p)
+			{
+				//первая четверть
+				Temp.x = 0;
+				Temp.z = 1;
+				Temp.id = p;
+				points.push_back(Temp);
 
-			//первая четверть
-			Temp.x = c_alfa;
-			Temp.z = s_alfa;
-			Temp.id = k;
-			points.push_back(Temp);
+				//вторая четверть
+				Temp.x = -1;
+				Temp.z = 0;
+				Temp.id = n + p;
+				points.push_back(Temp);
 
-			//вторая четверть
-			Temp.x = -c_alfa;
-			Temp.z = s_alfa;
-			Temp.id = n - k;
-			points.push_back(Temp);
+				//третья четверть
+				Temp.x = 0;
+				Temp.z = -1;
+				Temp.id = 2 * n + p;
+				points.push_back(Temp);
 
-			//четвертая четверть
-			Temp.x = c_alfa;
-			Temp.z = -s_alfa;
-			Temp.id = 3 * n - k;
-			points.push_back(Temp);
+				//четвертая четверть
+				Temp.x = 1;
+				Temp.z = 0;
+				Temp.id = 3 * n + p;
+				points.push_back(Temp);
+			}
+			else {
+				real s_alfa = sin((45 + k * alfa_step) * M_PI / 180.0);
+				real c_alfa = cos((45 + k * alfa_step) * M_PI / 180.0);
 
-			//третья четверть
-			Temp.x = -c_alfa;
-			Temp.z = -s_alfa;
-			Temp.id = 2 * n + k;
-			points.push_back(Temp);
+				//первая четверть
+				Temp.x = c_alfa;
+				Temp.z = s_alfa;
+				Temp.id = k;
+				points.push_back(Temp);
 
-			//___________________________________________
-			//первая четверть
-			Temp.x = s_alfa;
-			Temp.z = c_alfa;
-			Temp.id = 4 * n - k;
-			points.push_back(Temp);
+				//вторая четверть
+				Temp.x = -c_alfa;
+				Temp.z = s_alfa;
+				Temp.id = n - k;
+				points.push_back(Temp);
 
-			//вторая четверть
-			Temp.x = -s_alfa;
-			Temp.z = c_alfa;
-			Temp.id = n + k;
-			points.push_back(Temp);
+				//четвертая четверть
+				Temp.x = c_alfa;
+				Temp.z = -s_alfa;
+				Temp.id = 3 * n - k;
+				points.push_back(Temp);
 
-			//четвертая четверть
-			Temp.x = s_alfa;
-			Temp.z = -c_alfa;
-			Temp.id = 3 * n + k;
-			points.push_back(Temp);
+				//третья четверть
+				Temp.x = -c_alfa;
+				Temp.z = -s_alfa;
+				Temp.id = 2 * n + k;
+				points.push_back(Temp);
 
-			//третья четверть
-			Temp.x = -s_alfa;
-			Temp.z = -c_alfa;
-			Temp.id = 2 * n - k;
-			points.push_back(Temp);
-		}
+				//___________________________________________
+				//первая четверть
+				Temp.x = s_alfa;
+				Temp.z = c_alfa;
+				Temp.id = 4 * n - k;
+				points.push_back(Temp);
 
-		if (!n % 2)
-		{
-			//первая четверть
-			Temp.x = 0;
-			Temp.z = 1;
-			Temp.id = p;
-			points.push_back(Temp);
+				//вторая четверть
+				Temp.x = -s_alfa;
+				Temp.z = c_alfa;
+				Temp.id = n + k;
+				points.push_back(Temp);
 
-			//вторая четверть
-			Temp.x = -1;
-			Temp.z = 0;
-			Temp.id = n + p;
-			points.push_back(Temp);
+				//четвертая четверть
+				Temp.x = s_alfa;
+				Temp.z = -c_alfa;
+				Temp.id = 3 * n + k;
+				points.push_back(Temp);
 
-			//третья четверть
-			Temp.x = 0;
-			Temp.z = -1;
-			Temp.id = 2 * n + p;
-			points.push_back(Temp);
+				//третья четверть
+				Temp.x = -s_alfa;
+				Temp.z = -c_alfa;
+				Temp.id = 2 * n - k;
+				points.push_back(Temp);
+			}
 
-			//четвертая четверть
-			Temp.x = 1;
-			Temp.z = 0;
-			Temp.id = 3 * n + p;
-			points.push_back(Temp);
-		}
-		
 		return points;
 	}
 
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 		//Займёмся сеткой
-		int i, j, material = 0;
+		int i(0), j, material = 0;
 		int a, b, c, d;
 
 		int n = RoundeSection::n;
 		int l = RoundeSection::l;
 		vector<NetType> nv;
-		//Сетка по окружностям
-		for (int k = 0; k < 4 * n; k++)
-			for (i = 0; i <= l; i++)
-			{
-				if (i == l) material = OIL; else
-					if (  i > 6 || i < 2 )  material = IRON; else material = AIR;
-				//Склейка конца с началом
-				if (k == 4 * n - 1) {
-					a = (l + 2)*k + i;
-					b = (l + 2)*k + i + 1;
-					c = i;
-					d = i + 1;
-					NetType A(c, a, d, b, material);
-					nv.push_back(A);
-				}
-				else {
-					a = (l + 2)*k + i;
-					b = (l + 2)*k + i + 1;
-					c = (l + 2)*(k + 1) + i;
-					d = (l + 2)*(k + 1) + i + 1;
-					if (k / n == 0 || k / n == 2)
-					{
-						NetType A(a, b, c, d, material); nv.push_back(A);
-					}
-					else
-					{
-						NetType A(b, d, a, c, material); nv.push_back(A);
-					}
 
-				}
+		//Сетка по окружностям
+		for (int i = 0; i < 4 * n; i++)
+		{
+			material = IRON;
+			//Склейка конца с началом
+			if (i == 4 * n - 1) {
+				a = i;
+				b = 0;
+				c = 4 * n + i;
+				d = 4*n;
+				NetType A(c, a, d, b, material);
+				nv.push_back(A);
 			}
-		//Верхняя полоса внутренней сетки
-		for (i = 0; i < n - 1; i++) {
-			a = (l + 2)*i + l + 1;
-			b = (l + 2)*(i + 1) + l + 1;
+			else {
+				a =  i;
+				b = i + 1;
+				c = 4*n + i;
+				d = 4*n + i + 1;
+				NetType A(a,b,c,d, material); nv.push_back(A);
+			}
+		}
+		
+		for (i = 0; i < n; i++) {
+
+			//внутренние КЭ
+			for (j = 0; j < n; j++) {
+				a = start_ind + (n + 1)*i + j;
+				b = start_ind + (n + 1)*i + j + 1;
+				c = start_ind + (n + 1)*(i + 1) + j;
+				d = start_ind + (n + 1)*(i + 1) + j + 1;
+				NetType A(a, c, b, d, OIL);
+				nv.push_back(A);
+			}
+
+			//Верхняя полоса внутренней сетки
+			a = 4 * n + i;
+			b = 4 * n + i + 1;
 			c = start_ind + i;
 			d = start_ind + i + 1;
 			NetType A(a, c, b, d, OIL);
 			nv.push_back(A);
-		}
-		//Верхняя левая в квадрате
-		a = (l + 2)*n - 1;
-		b = (l + 2)*n + l + 1;
-		c = start_ind + n - 1;
-		d = (l + 2)*(n + 1) + l + 1;
-		NetType A1(a, c, b, d, OIL);
-		nv.push_back(A1);
-		//Нижняя левая
-		a = (l + 2)*(2 * n) - 1;
-		b = RoundeSection::coor_on_layer - 1;
-		c = (l + 2)*(2 * n) + l + 1;
-		d = (l + 2)*(2 * n + 2) - 1;
-		NetType A2(b, d, a, c, OIL);
-		nv.push_back(A2);
-		//Нижняя правая
-		a = (l + 2)*(3 * n) - 1;
-		b = RoundeSection::coor_on_layer - n + 1;
-		c = (l + 2)*(3 * n + 1) - 1;
-		d = (l + 2)*(3 * n + 2) - 1;
-		NetType A3(d, c, b, a, OIL);
-		nv.push_back(A3);
 
-		for (i = 1; i < n - 1; i++)
-		{
 			// по левой стенке
-			a = (l + 2)*(n + i) + l + 1;
-			b = start_ind + i * (n - 1);
-			c = (l + 2)*(n + i + 1) + l + 1;
-			d = start_ind + (i + 1)*(n - 1);
+			a = n * 4 + n + i;
+			b = start_ind + i*(n+1)+n;
+			c = n * 4 + n + i + 1;
+			d = start_ind + (i + 1)*(n+1) + n;
 			NetType A4(b, d, a, c, OIL);
 			nv.push_back(A4);
+
 			//по низу
-			a = (l + 2)*(2 * n + 1 + i) - 1;
-			b = RoundeSection::coor_on_layer - i;
-			c = (l + 2)*(2 * n + 2 + i) - 1;
-			d = RoundeSection::coor_on_layer - i - 1;
+			a = n * 4 + 2 * n + i;
+			b = start_ind + (n + 1)*(n + 1) - 1 - i;
+			c = n * 4 + 2*n + i + 1;
+			d = start_ind + (n + 1)*(n + 1) - 1 - (i + 1);
 			NetType A5(d, c, b, a, OIL);
 			nv.push_back(A5);
+
 			// По правой стенке
-			a = start_ind + (n - 1)*(i - 1) + 1;
-			b = start_ind - (i - 1)*(l + 2);
-			c = start_ind + (n - 1)*i + 1;
-			d = start_ind - (i)*(l + 2);
+			a = start_ind + (n+1) * i;
+			b = (i) ? 8 * n - i: 4 * n;
+			c = start_ind + (n+1)*(i + 1);
+			d = 8 * n - (i + 1);
 			NetType A6(b, d, a, c, OIL);
 			nv.push_back(A6);
 		}
-		//Внутренние КЭ
-		for (i = 1; i < n - 1; i++)
-			for (j = 1; j < n - 1; j++) {
-				a = start_ind + (n - 1)*(i - 1) + j;
-				b = start_ind + (n - 1)*(i - 1) + j + 1;
-				c = start_ind + (n - 1)*(i)+j;
-				d = start_ind + (n - 1)*i + j + 1;
-				NetType A(a, c, b, d, OIL);
-				nv.push_back(A);
-			}
+			
 		return nv;
 	};
 
@@ -261,11 +233,11 @@ private:
 
 		start_ind = points.size();
 		//Добавляем внутренюю сетку
-		for (i = 0; i < n; i++)
-			for (j = 0; j < n; j++) {
+		for (i = 0; i <= n; i++)
+			for (j = 0; j <= n; j++) {
 				Temp.x = b - j * b_step;
 				Temp.z = b - i * b_step;
-				Temp.id = start_ind + n*i + j;
+				Temp.id = start_ind + (n+1)*i + j;
 				points.push_back(Temp);
 			}
 		RoundeSection::coor_on_layer = points.size();
