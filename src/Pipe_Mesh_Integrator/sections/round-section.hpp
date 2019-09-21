@@ -8,35 +8,122 @@ class RoundeSection :public PipeSection <PointType, NetType, SectionType > {
 private:
 	size_t start_ind;		//кол-во вершин в окружностях
 	
-	// поиск  точки пересечения прямой, заданной двумя точками, и окружностью
-	void circle_point(real &res_x, real &res_y,
-		const real x1, const real y1,
-		const real x2, const real y2,
-		const real x0, const real y0, const real r) {
-		if (x1 == x2) {
-			res_x = x1;
-			res_y = y0 + r;
-		}
-		if (y1 == y2) {
-			res_x = x0 + r;
-			res_y = y1;
-		}
-		else {
-			real dx = x1 - x2;
-			real dy = y1 - y2;
-			real l = sqrt(dx*dx + dy * dy);
-			real c = dx / l;
-			real s = dy / l;
-			real x = x0 + c * r;
-			real y = y0 + s * r;
-			res_x = x;
-			res_y = y;
-		}
-	};
-
 	vector<PointType> findPointsOfTheUnitCircle() {
 		vector<PointType> points;
+		PointType Temp;
+		int n = RoundeSection::n;
+		int p = n / (int)2;
+		real alfa_step = 90 / n;
+		
+		{
+			real sn = sin(45 * M_PI / 180.0);
+			//первая четверть
+			Temp.x = sn;
+			Temp.z = sn;
+			Temp.id = 0;
+			points.push_back(Temp);
 
+			//вторая четверть
+			Temp.x = -sn;
+			Temp.z = sn;
+			Temp.id = n;
+			points.push_back(Temp);
+
+			//третья четверть
+			Temp.x = -sn;
+			Temp.z = -sn;
+			Temp.id = 2 * n;
+			points.push_back(Temp);
+
+			//четвертая четверть
+			Temp.x = sn;
+			Temp.z = -sn;
+			Temp.id = 3 * n;
+			points.push_back(Temp);
+		}
+
+		//Точки на радиусе
+		for (int k = 1; k <= p; k++){
+			real s_alfa = sin((45 + k * alfa_step) * M_PI / 180.0);
+			real c_alfa = cos((45 + k * alfa_step) * M_PI / 180.0);
+
+			//первая четверть
+			Temp.x = c_alfa;
+			Temp.z = s_alfa;
+			Temp.id = k;
+			points.push_back(Temp);
+
+			//вторая четверть
+			Temp.x = -c_alfa;
+			Temp.z = s_alfa;
+			Temp.id = n - k;
+			points.push_back(Temp);
+
+			//четвертая четверть
+			Temp.x = c_alfa;
+			Temp.z = -s_alfa;
+			Temp.id = 3 * n - k;
+			points.push_back(Temp);
+
+			//третья четверть
+			Temp.x = -c_alfa;
+			Temp.z = -s_alfa;
+			Temp.id = 2 * n + k;
+			points.push_back(Temp);
+
+			//___________________________________________
+			//первая четверть
+			Temp.x = s_alfa;
+			Temp.z = c_alfa;
+			Temp.id = 4 * n - k;
+			points.push_back(Temp);
+
+			//вторая четверть
+			Temp.x = -s_alfa;
+			Temp.z = c_alfa;
+			Temp.id = n + k;
+			points.push_back(Temp);
+
+			//четвертая четверть
+			Temp.x = s_alfa;
+			Temp.z = -c_alfa;
+			Temp.id = 3 * n + k;
+			points.push_back(Temp);
+
+			//третья четверть
+			Temp.x = -s_alfa;
+			Temp.z = -c_alfa;
+			Temp.id = 2 * n - k;
+			points.push_back(Temp);
+		}
+
+		if (!n % 2)
+		{
+			//первая четверть
+			Temp.x = 0;
+			Temp.z = 1;
+			Temp.id = p;
+			points.push_back(Temp);
+
+			//вторая четверть
+			Temp.x = -1;
+			Temp.z = 0;
+			Temp.id = n + p;
+			points.push_back(Temp);
+
+			//третья четверть
+			Temp.x = 0;
+			Temp.z = -1;
+			Temp.id = 2 * n + p;
+			points.push_back(Temp);
+
+			//четвертая четверть
+			Temp.x = 1;
+			Temp.z = 0;
+			Temp.id = 3 * n + p;
+			points.push_back(Temp);
+		}
+		
 		return points;
 	}
 
@@ -53,7 +140,6 @@ private:
 		for (int k = 0; k < 4 * n; k++)
 			for (i = 0; i <= l; i++)
 			{
-				 
 				if (i == l) material = OIL; else
 					if (  i > 6 || i < 2 )  material = IRON; else material = AIR;
 				//Склейка конца с началом
@@ -156,167 +242,34 @@ private:
 		int l = RoundeSection::l;
 
 		PointType Temp(0, 0, 0, 0);
-		vector<PointType> tmp;
+		vector<PointType> unitCircle = findPointsOfTheUnitCircle();
+		vector<PointType> points;
+
 		int i, j;
-		real a = RoundeSection::face.R*1.1;
 		real b = (RoundeSection::face.R - RoundeSection::face.d)*0.6;
-		real a_step = 2 * a / (int)n;
 		real b_step = 2 * b / (int)n;
-		real p = a / a_step;
 
-		real step = RoundeSection::face.d / (int)l;
+		int s = unitCircle.size();
+		for (i = 0; i < s; i++) {
+			Temp.x = unitCircle[i].x * (RoundeSection::face.R - RoundeSection::face.d);
+			Temp.z = unitCircle[i].z * (RoundeSection::face.R - RoundeSection::face.d);
+			Temp.id = unitCircle[i].id + s;
 
-		//Точки на внутреннем квадрате
-		for (int k = 0; k < n; k++)
-		{
-			//Верхняя сторона
-			Temp.x = b - k * b_step;
-			Temp.z = b;
-			Temp.id = (l + 1)*(k + 1) + k;
-			tmp.push_back(Temp);
-
-			//Левая сторона
-			Temp.x = -b;
-			Temp.z = b - k * b_step;
-			Temp.id = (l + 2)*(n + k) + l + 1;
-			tmp.push_back(Temp);
-
-			//Нижняя сторона
-			Temp.x = -b + k * b_step;
-			Temp.z = -b;
-			Temp.id = (k + 2 * n) * (l + 2) + l + 1;
-			tmp.push_back(Temp);
-
-			//Правая сторона
-			Temp.x = b;
-			Temp.z = -b + k * b_step;
-			Temp.id = (k + 3 * n) * (l + 2) + l + 1;
-			tmp.push_back(Temp);
-
+			points.push_back(Temp);
+			points.push_back(unitCircle[i]);
 		}
-		//Точки на радиусах
-		for (int k = 0; k <= p; k++)
-		{
-			// Если попали ровно в середину стороны
-			if (k == p && (a - p * a_step <= 2))
-				for (i = 0; i <= l; i++)
-				{
-					//Вертикальная верх 
-					Temp.x = 0;
-					Temp.z = RoundeSection::face.R - i * step;
-					Temp.id = (l + 2)*k + i;
-					tmp.push_back(Temp);
-					//Горизонтальная лево
-					Temp.x = -RoundeSection::face.R + i * step;
-					Temp.z = 0;
-					Temp.id = (l + 2) * n + (l + 2)*k + i;
-					tmp.push_back(Temp);
-					//Вертикальная низ
-					Temp.x = 0;
-					Temp.z = -RoundeSection::face.R + i * step;
-					Temp.id = 2 * n *(l + 2) + (l + 2)*k + i;
-					tmp.push_back(Temp);
-					//Горизонтальная право
-					Temp.x = RoundeSection::face.R - i * step;
-					Temp.z = 0;
-					Temp.id = 3 * n*(l + 2) + (l + 2)*k + i;
-					tmp.push_back(Temp);
-				}
-			else {
 
-				real x1, y1, x2, y2;
-				//Точка с внешнего квадрата
-				x1 = a - k * a_step;
-				y1 = a;
-
-				// Точка с внутреннего квадрата
-				x2 = b - k * b_step;
-				y2 = b;
-
-				real r_x, r_z, R_x, R_z;
-				circle_point(R_x, R_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R);
-				circle_point(r_x, r_z, x1, y1, x2, y2, 0.0, 0.0, RoundeSection::face.R - RoundeSection::face.d);
-
-				real x_step = abs(R_x - r_x) / l;
-				real z_step = abs(R_z - r_z) / l;
-
-				//концентрические окружности
-				for (i = 0; i <= l; i++) {
-
-					//Верх право
-					Temp.x = R_x - i * x_step;
-					Temp.z = R_z - i * z_step;
-					Temp.id = (l + 2)*k + i;
-					tmp.push_back(Temp);
-
-					real dx = Temp.x;
-					real dy = Temp.z;
-					Point Temp1(0, 0, 0, 0);
-
-					//Верх лево
-					if (k != 0) {
-						Temp1.x = -dx;
-						Temp1.z = Temp.z;
-						Temp1.id = (l + 2)*n - (l + 2)*k + i;
-						tmp.push_back(Temp1);
-					}
-
-					//низ лево
-					Temp1.x = -dx;
-					Temp1.z = -dy;
-					Temp1.id = (l + 2)*n * 2 + (l + 2)*k + i;
-					tmp.push_back(Temp1);
-
-					if (k != 0) {
-						//низ право
-						Temp1.x = Temp.x;
-						Temp1.z = -dy;
-						Temp1.id = (l + 2)*n * 3 - (l + 2)*k + i;
-						tmp.push_back(Temp1);
-					}
-
-					//Право верх
-					if (k != 0) {
-						Temp1.x = dy;
-						Temp1.z = dx;
-						Temp1.id = (l + 2)* n * 4 + i - (l + 2)*k;
-						tmp.push_back(Temp1);
-					}
-
-					//Право низ
-					Temp1.x = dy;
-					Temp1.z = -dx;
-					Temp1.id = (l + 2)*n * 3 + i + (l + 2)*k;
-					tmp.push_back(Temp1);
-
-					//Лево верх
-					Temp1.x = -dy;
-					Temp1.z = dx;
-					Temp1.id = (l + 2)*n + i + (l + 2)*k;
-					tmp.push_back(Temp1);
-
-					if (k != 0) {
-						//Лево низ
-						Temp1.x = -dy;
-						Temp1.z = -dx;
-						Temp1.id = (l + 2)*n * 2 + i - (l + 2)*k;
-						tmp.push_back(Temp1);
-					}
-
-				}
-			}
-		}
-		start_ind = tmp.size() - 1;
+		start_ind = points.size();
 		//Добавляем внутренюю сетку
-		for (i = 1; i < n; i++)
-			for (j = 1; j < n; j++) {
+		for (i = 0; i < n; i++)
+			for (j = 0; j < n; j++) {
 				Temp.x = b - j * b_step;
 				Temp.z = b - i * b_step;
-				Temp.id = start_ind + (n - 1)*(i - 1) + j;
-				tmp.push_back(Temp);
+				Temp.id = start_ind + n*i + j;
+				points.push_back(Temp);
 			}
-		RoundeSection::coor_on_layer = tmp.size();
-		return tmp;
+		RoundeSection::coor_on_layer = points.size();
+		return points;
 	}
 
 public:

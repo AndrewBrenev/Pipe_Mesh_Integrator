@@ -8,7 +8,7 @@
         "parameters": {
           "cut": {
             "type": "circle",
-            "splits": 6,
+            "splits": 4,
             "insetry": 2,
             "layer_splits": 5
           },
@@ -57,10 +57,10 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "inftry": "../../Glass/Test/inftry.dat",
-        "nver": "../../Glass/Test/nver.dat",
-        "nvkat": "../../Glass/Test/nvkat.dat",
-        "xyz": "../../Glass/Test/xyz.dat"
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
       }
     },
     "t-matrix": {
