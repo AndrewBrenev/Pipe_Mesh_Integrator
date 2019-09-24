@@ -3,24 +3,25 @@
 
 #include "interface.h"
 
-template <class PointType, class NetType, class SectionType>
+template <class PointType, class NetType>
 class PipeSection : public IMesh<PointType, NetType> {
 protected:
-	
-	SectionType face;
 
-	// Число разбиений по стороне квадрата, кол-во внутренних окружностей
-	int n, l;
+	// Число разбиений одной четверти 
+	int n;
+
+	
+	//Кол-во слоёв в сечении и материалы на них
+	int number_of_inner_layers;
+	vector<Layer> section_layers;
+
+	int innner_material_id;
 
 	//колличество точек в одном сечении
 	int coor_on_layer;
 
-	//Вложенность труб
-	int insert;
+	
 
-	//Кол-во слоёв в сечении и материалы на них
-	int number_of_inner_layers;
-	vector<int>	layerMaterials;
 
 	//Задание конечных элементов на слое
 	virtual vector<NetType> nvtrTubeOnly() = 0;

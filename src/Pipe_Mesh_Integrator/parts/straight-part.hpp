@@ -12,8 +12,8 @@ protected:
 public:
 	StraightPart(json input_configs) {
 		StraightPart::section_count = input_configs["splits"];
-		StraightPart::begin.setValue(input_configs["from"]["point"]["x"], input_configs["from"]["point"]["y"], input_configs["from"]["point"]["z"]);
-		StraightPart::end.setValue(input_configs["to"]["point"]["x"], input_configs["to"]["point"]["y"], input_configs["to"]["point"]["z"]);
+		StraightPart::begin.setValue(input_configs["from"]["x"], input_configs["from"]["y"], input_configs["from"]["z"]);
+		StraightPart::end.setValue(input_configs["to"]["x"], input_configs["to"]["y"], input_configs["to"]["z"]);
 
 		StraightPart::cut = StraightPart::createCut(input_configs);
 		StraightPart::cut->buildNet();

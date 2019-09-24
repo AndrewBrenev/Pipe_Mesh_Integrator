@@ -3,9 +3,12 @@
 
 #include "pipe-section.hpp"
 
-template <class PointType, class NetType, class SectionType>
-class RoundeSection :public PipeSection <PointType, NetType, SectionType > {
+template <class PointType, class NetType>
+class RoundeSection :public PipeSection <PointType, NetType> {
 private:
+
+	real outter_R =1;
+
 	size_t start_ind;		//кол-во вершин в окружностях
 	
 	vector<PointType> findPointsOfTheUnitCircle() {
@@ -131,10 +134,10 @@ private:
 	vector<NetType> nvtrTubeOnly() {
 		//Займёмся сеткой
 		int i(0), j, material = 0;
+
 		int a, b, c, d;
 
 		int n = RoundeSection::n;
-		int l = RoundeSection::l;
 		vector<NetType> nv;
 
 		//Сетка по окружностям
@@ -211,20 +214,20 @@ private:
 	vector<PointType> coordTubeOnly() {
 
 		int n = RoundeSection::n;
-		int l = RoundeSection::l;
 
 		PointType Temp(0, 0, 0, 0);
 		vector<PointType> unitCircle = findPointsOfTheUnitCircle();
 		vector<PointType> points;
 
 		int i, j;
-		real b = (RoundeSection::face.R - RoundeSection::face.d)*0.6;
+		//real b = (RoundeSection::face.R - RoundeSection::face.d)*0.6;
+		real b = 0.5;
 		real b_step = 2 * b / (int)n;
 
 		int s = unitCircle.size();
 		for (i = 0; i < s; i++) {
-			Temp.x = unitCircle[i].x * (RoundeSection::face.R - RoundeSection::face.d);
-			Temp.z = unitCircle[i].z * (RoundeSection::face.R - RoundeSection::face.d);
+			Temp.x = unitCircle[i].x * 0.6; // *(RoundeSection::face.R - RoundeSection::face.d);
+			Temp.z = unitCircle[i].z *0.6;// * (RoundeSection::face.R - RoundeSection::face.d);
 			Temp.id = unitCircle[i].id + s;
 
 			points.push_back(Temp);
@@ -246,19 +249,9 @@ private:
 
 public:
 	RoundeSection() {
-		SectionType A(0, 0, 0, 1, 0.8);
-		RoundeSection::face = A;
+	
 	};
-	RoundeSection(SectionType circle) {
-		RoundeSection::face = circle;
-		RoundeSection::n = 6;
-		RoundeSection::l = 5;
-	};
-	RoundeSection(SectionType circle,int _n,int _l) {
-		RoundeSection::face = circle;
-		RoundeSection::n = _n;
-		RoundeSection::l = _l;
-	};
+	
 	~RoundeSection() {};
 };
 

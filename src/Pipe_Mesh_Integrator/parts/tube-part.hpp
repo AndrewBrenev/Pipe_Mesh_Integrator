@@ -1,8 +1,6 @@
 #ifndef _TUBE_PART_HPP_
 #define _TUBE_PART_HPP_
 
-
-
 #include "interface.h"
 #include "../sections/square-section.hpp"
 #include "../sections/round-section.hpp"
@@ -17,7 +15,7 @@ public:
 		return (i.id < j.id);
 	}
 };
-typedef Circle SectionType;
+
 template <class PointType, class NetType>
 class TubePart : public TridimensionalMesh<PointType, NetType> {
 private:
@@ -25,7 +23,7 @@ private:
 protected:
 
 	sort_coord_vector <PointType> sort_coord_vect;	//Класс для сортировки
-	PipeSection<PointType, NVTR_2D, SectionType> *cut; // шаблонное сечение
+	PipeSection<PointType, NVTR_2D> *cut; // шаблонное сечение
 
 	std::vector <vect<PointType>> normals; //Вектор нормалей
 
@@ -90,23 +88,26 @@ protected:
 				TubePart::nvtr.push_back(tmp_FE);
 			}
 	}
-	PipeSection<PointType, NVTR_2D, SectionType> * createCut(json cut_params) {
+
+	PipeSection<PointType, NVTR_2D> * createCut(json cut_params) {
 		if (cut_params["cut"]["type"] == "circle") {
-			Circle A(0, 0, 0, cut_params["sections"][0]["R"], cut_params["sections"][0]["d"]);
-			return new RoundeSection<PointType, NVTR_2D, Circle>(A, cut_params["cut"]["splits"], cut_params["cut"]["layer_splits"]);
+			//Circle A(0, 0, 0, cut_params["sections"][0]["R"], cut_params["sections"][0]["d"]);
+			int t = 0;
+			return new RoundeSection<PointType, NVTR_2D>();
 		}
+		/*
 		if (cut_params["cut"]["type"] == "rectangle") {
-			Circle A(0, 0, 0, cut_params["sections"][0]["R"], cut_params["sections"][0]["d"]);
-			return new RoundeSection<PointType, NVTR_2D, Circle>(A, cut_params["cut"]["splits"], cut_params["cut"]["layer_splits"]);
+			
+			return new RoundeSection<PointType, NVTR_2D>();
 		}
+		*/
 		else 
-		return NULL;
+		return nullptr;
 	}
 public:
 	TubePart(){};
 	~TubePart() {};
 	virtual void buildNet() =0;
-
 };
 
 #endif

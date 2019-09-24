@@ -87,26 +87,6 @@ public:
 	};
 };
 
-struct Circle {
-	//Координаты центра окружности
-	Point O;
-	//Внешний радиус и толщина стенки
-	real R, d;
-	Circle() {};
-	Circle(real x0, real y0, real z0, real R0, real r0) {
-		O.x = x0;
-		O.y = y0;
-		O.z = z0;
-		R = R0;
-		d = r0;
-	};
-	Circle(Point Center, real R0, real r0) {
-		O = Center;
-		R = R0;
-		d = r0;
-	};
-};
-
 struct Plane {
 	//координаты, глобальный номер вершины
 	real A, B, C, D;
@@ -126,18 +106,28 @@ struct Plane {
 
 };
 
+struct Layer {
+	int material;
+	int splits;
+	real thickness;
+	Layer(int _splits, real d, int _material_id) {
+		material = _material_id;
+		splits = _splits;
+		thickness = d;
+	}
+};
+
 struct NVTR_2D
 {
 public:
 	int material;
-	int id;
 	int n[4];
 	NVTR_2D() {};
-	NVTR_2D(const int a,const int b,const int c,const int d,const int e) {
+	NVTR_2D(const int a,const int b,const int c,const int d,const int m) {
 		n[0] = a;
 		n[1] = b;
 		n[2] = c;
 		n[3] = d;
-		material = e;
+		material = m;
 	};
 };

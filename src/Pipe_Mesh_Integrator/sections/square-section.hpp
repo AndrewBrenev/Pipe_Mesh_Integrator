@@ -3,9 +3,11 @@
 
 #include "pipe-section.hpp"
 
-template <class PointType, class NetType, class SectionType>
-class SquareSection : public PipeSection<PointType, NetType, SectionType> {
+template <class PointType, class NetType>
+class SquareSection : public PipeSection<PointType, NetType> {
 private:
+
+	real side = 1;
 
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
@@ -46,12 +48,11 @@ private:
 		PointType T(0, 0, 0, 0);
 		vector<PointType> tmp;
 
-		real b = SquareSection::face.R * 2;
+		real b = side;
 		real a = n * b / l;
 		real a_step = a / n;
 		real b_step = b / l;
-
-
+		
 		T.z = b / 2;
 		int start_id = 0;
 
@@ -83,16 +84,15 @@ private:
 	}
 public:
 	SquareSection() {
-		SectionType A(0, 0, 0, 1, 0.8);
-		SquareSection::face = A;
+		
 	};
-	SquareSection(SectionType round) {
-		SquareSection::face = round;
+	SquareSection(real square_side) {
+		side = square_side;
 		SquareSection::n = 6;
 		SquareSection::l = 5;
 	};
-	SquareSection(SectionType round,int _n,int _l) {
-		SquareSection::face = round;
+	SquareSection(real square_side ,int _n,int _l) {
+		side = square_side;
 		SquareSection::n = _n;
 		SquareSection::l = _l;
 	};
