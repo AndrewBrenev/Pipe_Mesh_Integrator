@@ -133,36 +133,43 @@ private:
 
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
+
 		//Займёмся сеткой
-		int i(0), j, material = 0;
+		int i(0), j(0), material = 0;
 
 		int a, b, c, d;
 
 		int n = RoundeSection::n;
 		vector<NetType> nv;
 
-		//Сетка по окружностям
-		for (int i = 0; i < 4 * n; i++)
-		{
-			material = IRON;
-			//Склейка конца с началом
-			if (i == 4 * n - 1) {
-				a = i;
-				b = 0;
-				c = 4 * n + i;
-				d = 4*n;
-				NetType A(c, a, d, b, material);
-				nv.push_back(A);
+		int number_of_layers = 0;
+		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++) 
+			for (j = 0; j < RoundeSection::section_layers[k].splits; j++)
+			{
+				//Сетка по окружностям
+				for (i = 0; i < 4 * n; i++)
+				{
+					//Склейка конца с началом
+					if (i == 4 * n - 1) {
+						a = i+ 4 * n*number_of_layers;
+						b = 4 * n*number_of_layers;
+						c = i+ 4 * n*(number_of_layers + 1);
+						d = 4 * n*(number_of_layers + 1);
+						NetType A(c, a, d, b, RoundeSection::section_layers[k].material);
+						nv.push_back(A);
+					}
+					else {
+						a = i + number_of_layers * 4 * n;
+						b = i + 1 + number_of_layers * 4 * n;
+						c = i + 4 * n*(number_of_layers + 1);
+						d = i + 1 + 4 * n*(number_of_layers + 1);
+						NetType A(a, b, c, d, RoundeSection::section_layers[k].material);
+						nv.push_back(A);
+					}
+				}
+				number_of_layers++;
 			}
-			else {
-				a =  i;
-				b = i + 1;
-				c = 4*n + i;
-				d = 4*n + i + 1;
-				NetType A(a,b,c,d, material); nv.push_back(A);
-			}
-		}
-		
+		//Внутренний материал
 		for (i = 0; i < n; i++) {
 
 			//внутренние КЭ
@@ -171,40 +178,41 @@ private:
 				b = start_ind + (n + 1)*i + j + 1;
 				c = start_ind + (n + 1)*(i + 1) + j;
 				d = start_ind + (n + 1)*(i + 1) + j + 1;
-				NetType A(a, c, b, d, OIL);
+				NetType A(a, c, b, d, RoundeSection::innner_material_id);
 				nv.push_back(A);
 			}
 
 			//Верхняя полоса внутренней сетки
-			a = 4 * n + i;
-			b = 4 * n + i + 1;
+			a = number_of_layers *4 * n + i;
+			b = number_of_layers*4 * n + i + 1;
 			c = start_ind + i;
 			d = start_ind + i + 1;
-			NetType A(a, c, b, d, OIL);
+			NetType A(a, c, b, d, RoundeSection::innner_material_id);
 			nv.push_back(A);
 
 			// по левой стенке
-			a = n * 4 + n + i;
+			a = number_of_layers *n * 4 + n + i;
 			b = start_ind + i*(n+1)+n;
-			c = n * 4 + n + i + 1;
+			c = number_of_layers*n * 4 + n + i + 1;
 			d = start_ind + (i + 1)*(n+1) + n;
-			NetType A4(b, d, a, c, OIL);
+			NetType A4(b, d, a, c, RoundeSection::innner_material_id);
 			nv.push_back(A4);
 
 			//по низу
-			a = n * 4 + 2 * n + i;
+			a = number_of_layers* n * 4 + 2 * n + i;
 			b = start_ind + (n + 1)*(n + 1) - 1 - i;
-			c = n * 4 + 2*n + i + 1;
+			c = number_of_layers*n * 4 + 2*n + i + 1;
 			d = start_ind + (n + 1)*(n + 1) - 1 - (i + 1);
-			NetType A5(d, c, b, a, OIL);
+			NetType A5(d, c, b, a, RoundeSection::innner_material_id);
 			nv.push_back(A5);
 
 			// По правой стенке
 			a = start_ind + (n+1) * i;
-			b = (i) ? 8 * n - i: 4 * n;
+			b = (i) ? (number_of_layers+1)*4 * n - i:
+				4 * n*number_of_layers;
 			c = start_ind + (n+1)*(i + 1);
-			d = 8 * n - (i + 1);
-			NetType A6(b, d, a, c, OIL);
+			d = (number_of_layers+1) *4* n - (i + 1);
+			NetType A6(b, d, a, c, RoundeSection::innner_material_id);
 			nv.push_back(A6);
 		}
 			
@@ -244,8 +252,10 @@ private:
 				}
 		}
 
-		real b = layer_R * 0.9;
-		real b_step = 2 * layer_R / (int)n;
+		// Констанат здесь не случайная. 
+		//  D = sqrt(2)a = 2r => a = sqrt(2) => макс. константа = 1/sqrt(2)
+		real b = layer_R * 0.65;
+		real b_step = 2 * b / (int)n;
 		start_ind = points.size();
 		//Добавляем внутренюю сетку
 		for (i = 0; i <= n; i++)
