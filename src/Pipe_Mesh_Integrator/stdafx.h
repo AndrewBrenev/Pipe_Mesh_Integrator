@@ -110,11 +110,17 @@ struct Layer {
 	int material;
 	int splits;
 	real thickness;
+
+	Layer() {
+		material = 0;
+		splits = 2;
+		thickness = 0.5;
+	};
 	Layer(int _splits, real d, int _material_id) {
 		material = _material_id;
 		splits = _splits;
 		thickness = d;
-	}
+	};
 };
 
 struct NVTR_2D

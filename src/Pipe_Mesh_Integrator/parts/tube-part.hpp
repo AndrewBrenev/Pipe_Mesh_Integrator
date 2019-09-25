@@ -91,16 +91,12 @@ protected:
 
 	PipeSection<PointType, NVTR_2D> * createCut(json cut_params) {
 		if (cut_params["cut"]["type"] == "circle") {
-			//Circle A(0, 0, 0, cut_params["sections"][0]["R"], cut_params["sections"][0]["d"]);
-			int t = 0;
-			return new RoundeSection<PointType, NVTR_2D>();
+			return new RoundeSection<PointType, NVTR_2D>(cut_params["cut"]);
 		}
-		/*
 		if (cut_params["cut"]["type"] == "rectangle") {
 			
-			return new RoundeSection<PointType, NVTR_2D>();
+			return new SquareSection<PointType, NVTR_2D>(cut_params["cut"]);
 		}
-		*/
 		else 
 		return nullptr;
 	}

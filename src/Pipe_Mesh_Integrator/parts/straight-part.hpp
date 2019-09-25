@@ -14,7 +14,6 @@ public:
 		StraightPart::section_count = input_configs["splits"];
 		StraightPart::begin.setValue(input_configs["from"]["x"], input_configs["from"]["y"], input_configs["from"]["z"]);
 		StraightPart::end.setValue(input_configs["to"]["x"], input_configs["to"]["y"], input_configs["to"]["z"]);
-
 		StraightPart::cut = StraightPart::createCut(input_configs);
 		StraightPart::cut->buildNet();
 	
@@ -61,10 +60,6 @@ public:
 		
 		IMesh<PointType, NetType>::setNodesSize(StraightPart::coord.size());
 		IMesh<PointType, NetType>::setElemsSize(StraightPart::nvtr.size());
-
-	//	IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../Glass/Test/inftry.dat", "../../Glass/Test/nvkat.dat",
-	//		"../../Glass/Test/xyz.dat", "../../Glass/Test/nver.dat");
-
 	}
 	
 };

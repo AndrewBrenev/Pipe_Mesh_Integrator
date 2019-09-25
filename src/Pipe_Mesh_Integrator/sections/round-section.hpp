@@ -130,6 +130,7 @@ private:
 		return points;
 	}
 
+
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 		//Займёмся сеткой
@@ -212,35 +213,46 @@ private:
 
 	//Нахождение координат трубы в сечении
 	vector<PointType> coordTubeOnly() {
+		int i, j;
+		PointType Temp(0, 0, 0, 0);
+		vector<PointType> points;
+
+		vector<PointType> unitCircle = findPointsOfTheUnitCircle();
 
 		int n = RoundeSection::n;
 
-		PointType Temp(0, 0, 0, 0);
-		vector<PointType> unitCircle = findPointsOfTheUnitCircle();
-		vector<PointType> points;
-
-		int i, j;
-		//real b = (RoundeSection::face.R - RoundeSection::face.d)*0.6;
-		real b = 0.5;
-		real b_step = 2 * b / (int)n;
-
-		int s = unitCircle.size();
-		for (i = 0; i < s; i++) {
-			Temp.x = unitCircle[i].x * 0.6; // *(RoundeSection::face.R - RoundeSection::face.d);
-			Temp.z = unitCircle[i].z *0.6;// * (RoundeSection::face.R - RoundeSection::face.d);
-			Temp.id = unitCircle[i].id + s;
-
-			points.push_back(Temp);
-			points.push_back(unitCircle[i]);
+		size_t untin_size = unitCircle.size();
+		real layer_R = outter_R;
+		j = 0;
+		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++) {
+			for (int l = 0; l < RoundeSection::section_layers[k].splits; l++) {
+				for (i = 0; i < untin_size; i++) {
+					Temp.x = unitCircle[i].x *layer_R;
+					Temp.z = unitCircle[i].z *layer_R;
+					Temp.id = unitCircle[i].id + untin_size * j;
+					points.push_back(Temp);
+				}
+				layer_R -= RoundeSection::section_layers[k].thickness / RoundeSection::section_layers[k].splits;
+				j++;
+			}
+			if (k == (RoundeSection::number_of_inner_layers - 1))
+				for (i = 0; i < untin_size; i++) {
+					Temp.x = unitCircle[i].x *layer_R;
+					Temp.z = unitCircle[i].z *layer_R;
+					Temp.id = unitCircle[i].id + untin_size * j;
+					points.push_back(Temp);
+				}
 		}
 
+		real b = layer_R * 0.9;
+		real b_step = 2 * layer_R / (int)n;
 		start_ind = points.size();
 		//Добавляем внутренюю сетку
 		for (i = 0; i <= n; i++)
 			for (j = 0; j <= n; j++) {
 				Temp.x = b - j * b_step;
 				Temp.z = b - i * b_step;
-				Temp.id = start_ind + (n+1)*i + j;
+				Temp.id = start_ind + (n + 1)*i + j;
 				points.push_back(Temp);
 			}
 		RoundeSection::coor_on_layer = points.size();
@@ -251,7 +263,18 @@ public:
 	RoundeSection() {
 	
 	};
-	
+	RoundeSection(json cut_configs) {
+		outter_R = cut_configs["R"];
+		RoundeSection::n = cut_configs["splits"];
+		RoundeSection::innner_material_id = cut_configs["inner-material-id"];
+		RoundeSection::number_of_inner_layers = cut_configs["layers-count"];
+		RoundeSection::section_layers.resize(RoundeSection::number_of_inner_layers);
+		for (int i = 0; i < RoundeSection::number_of_inner_layers; i++) {
+			RoundeSection::section_layers[i].material = cut_configs["layers"][i]["material-id"];
+			RoundeSection::section_layers[i].splits = cut_configs["layers"][i]["splits"];
+			RoundeSection::section_layers[i].thickness = cut_configs["layers"][i]["d"];
+		}
+	};
 	~RoundeSection() {};
 };
 

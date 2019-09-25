@@ -8,12 +8,12 @@ class SquareSection : public PipeSection<PointType, NetType> {
 private:
 
 	real side = 1;
+	int l = 5;
 
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 		int n = SquareSection::n;
-		int l = SquareSection::l;
-
+	
 		int i, j, material;
 		int a, b, c, d;
 		int point_id = 0;
@@ -43,8 +43,7 @@ private:
 	vector<PointType> coordTubeOnly() {
 
 		int n = SquareSection::n;
-		int l = SquareSection::l;
-
+	
 		PointType T(0, 0, 0, 0);
 		vector<PointType> tmp;
 
@@ -89,7 +88,9 @@ public:
 	SquareSection(real square_side) {
 		side = square_side;
 		SquareSection::n = 6;
-		SquareSection::l = 5;
+	};
+	SquareSection(json cut_configs) {
+	
 	};
 	SquareSection(real square_side ,int _n,int _l) {
 		side = square_side;

@@ -10,7 +10,6 @@ protected:
 	// Число разбиений одной четверти 
 	int n;
 
-	
 	//Кол-во слоёв в сечении и материалы на них
 	int number_of_inner_layers;
 	vector<Layer> section_layers;
@@ -19,9 +18,6 @@ protected:
 
 	//колличество точек в одном сечении
 	int coor_on_layer;
-
-	
-
 
 	//Задание конечных элементов на слое
 	virtual vector<NetType> nvtrTubeOnly() = 0;
@@ -35,7 +31,11 @@ public:
 	vector<NetType> getSectionNVTR(){
 		return PipeSection::nvtr;
 	};
-	
+
+	int getIdOfExternalNodes() {
+		return 4 * n;
+	};
+
 	void buildNet() {
 		try {
 				PipeSection::coord = coordTubeOnly();
