@@ -7,9 +7,6 @@ template <class PointType, class NetType>
 class PipeSection : public IMesh<PointType, NetType> {
 protected:
 
-	// Число разбиений одной четверти 
-	int n;
-
 	//Кол-во слоёв в сечении и материалы на них
 	int number_of_inner_layers;
 	vector<Layer> section_layers;
@@ -32,9 +29,7 @@ public:
 		return PipeSection::nvtr;
 	};
 
-	int getIdOfExternalNodes() {
-		return 4 * n;
-	};
+	virtual int getIdOfExternalNodes() = 0;
 
 	void buildNet() {
 		try {

@@ -7,14 +7,14 @@ template <class PointType, class NetType>
 class RoundeSection :public PipeSection <PointType, NetType> {
 private:
 
-	real outter_R =1;
-
-	size_t start_ind;		//кол-во вершин в окружностях
+	real outter_R =1;		// Радиус Внешней окружности
+	int n;					// Число разбиений одной четверти 
+	size_t start_ind;		// Кол-во вершин в окружностях = 4*n*number_of_layers или начальный индекс правого верхнего узла внутренней сетки
 	
 	vector<PointType> findPointsOfTheUnitCircle() {
 		vector<PointType> points;
 		PointType Temp;
-		int n = RoundeSection::n;
+
 		int p = n / (int)2;
 		real alfa_step = 90 / n;
 
@@ -130,7 +130,6 @@ private:
 		return points;
 	}
 
-
 	//Задание конечных элементов на слое
 	vector<NetType> nvtrTubeOnly() {
 
@@ -139,7 +138,6 @@ private:
 
 		int a, b, c, d;
 
-		int n = RoundeSection::n;
 		vector<NetType> nv;
 
 		int number_of_layers = 0;
@@ -169,6 +167,7 @@ private:
 				}
 				number_of_layers++;
 			}
+		
 		//Внутренний материал
 		for (i = 0; i < n; i++) {
 
@@ -221,26 +220,37 @@ private:
 
 	//Нахождение координат трубы в сечении
 	vector<PointType> coordTubeOnly() {
+
 		int i, j;
 		PointType Temp(0, 0, 0, 0);
 		vector<PointType> points;
 
 		vector<PointType> unitCircle = findPointsOfTheUnitCircle();
 
-		int n = RoundeSection::n;
-
 		size_t untin_size = unitCircle.size();
-		real layer_R = outter_R;
+
+		real layer_R;
+		if (outter_R > 0)
+			layer_R = outter_R;
+		else
+			throw runtime_error("The outer radius of the pipe cannot be less than or equal to 0.");
+
 		j = 0;
-		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++) {
-			for (int l = 0; l < RoundeSection::section_layers[k].splits; l++) {
-				for (i = 0; i < untin_size; i++) {
+		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++)
+		{
+			for (int l = 0; l < RoundeSection::section_layers[k].splits; l++) 
+			{
+				for (i = 0; i < untin_size; i++)
+				{
 					Temp.x = unitCircle[i].x *layer_R;
 					Temp.z = unitCircle[i].z *layer_R;
 					Temp.id = unitCircle[i].id + untin_size * j;
 					points.push_back(Temp);
 				}
 				layer_R -= RoundeSection::section_layers[k].thickness / RoundeSection::section_layers[k].splits;
+				if (layer_R <= 0)	
+					throw runtime_error("The sum of the thicknesses of the layers is greater than or equal to the radius of the pipe! It is incorrect! The program is stopped. Edit the config file and try again!");
+
 				j++;
 			}
 			if (k == (RoundeSection::number_of_inner_layers - 1))
@@ -259,7 +269,8 @@ private:
 		start_ind = points.size();
 		//Добавляем внутренюю сетку
 		for (i = 0; i <= n; i++)
-			for (j = 0; j <= n; j++) {
+			for (j = 0; j <= n; j++)
+			{
 				Temp.x = b - j * b_step;
 				Temp.z = b - i * b_step;
 				Temp.id = start_ind + (n + 1)*i + j;
@@ -271,11 +282,17 @@ private:
 
 public:
 	RoundeSection() {
-	
+		outter_R = 1;
+		n = 6;
+		RoundeSection::innner_material_id = 0;
+		RoundeSection::number_of_inner_layers = 1;
+		Layer def{ 4,0.2,1 };
+		RoundeSection::section_layers.push_back(def);
 	};
+	
 	RoundeSection(json cut_configs) {
 		outter_R = cut_configs["R"];
-		RoundeSection::n = cut_configs["splits"];
+		n = cut_configs["splits"];
 		RoundeSection::innner_material_id = cut_configs["inner-material-id"];
 		RoundeSection::number_of_inner_layers = cut_configs["layers-count"];
 		RoundeSection::section_layers.resize(RoundeSection::number_of_inner_layers);
@@ -286,6 +303,10 @@ public:
 		}
 	};
 	~RoundeSection() {};
+
+	int getIdOfExternalNodes() {
+		return 4 * n;
+	};
 };
 
 #endif //_ROUND_SECTION_HPP_

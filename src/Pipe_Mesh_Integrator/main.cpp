@@ -32,7 +32,8 @@ int main(int argc, const char** argv)
 				cout << "All calculations took " << seconds << " second(s)." << endl :
 				cout << "Wow! All calculations took less then second!" << endl;
 
-		}else throw runtime_error("Incorrect number of function arguments! The program takes only one argument: the relative path to the config file. The path and file name must not contain spaces. Check the conditions and try again.");
+		}else
+			throw runtime_error("Incorrect number of function arguments! The program takes only one argument: the relative path to the config file. The path and file name must not contain spaces. Check the conditions and try again.");
 	}
 	catch (exception& e)
 	{

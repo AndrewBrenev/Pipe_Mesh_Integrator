@@ -29,7 +29,7 @@
     <ClInclude Include="parts\tube-part.hpp" />
     <ClInclude Include="sections\pipe-section.hpp" />
     <ClInclude Include="sections\round-section.hpp" />
-    <ClInclude Include="sections\square-section.hpp" />
+    <ClInclude Include="sections\rectangle-section.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="vect.hpp" />
   </ItemGroup>

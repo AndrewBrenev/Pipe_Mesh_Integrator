@@ -51,9 +51,6 @@
     <ClInclude Include="sections\round-section.hpp">
       <Filter>Файлы заголовков\sections</Filter>
     </ClInclude>
-    <ClInclude Include="sections\square-section.hpp">
-      <Filter>Файлы заголовков\sections</Filter>
-    </ClInclude>
     <ClInclude Include="parts\bending-part.hpp">
       <Filter>Файлы заголовков\parts</Filter>
     </ClInclude>
@@ -62,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="parts\tube-part.hpp">
       <Filter>Файлы заголовков\parts</Filter>
+    </ClInclude>
+    <ClInclude Include="sections\rectangle-section.hpp">
+      <Filter>Файлы заголовков\sections</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

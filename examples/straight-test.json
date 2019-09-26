@@ -7,7 +7,7 @@
         "action": "build",
         "parameters": {
           "straight": {
-            "count": 1,
+            "count": 2,
             "segments": [
               {
                 "from": {
@@ -26,6 +26,45 @@
                   "splits": 4,
                   "inner-material-id": 0,
                   "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              },
+			   {
+                "from": {
+                    "x": 6,
+                    "y": 0,
+                    "z": 0
+                },
+                "to": {
+                    "x": 6,
+                    "y": 5,
+                    "z": 0
+                },
+                "splits": 10,
+                "cut": {
+                  "type": "rectangle",
+                  "inner-material-id": 0,
+                  "a-splits": 4,
+                  "b-splits": 2,
+				  "a-side": 2,
+                  "b-side": 1,                  
                   "layers-count": 3,
                   "layers": [
                     {

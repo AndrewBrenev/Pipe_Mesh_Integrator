@@ -2,7 +2,7 @@
 #define _TUBE_PART_HPP_
 
 #include "interface.h"
-#include "../sections/square-section.hpp"
+#include "../sections/rectangle-section.hpp"
 #include "../sections/round-section.hpp"
 #include "vect.hpp"
 
@@ -94,11 +94,10 @@ protected:
 			return new RoundeSection<PointType, NVTR_2D>(cut_params["cut"]);
 		}
 		if (cut_params["cut"]["type"] == "rectangle") {
-			
-			return new SquareSection<PointType, NVTR_2D>(cut_params["cut"]);
+			return new RectangleSection<PointType, NVTR_2D>(cut_params["cut"]);
 		}
 		else 
-		return nullptr;
+			return new RoundeSection<PointType, NVTR_2D>();
 	}
 public:
 	TubePart(){};
