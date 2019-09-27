@@ -51,7 +51,7 @@ private:
 							(k + 1) * (nX + 1) + i + (j + 1) * el_layer + 1,
 							k * (nX + 1) + i + (j + 1) * el_layer + 1,
 							t_el,
-							GROUND
+							meshParams["parameters"]["material-id"]
 						);
 						TridimensionalMesh<PointType, NetType>::nvtr.push_back(N);
 						t_el++;

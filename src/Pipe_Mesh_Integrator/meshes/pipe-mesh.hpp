@@ -9,8 +9,6 @@
 #include "../parts/straight-part.hpp"
 
 
-typedef Circle SectionType;
-
 template <class PointType, class NetType>
 class PipeMesh : public TridimensionalMesh<PointType, NetType> {
 private:
@@ -67,8 +65,7 @@ public:
 			for (int i = 0; i < input_configs["parameters"]["straight"]["count"]; i++) {
 
 				json straight_part_params = input_configs["parameters"]["straight"]["segments"][i];
-				straight_part_params["cut"] = input_configs["parameters"]["cut"];
-				
+					
 				tube_parts.push_back(new StraightPart< PointType, NetType>(straight_part_params));
 			}
 
@@ -77,13 +74,13 @@ public:
 				json turn_parameters;
 
 				turn_parameters = input_configs["parameters"]["turns"]["segments"][i];
-				turn_parameters["cut"] = input_configs["parameters"]["cut"];
-
-				int begin_id = input_configs["parameters"]["turns"]["segments"][i]["between"]["start"] - 1;
+						int begin_id = input_configs["parameters"]["turns"]["segments"][i]["between"]["start"] - 1;
 				int end_id = input_configs["parameters"]["turns"]["segments"][i]["between"]["end"] - 1;
-				if (begin_id < 0 || end_id < 0) throw runtime_error("Error when calculatting a turn : the numbering of straight sections starts from 1");
+				if (begin_id < 0 || end_id < 0)
+					throw runtime_error("Error when calculatting a turn : the numbering of straight sections starts from 1");
 				if (begin_id >= input_configs["parameters"]["straight"]["count"] ||
-					end_id >= input_configs["parameters"]["straight"]["count"]) throw runtime_error("Error when calculatting a turn : the numbering of straight sections can not be more than the number of straight sections");
+					end_id >= input_configs["parameters"]["straight"]["count"]) 
+					throw runtime_error("Error when calculatting a turn : the numbering of straight sections can not be more than the number of straight sections");
 
 				turn_parameters["begin"] = input_configs["parameters"]["straight"]["segments"][begin_id];
 				turn_parameters["end"] = input_configs["parameters"]["straight"]["segments"][end_id];
@@ -120,8 +117,6 @@ public:
 	~PipeMesh() {};
 	void buildNet() {
 
-
-		omp_set_num_threads(4);
 		#pragma omp parallel for
 		for (int i = 0; i < tube_parts.size(); i++)
 			tube_parts[i]->buildNet();

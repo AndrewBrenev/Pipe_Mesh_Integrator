@@ -1,0 +1,113 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+        {
+        "type": "Tube",
+        "action": "build",
+        "parameters": {
+          "straight": {
+            "count": 2,
+            "segments": [
+              {
+                "from": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "to": {
+                    "x": 0,
+                    "y": 5,
+                    "z": 0
+                },
+                "splits": 10,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              },
+			   {
+                "from": {
+                    "x": 6,
+                    "y": 0,
+                    "z": 0
+                },
+                "to": {
+                    "x": 6,
+                    "y": 5,
+                    "z": 0
+                },
+                "splits": 10,
+                "cut": {
+                  "type": "rectangle",
+                  "inner-material-id": 0,
+                  "a-splits": 8,
+                  "b-splits": 4,
+				  "a-side": 2,
+                  "b-side": 1,                  
+                  "layers-count": 2,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "turns": {
+            "count": 0,
+            "segments": [
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

@@ -15,15 +15,15 @@ protected:
 public:
 	BendingPart(json input_configs) {
 		
-		BendingPart::begin.setValue(input_configs["begin"]["to"]["point"]["x"], input_configs["begin"]["to"]["point"]["y"], input_configs["begin"]["to"]["point"]["z"]);
-		BendingPart::end.setValue(input_configs["end"]["from"]["point"]["x"], input_configs["end"]["from"]["point"]["y"], input_configs["end"]["from"]["point"]["z"]);
-		rotationPoint.setValue(input_configs["rotationPoint"]["point"]["x"], input_configs["rotationPoint"]["point"]["y"], input_configs["rotationPoint"]["point"]["z"]);
+		BendingPart::begin.setValue(input_configs["begin"]["to"]["x"], input_configs["begin"]["to"]["y"], input_configs["begin"]["to"]["z"]);
+		BendingPart::end.setValue(input_configs["end"]["from"]["x"], input_configs["end"]["from"]["y"], input_configs["end"]["from"]["z"]);
+		rotationPoint.setValue(input_configs["rotationPoint"]["x"], input_configs["rotationPoint"]["y"], input_configs["rotationPoint"]["z"]);
 		BendingPart::section_count = input_configs["splits"];
 
-		PointType A(input_configs["begin"]["from"]["point"]["x"], input_configs["begin"]["from"]["point"]["y"], input_configs["begin"]["from"]["point"]["z"]);
-		prev_straight_norm = BendingPart::getNorm(A,	BendingPart::begin);
+		PointType A(input_configs["begin"]["from"]["x"], input_configs["begin"]["from"]["y"], input_configs["begin"]["from"]["z"]);
+		prev_straight_norm = BendingPart::getNorm(A,BendingPart::begin);
 
-		PointType B(input_configs["end"]["to"]["point"]["x"], input_configs["end"]["to"]["point"]["y"], input_configs["end"]["to"]["point"]["z"]);
+		PointType B(input_configs["end"]["to"]["x"], input_configs["end"]["to"]["y"], input_configs["end"]["to"]["z"]);
 		next_straight_norm = BendingPart::getNorm(BendingPart::end, B);
 
 		BendingPart::cut = BendingPart::createCut(input_configs);

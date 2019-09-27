@@ -159,7 +159,6 @@ public:
 
 		cout << "Building the combined mesh: " << endl;
 
-		omp_set_num_threads(4);
 		#pragma omp parallel for
 		for (int i = 0; i < objectsMeshes.size(); i++) 
 			objectsMeshes[i]->buildNet();

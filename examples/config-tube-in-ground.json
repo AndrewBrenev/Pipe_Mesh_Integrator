@@ -6,6 +6,7 @@
         "type": "Outer",
         "action": "build",
         "parameters": {
+          "material-id": 1,
           "X": {
             "min": -10,
             "max": 10,
