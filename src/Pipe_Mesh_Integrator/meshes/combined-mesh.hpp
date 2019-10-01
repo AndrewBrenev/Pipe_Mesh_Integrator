@@ -163,11 +163,13 @@ public:
 		for (int i = 0; i < objectsMeshes.size(); i++) 
 			objectsMeshes[i]->buildNet();
 		
-		deleteOverlappingFE();
+		if (objectsMeshes.size() > 1) {
 
-		// Перенумеруем полученные объекты и построим выходную сетку.
-		buildCombinedMesh();
+			deleteOverlappingFE();
 
+			// Перенумеруем полученные объекты и построим выходную сетку.
+			buildCombinedMesh();
+		}
 		saveResultMesh();
 	};
 };

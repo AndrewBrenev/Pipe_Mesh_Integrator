@@ -72,7 +72,15 @@ public:
 	const real length() {
 		return sqrt(x*x + y * y + z * z);
 	};
-	vect() {};
+	vect() {
+		x = 1;
+		y = 1;
+		z = 1;
+
+		clockwiseZ = true;
+		clockwiseX = true;
+		clockwiseY = true;
+	};
 	// x,y,z, вокруг Z,вокруг X 
 	vect(real x1, real x2, real x3, bool A, bool B, bool C) {
 		x = x1;

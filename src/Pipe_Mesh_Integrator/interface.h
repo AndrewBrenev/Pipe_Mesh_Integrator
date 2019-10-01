@@ -58,13 +58,13 @@ protected:
 
 		return true;
 	};
-	bool writeMeshInGlassFormatIntoFiles(const char* inf, const char *nvkat, const char *xyz, const char *nver) {
+	bool writeMeshInGlassFormatIntoFiles(const char* inf, const char* nvkat, const char* xyz, const char* nver) {
 
 		// nvkat
-		int *tmp = new int[el_size];
+		int* tmp = new int[el_size];
 		size_t t;
 		for (int i = 0; i < el_size; i++)	tmp[i] = nvtr[i].material;
-		FILE *fout;
+		FILE* fout;
 		if (fopen_s(&fout, nvkat, "wb")) return false;
 		else {
 			t = fwrite(tmp, sizeof(int), el_size, fout);
@@ -85,7 +85,7 @@ protected:
 		delete tmp;
 
 		//xyz
-		double *tmp_xyz = new double[3 * nodes_size];
+		double* tmp_xyz = new double[3 * nodes_size];
 		for (int i = 0, k = 0; k < nodes_size; k++, i = i + 3) {
 			tmp_xyz[i] = coord[k].x;
 			tmp_xyz[i + 1] = coord[k].y;
@@ -96,7 +96,7 @@ protected:
 		fclose(fout);
 
 		//inftry
-		FILE *b = fopen(inf, "w");
+		FILE* b = fopen(inf, "w");
 		fprintf(b, " ISLAU=       0 INDKU1=       0 INDFPO=       0\nKUZLOV=%8d   KPAR=%8d    KT1=       0   KTR2=       0   KTR3=       0\nKISRS1=       0 KISRS2=       0 KISRS3=       0   KBRS=       0\n   KT7=       0   KT10=       0   KTR4=       0  KTSIM=       0\n   KT6=       0\n", nodes_size, el_size);
 		fclose(b);
 

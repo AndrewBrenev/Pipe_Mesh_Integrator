@@ -11884,29 +11884,29 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
     // k is the length of the buffer (number of decimal digits)
     // n is the position of the decimal point relative to the start of the buffer.
 
-    if (k <= n and n <= max_exp)
-    {
-        // digits[000]
-        // len <= max_exp + 2
+	if (k <= n and n <= max_exp)
+	{
+		// digits[000]
+		// len <= max_exp + 2
 
-        std::memset(buf + k, '0', static_cast<size_t>(n - k));
-        // Make it look like a floating-point number (#362, #378)
-        buf[n + 0] = '.';
-        buf[n + 1] = '0';
-        return buf + (n + 2);
-    }
+		std::memset(buf + k, '0', static_cast<size_t>(n - k));
+		// Make it look like a floating-point number (#362, #378)
+		buf[n + 0] = '.';
+		buf[n + 1] = '0';
+		return buf + (n + 2);
+	}
 
-    if (0 < n and n <= max_exp)
-    {
-        // dig.its
-        // len <= max_digits10 + 1
+	if (0 < n and n <= max_exp)
+	{
+		// dig.its
+		// len <= max_digits10 + 1
 
-        assert(k > n);
+		assert(k > n);
 
-        std::memmove(buf + (n + 1), buf + n, static_cast<size_t>(k - n));
-        buf[n] = '.';
-        return buf + (k + 1);
-    }
+		std::memmove(buf + (n + 1), buf + n, static_cast<size_t>(k - n));
+		buf[n] = '.';
+		return buf + (k + 1);
+	}
 
     if (min_exp < n and n <= 0)
     {

@@ -27,7 +27,7 @@ protected:
 
 	std::vector <vect<PointType>> normals; //Вектор нормалей
 
-	int section_count;
+	int section_count{ 0 };
 	PointType begin, end; //Точки начала и конца секции
 
 	// Поворот заданных точек на ветор
@@ -74,15 +74,15 @@ protected:
 			for (int j = 0; j < el_on_layer; j++)
 			{
 				NetType tmp_FE(
-					nv[j].n[0] + (q - 1)*coor_on_layer + 1,
-					nv[j].n[1] + (q - 1)*coor_on_layer + 1,
-					nv[j].n[2] + (q - 1)*coor_on_layer + 1,
-					nv[j].n[3] + (q - 1)*coor_on_layer + 1,
+					nv[j].n[0] + (q - 1) * coor_on_layer + 1,
+					nv[j].n[1] + (q - 1) * coor_on_layer + 1,
+					nv[j].n[2] + (q - 1) * coor_on_layer + 1,
+					nv[j].n[3] + (q - 1) * coor_on_layer + 1,
 					nv[j].n[0] + q * coor_on_layer + 1,
 					nv[j].n[1] + q * coor_on_layer + 1,
 					nv[j].n[2] + q * coor_on_layer + 1,
 					nv[j].n[3] + q * coor_on_layer + 1,
-					(q - 1)*coor_on_layer + j + 1,
+					(q - 1) * coor_on_layer + j + 1,
 					nv[j].material
 				);
 				TubePart::nvtr.push_back(tmp_FE);
@@ -100,7 +100,9 @@ protected:
 			return new RoundeSection<PointType, NVTR_2D>();
 	}
 public:
-	TubePart(){};
+	TubePart(){
+		cut = nullptr;
+	};
 	~TubePart() {};
 	virtual void buildNet() =0;
 };

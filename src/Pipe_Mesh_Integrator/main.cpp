@@ -7,7 +7,7 @@ int main(int argc, const char** argv)
 
 		auto numberOfThreads = omp_get_max_threads();
 		omp_set_num_threads(numberOfThreads);
-
+	
 		if (argc == 2) {
 
 			time_t start, end;

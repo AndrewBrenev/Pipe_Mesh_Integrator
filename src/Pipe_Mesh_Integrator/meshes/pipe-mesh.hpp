@@ -118,8 +118,10 @@ public:
 	void buildNet() {
 
 		#pragma omp parallel for
-		for (int i = 0; i < tube_parts.size(); i++)
+		for (int i = 0; i < tube_parts.size(); i++) {
 			tube_parts[i]->buildNet();
+		}
+
 
 		dockingPipeParts();
 
