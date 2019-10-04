@@ -9,7 +9,7 @@ private:
 
 	real outter_R =1;		// –адиус ¬нешней окружности
 	int n;					// „исло разбиений одной четверти 
-	size_t start_ind;		//  ол-во вершин в окружност€х = 4*n*number_of_layers или начальный индекс правого верхнего узла внутренней сетки
+	size_t start_ind = 0;		//  ол-во вершин в окружност€х = 4*n*number_of_layers или начальный индекс правого верхнего узла внутренней сетки
 	
 	vector<PointType> findPointsOfTheUnitCircle() {
 		vector<PointType> points;
@@ -127,6 +127,7 @@ private:
 				points.push_back(Temp);
 			}
 
+		points.shrink_to_fit();
 		return points;
 	}
 
@@ -214,7 +215,7 @@ private:
 			NetType A6(b, d, a, c, RoundeSection::innner_material_id);
 			nv.push_back(A6);
 		}
-			
+		nv.shrink_to_fit();
 		return nv;
 	};
 
@@ -273,10 +274,12 @@ private:
 			{
 				Temp.x = b - j * b_step;
 				Temp.z = b - i * b_step;
-				Temp.id = start_ind + (n + 1)*i + j;
+				Temp.id = start_ind + (n + 1) * i + j;
 				points.push_back(Temp);
 			}
 		RoundeSection::coor_on_layer = points.size();
+
+		points.shrink_to_fit();
 		return points;
 	}
 

@@ -1,0 +1,374 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+      {
+        "type": "Tube",
+        "action": "build",
+        "parameters": {
+          "straight": {
+            "count": 5,
+            "segments": [
+              {
+                "from": {
+                  "x": -6,
+                  "y": 5,
+                  "z": 3
+                },
+                "to": {
+                  "x": -6,
+                  "y": 3,
+                  "z": 3
+                },
+                "splits": 10,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              },
+              {
+                "from": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 3
+                },
+                "to": {
+                  "x": -2.5,
+                  "y": 0,
+                  "z": 3
+                },
+                "splits": 2,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              },
+              {
+                "from": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "to": {
+                  "x": 0,
+                  "y": 0,
+                  "z": -4
+                },
+                "splits": 6,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              },
+              {
+                "from": {
+                  "x": 1,
+                  "y": 0,
+                  "z": -5
+                },
+                "to": {
+                  "x": 4,
+                  "y": 0,
+                  "z": -7
+                },
+                "splits": 6,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+
+              },
+              {
+                "from": {
+                  "x": 6,
+                  "y": 0,
+                  "z": -7
+
+                },
+                "to": {
+                  "x": 10,
+                  "y": 0,
+                  "z": -7
+
+                },
+                "splits": 5,
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "turns": {
+            "count": 4,
+            "segments": [
+              {
+                "splits": 4,
+                "between": {
+                  "start": 1,
+                  "end": 2
+                },
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                },
+                "rotationPoint": {
+                  "x": -3.5,
+                  "y": 2.5,
+                  "z": 3
+                }
+              },
+              {
+                "splits": 4,
+                "between": {
+                  "start": 2,
+                  "end": 3
+                },
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                },
+                "rotationPoint": {
+                  "x": -1,
+                  "y": 0,
+                  "z": 0.2
+                }
+              },
+              {
+                "splits": 4,
+                "between": {
+                  "start": 3,
+                  "end": 4
+                },
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                },
+                "rotationPoint": {
+                  "x": 3,
+                  "y": 0.1,
+                  "z": -3
+                }
+              },
+              {
+                "splits": 3,
+                "between": {
+                  "start": 4,
+                  "end": 5
+                },
+                "cut": {
+                  "type": "circle",
+                  "splits": 4,
+                  "inner-material-id": 0,
+                  "R": 2,
+                  "layers-count": 3,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    },
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    }
+                  ]
+                },
+                "rotationPoint": {
+                  "x": 5,
+                  "y": 0,
+                  "z": -4
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

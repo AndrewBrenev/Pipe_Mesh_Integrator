@@ -12,7 +12,6 @@ private:
 	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
 
-
 	//функци€ возвращает центр  Ё и радиус описывающей окружности
 	pair<PointType, real> countFeCenterPoint(const NetType & meshFE, const int& objId) {
 		real Ox{ 0 }, Oy{ 0 }, Oz{ 0 };

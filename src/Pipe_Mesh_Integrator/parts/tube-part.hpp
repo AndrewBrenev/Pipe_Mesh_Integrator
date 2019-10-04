@@ -55,9 +55,9 @@ protected:
 			tmp[i].id += A.id;
 		}
 	}
-	 // Построение сетки на слое
+	 // Построение сетки на двумрном слое
 	void calculate2DLayer(PointType current_cut_center, vect<PointType> &norma) {
-		//Вычисляем
+	
 		size_t node = TubePart::coord.size();
 		vector<PointType> newCut = cut->getNodes();
 		current_cut_center.id = node;
@@ -70,6 +70,7 @@ protected:
 		size_t el_on_layer = cut->getElemsSize();
 		size_t coor_on_layer = cut->getNodesSize();
 		vector<CutNetType> nv = cut->getSectionNVTR();
+
 		for (int q = 1; q < k; q++)
 			for (int j = 0; j < el_on_layer; j++)
 			{
@@ -87,6 +88,7 @@ protected:
 				);
 				TubePart::nvtr.push_back(tmp_FE);
 			}
+		TubePart::nvtr.shrink_to_fit();
 	}
 
 	PipeSection<PointType, NVTR_2D> * createCut(json cut_params) {

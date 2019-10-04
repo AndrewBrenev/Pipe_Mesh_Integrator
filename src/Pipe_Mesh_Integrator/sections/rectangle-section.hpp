@@ -29,6 +29,7 @@ private:
 				nv.push_back(A);
 			}
 
+		nv.shrink_to_fit();
 		return nv;
 
 	};
@@ -61,6 +62,7 @@ private:
 			throw runtime_error("The sum of the thicknesses of the layers is greater than or equal to the radius of the pipe! It is incorrect! The program is stopped. Edit the config file and try again!");
 
 		RectangleSection::coor_on_layer = points.size();
+		points.shrink_to_fit();
 		return points;
 	}
 public:
