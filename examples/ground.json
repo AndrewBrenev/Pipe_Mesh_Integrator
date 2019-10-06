@@ -1,0 +1,48 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+      {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "material-id": 1,
+          "X": {
+            "min": -10,
+            "max": 10,
+            "h": 1
+          },
+          "Y": {
+            "min": 0,
+            "max": 10,
+            "h": 1
+          },
+          "Z": {
+            "min": -5,
+            "max": 5,
+            "h": 1
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

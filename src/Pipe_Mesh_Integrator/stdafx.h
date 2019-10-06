@@ -128,7 +128,13 @@ struct NVTR_2D
 public:
 	int material;
 	int n[4];
-	NVTR_2D() {};
+	NVTR_2D() {
+		n[0] = 0;
+		n[1] = 0;
+		n[2] = 0;
+		n[3] = 0;
+		material = 0;
+	};
 	NVTR_2D(const int a,const int b,const int c,const int d,const int m) {
 		n[0] = a;
 		n[1] = b;

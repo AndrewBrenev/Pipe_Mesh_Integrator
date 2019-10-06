@@ -59,8 +59,8 @@ public:
 
 		//Ќормируем ветор нормали дл€ поворота точек вокруг произвольного единичного вектора
 		real N_length = sqrt(Nx*Nx + Ny * Ny + Nz * Nz);
-		Nx = -Nx / N_length;
-		Ny = -Ny / N_length;
+		Nx = Nx / N_length;
+		Ny = Ny / N_length;
 		Nz = Nz / N_length;
 
 		//¬ычисл€ем шаг по углу
@@ -68,49 +68,45 @@ public:
 
 		PointType Res;
 	
-		bool  X, Y(true), Z;
-
 		PointType Res_old = BendingPart::begin;
 		
 		//Ќашли крайние точки, теперь реализуем сам поворот
-		for (int section = 0; section <= BendingPart::section_count; section++) {
+		for (int section = 1; section <= BendingPart::section_count; section++) {
 
-			real aop = section * alfa_step*180.0 / M_PI;
-			real sn = sin(section*alfa_step);
-			real cs = cos(section*alfa_step);
+			real aop = section * alfa_step * 180.0 / M_PI;
+			real sn = sin(section * alfa_step);
+			real cs = cos(section * alfa_step);
 
 			// ѕовернули центр окружности
-			Res.x = (BendingPart::begin.x - rotationPoint.x) *(cs + (1 - cs)*Nx*Nx) + (BendingPart::begin.y - rotationPoint.y)*((1 - cs)*Nx*Ny - sn * Nz) + (BendingPart::begin.z - rotationPoint.z)*((1 - cs)*Nx*Nz + sn * Ny) + rotationPoint.x;
-			Res.y = (BendingPart::begin.x - rotationPoint.x) *((1 - cs)*Ny*Nx + sn * Nz) + (BendingPart::begin.y - rotationPoint.y)*(cs + (1 - cs)*Ny*Ny) + (BendingPart::begin.z - rotationPoint.z)*((1 - cs)*Ny*Nz - sn * Nx) + rotationPoint.y;
-			Res.z = (BendingPart::begin.x - rotationPoint.x) *((1 - cs)*Nz*Nx - sn * Ny) + (BendingPart::begin.y - rotationPoint.y)*((1 - cs)*Nz*Ny + sn * Nx) + (BendingPart::begin.z - rotationPoint.z)*(cs + (1 - cs)*Nz*Nz) + rotationPoint.z;
-		
+			Res.x = (BendingPart::begin.x - rotationPoint.x) * (cs + (1 - cs) * Nx * Nx) + (BendingPart::begin.y - rotationPoint.y) * ((1 - cs) * Nx * Ny - sn * Nz) + (BendingPart::begin.z - rotationPoint.z) * ((1 - cs) * Nx * Nz + sn * Ny) + rotationPoint.x;
+			Res.y = (BendingPart::begin.x - rotationPoint.x) * ((1 - cs) * Ny * Nx + sn * Nz) + (BendingPart::begin.y - rotationPoint.y) * (cs + (1 - cs) * Ny * Ny) + (BendingPart::begin.z - rotationPoint.z) * ((1 - cs) * Ny * Nz - sn * Nx) + rotationPoint.y;
+			Res.z = (BendingPart::begin.x - rotationPoint.x) * ((1 - cs) * Nz * Nx - sn * Ny) + (BendingPart::begin.y - rotationPoint.y) * ((1 - cs) * Nz * Ny + sn * Nx) + (BendingPart::begin.z - rotationPoint.z) * (cs + (1 - cs) * Nz * Nz) + rotationPoint.z;
 
-			if (section) 
-				if (section == BendingPart::section_count) 
+
+			
+				if (section == BendingPart::section_count)
 					BendingPart::calculate2DLayer(BendingPart::end, next_straight_norm);
-				else {
-					// ќпределили направление поворота
-
-					if (Res.x - Res_old.x >= 0) X = true; else X = false;
-					if (Res.z - Res_old.z >= 0) Z = true; else Z = false;
-
-					//определ€ем вектор нормали, в направлении которго будем поворачивать
-
-					vect<PointType> norml(Res.x - Res_old.x, Res.y - Res_old.y, Res.z - Res_old.z, Z, X, Y);
-					BendingPart::normals.push_back(norml);
-		
+				else
+				{
+					vect<PointType> nextNorm = BendingPart::getNorm(Res_old, Res);
+					if (section == 1) {
+						PointType nextDirection = nextNorm.getCoord();
+						BendingPart::directionYnorm = (nextDirection.y >= 0) ? true : false;
+						BendingPart::directionXnorm = (nextDirection.x < 0) ? true : false;
+						BendingPart::calculate2DLayer(BendingPart::begin, prev_straight_norm);
+						iter++;
+					}
+					BendingPart::normals.push_back(nextNorm);
 					BendingPart::calculate2DLayer(Res, BendingPart::normals[BendingPart::normals.size() - 1]);
 				}
 			
-			else 
-				BendingPart::calculate2DLayer(BendingPart::begin, prev_straight_norm);
-			
-			
+				
+
 			Res_old = Res;
 			iter++;
 		}
 				
-		std::sort(BendingPart::coord.begin(), BendingPart::coord.end(), BendingPart::sort_coord_vect);
+ 		std::sort(BendingPart::coord.begin(), BendingPart::coord.end(), BendingPart::sort_coord_vect);
 
 		BendingPart::compyteTubeFE<NetType, NVTR_2D>(iter);
 

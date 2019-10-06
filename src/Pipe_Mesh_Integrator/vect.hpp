@@ -3,67 +3,73 @@
 
 #include "stdafx.h"
 
-
 template <class PointType>
 class vect {
 private: 
 	real x, y, z;
+	bool directionX;
 public:
-
-	//Происходит поворот по, либо против часовой стрелки
-	bool clockwiseZ, clockwiseX, clockwiseY;
+	
 	// поворот точки на вектор
-	PointType rotatePoint(PointType A, PointType v) {
+	void rotatePoint(PointType& res, PointType v) {
 
-		PointType res;
-		real alfaZ, alfaX, alfaY(1);
+		real alfaZ, alfaX, alfaY;
+
+		// Вращение вокруг оси Z
 		// косинус угола в плоскости XY
-		alfaZ = (x*v.x + y * v.y) / (sqrt(v.x*v.x + v.y * v.y) * sqrt(x*x + y * y));
+		alfaZ = (x * v.x + y * v.y) / (sqrt(v.x * v.x + v.y * v.y) * sqrt(x * x + y * y));
+		alfaX = (z * v.z + y * v.y) / (sqrt(v.z * v.z + v.y * v.y) * sqrt(y * y + z * z));
+
+		if (alfaZ < 0 && alfaZ>-1) alfaZ += 1;
+		if (!isnan(alfaZ) && alfaZ != 1 && alfaZ != -1)
+			if (v.y > 0 && x >= 0 && y >= 0 ||
+				v.y < 0 && x <= 0 && y <= 0)
+			{
+				rotateOzF(res, alfaZ);
+				//rotateOzF(v, alfaZ);
+			}
+			else
+			{
+				rotateOzB(res, alfaZ);
+				//rotateOzB(v, alfaZ);
+			}
+
+		// Вращение вокруг оси Х
 		//косинус угола в плоскости YZ
-		alfaX = (z*v.z + y * v.y) / (sqrt(v.z*v.z + v.y * v.y) * sqrt(y*y + z * z));
-		res = A;
+		if (alfaX < 0 && alfaX > -1) alfaX += 1;
+		if ( !isnan(alfaX) && alfaX != 1 && alfaZ != -1)
+			if (v.y < 0 && z >= 0 && y <= 0 ||
+				v.y > 0 && z <= 0 && y >= 0)
+			{
+				rotateOxF(res, alfaX);
+				//rotateOxF(v, alfaX);
+			}
+			else
+			{
+				rotateOxB(res, alfaX);
+				//rotateOxB(v, alfaX);
+			}
+
 		/*
 
+		// Вращение вокруг оси Y
+		//косинус угола в плоскости XZ
+		alfaY = (z * v.z + x * v.x) / (sqrt(v.z * v.z + v.x * v.x) * sqrt(x * x + z * z));
 
-		if (x!= 0 && y == 0 && z!= 0){
-			//косинус угола в плоскости XZ
-
-			// поворот исходной точки вокруг оси X
-			if (clockwiseZ)
-				res = rotateOXB(res, z);
-			else
-				res = rotateOXF(res, z);
-
-			// поворот исходной точки вокруг оси Z
-			if (clockwiseX)
-				res = rotateOyF(res, 0.0);
-			else
-				res = rotateOyB(res, 0.0);
-
-
-			res.id = A.id;
-			return res;
-		}
-		*/
-
-		// поворот исходной точки вокруг оси Х
-		if (!isnan(alfaX) && alfaX != -1)
-			if (clockwiseZ)
-				res = rotateOXB(A, alfaX);
-			else
-				res = rotateOXF(A, alfaX);
-
-		// поворот полученной точки вокруг оси Z
-		if (!isnan(alfaZ) && alfaZ != -1)
-			if (clockwiseX)
-				res = rotateOzF(res, alfaZ);
-			else
-				res = rotateOzB(res, alfaZ);
-
-		res.id = A.id;
-		return res;
-
-	};
+		if (alfaY < 0 && alfaY > -1)  alfaY = (directionX)? abs(alfaY): alfaY + 1 ;
+		if (!isnan(alfaY) && alfaY != 1 && alfaY != -1)
+			if (x <= 0 && z <= 0  ||
+				x >= 0 && z >= 0 )
+			{
+				rotateOyF(res, alfaY);
+				rotateOyF(v, alfaY);
+			}
+			else {
+				rotateOyB(res, alfaY);
+				rotateOyB(v, alfaY);
+			}
+*/
+	}
 	PointType getCoord(){ 
 		PointType res(x, y,z);
 		return res;
@@ -72,88 +78,77 @@ public:
 	const real length() {
 		return sqrt(x*x + y * y + z * z);
 	};
+void	setXDirection(bool value) {
+	directionX = value;
+	}
 	vect() {
-		x = 1;
-		y = 1;
-		z = 1;
-
-		clockwiseZ = true;
-		clockwiseX = true;
-		clockwiseY = true;
+		x = 0;
+		y = 0;
+		z = 0;
+		directionX = false;
 	};
 	// x,y,z, вокруг Z,вокруг X 
-	vect(real x1, real x2, real x3, bool A, bool B, bool C) {
+	vect(real x1, real x2, real x3) {
 		x = x1;
 		y = x2;
 		z = x3;
-		clockwiseZ = A;
-		clockwiseX = B;
-		clockwiseY = C;
+		directionX = false;
 	}
 private:
-	// поворото вокруг оси OX против часовой стрелке
-	PointType rotateOXB(PointType A, real cos) {
-		real s = sqrt(1 - cos * cos);
-		real c = cos;
-		PointType R;
-		R.x = A.x;
-		R.y = A.y*c - A.z*s;
-		R.z = A.y*s + A.z*c;
-		return R;
-	};
-	// поворото вокруг оси OY против часовой стрелке
-	PointType rotateOyB(PointType A, real cos) {
-		real s = sqrt(1 - cos * cos);
-		real c = cos;
-		PointType R;
-		R.y = A.y;
-		R.x = A.x*c + A.z*s;
-		R.z = -A.x*s + A.z*c;
-		return R;
-	};
-	// поворот вокруг оси OZ против часовой стрелке
-	PointType rotateOzB(PointType A, real cos) {
-		real s = sqrt(1 - cos * cos);
-		real c = cos;
-		PointType R;
-		R.x = A.x * c - s * A.y;
-		R.y = A.x * s + A.y*c;
-		R.z = A.z;
-		return R;
+	// поворот точки вокруг оси OX против часовой стрелке
+	void rotateOxB(PointType& A,const real & cosAlfa)
+	{
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldY = A.y;
+		A.y = A.y* cosAlfa - A.z* sinAlfa;
+		A.z = oldY * sinAlfa + A.z* cosAlfa;
 	};
 
-	// поворото вокруг оси OX по часовой стрелке
-	PointType rotateOXF(PointType A, real cos) {
-		real s = sqrt(1 - cos * cos);
-		real c = cos;
-		PointType R;
-		R.x = A.x;
-		R.y = A.y*c + A.z*s;
-		R.z = -A.y*s + A.z*c;
-		return R;
-	};
-	// поворото вокруг оси OY по часовой стрелке
-	PointType rotateOyF(PointType A, real cos)
+	// поворот точки вокруг оси OY против часовой стрелке
+	void rotateOyB(PointType& A,const  real& cosAlfa) 
 	{
-		real s = sqrt(1 - cos * cos);
-		real c = cos;
-		PointType R;
-		R.y = A.y;
-		R.x = A.x*c - A.z*s;
-		R.z = A.x*s + A.z*c;
-		return R;
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldX = A.x;
+		A.x = A.x * cosAlfa + A.z * sinAlfa;
+		A.z = -oldX * sinAlfa + A.z * cosAlfa;
+		
 	};
-	// поворот вокруг оси OZ по часовой стрелке
-	PointType rotateOzF(PointType A, real cos) {
-		{
-			real s = sqrt(1 - cos * cos);
-			real c = cos;
-			PointType R;
-			R.x = A.x * c + s * A.y;
-			R.y = -A.x * s + A.y*c;
-			R.z = A.z;
-			return R;
-		}
+	// поворот точки вокруг оси OZ против часовой стрелке
+	void rotateOzB(PointType& A,const real& cosAlfa)
+	{
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldX = A.x;
+		
+		A.x = A.x * cosAlfa - sinAlfa * A.y;
+		A.y = oldX * sinAlfa + A.y* cosAlfa;
+		
+	};
+
+	// поворот точки вокруг оси OX по часовой стрелке
+	void rotateOxF(PointType & A, const real & cosAlfa)
+	{
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldY = A.y;
+		A.y = A.y* cosAlfa + A.z* sinAlfa;
+		A.z = -oldY* sinAlfa + A.z* cosAlfa;
+		
+	};
+	// поворот точки вокруг оси OY по часовой стрелке
+	void rotateOyF(PointType & A, const real & cosAlfa)
+	{
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldX = A.x;
+		A.x = A.x * cosAlfa - A.z * sinAlfa;
+		A.z = oldX * sinAlfa + A.z * cosAlfa;		
+	};
+	// поворот точки вокруг оси OZ по часовой стрелке
+	void rotateOzF(PointType& A, const real& cosAlfa)
+	{
+		real sinAlfa = sqrt(1 - cosAlfa * cosAlfa);
+		real oldX = A.x;
+		A.x = A.x * cosAlfa + sinAlfa * A.y;
+		A.y = -oldX* sinAlfa + A.y * cosAlfa;
+	
 	};
 };
 

@@ -27,27 +27,30 @@ protected:
 
 	std::vector <vect<PointType>> normals; //Вектор нормалей
 
+	// true - (0,1,0); false  - (0,-1,0) 
+	bool directionYnorm, directionXnorm ;
+
 	int section_count{ 0 };
 	PointType begin, end; //Точки начала и конца секции
 
 	// Поворот заданных точек на ветор
-	void rotateSection(vector<PointType>&tmp, vect<PointType> &norma) {
-		Point normal(0, 1, 0, 0);
+	void rotateSection(vector<PointType>& tmp, vect<PointType>& norma)
+	{
+		real y = (directionYnorm) ? 1 : -1;
+		if(directionXnorm)  norma.setXDirection(directionXnorm);
+		Point normal{ 0, y, 0 };
+		//Point normal{ 0, -1, 0 };
 		for (int i = 0; i < tmp.size(); i++)
-			tmp[i] = norma.rotatePoint(tmp[i], normal);
+			norma.rotatePoint(tmp[i], normal);
 	}
 
 	vect<PointType> getNorm(PointType begin, PointType end) {
-		bool  X, Y, Z;
-		if (end.x - begin.x >= 0) X = true; else X = false;
-		if (end.y - begin.y > 0) Y = true; else Y = false;
-		if (end.z - begin.z >= 0) Z = true; else Z = false;
-		vect<PointType> temp(end.x - begin.x,end.y - begin.y,end.z - begin.z, Z, X, Y);
+		vect<PointType> temp(end.x - begin.x,end.y - begin.y,end.z - begin.z);
 		return temp;
 	}
-
 	// Сдвиг вектора точек на вектор
-	void moveSection(vector<PointType> &tmp, const PointType A) {
+	void moveSection(vector<PointType>& tmp, const PointType A) {
+#pragma omp parallel for
 		for (int i = 0; i < tmp.size(); i++) {
 			tmp[i].x += A.x;
 			tmp[i].y += A.y;
@@ -56,15 +59,15 @@ protected:
 		}
 	}
 	 // Построение сетки на двумрном слое
-	void calculate2DLayer(PointType current_cut_center, vect<PointType> &norma) {
-	
-		size_t node = TubePart::coord.size();
+	void calculate2DLayer(PointType current_cut_center, vect<PointType>& norma) {
+
 		vector<PointType> newCut = cut->getNodes();
+		size_t node = TubePart::coord.size();
 		current_cut_center.id = node;
 		rotateSection(newCut, norma);
 		moveSection(newCut, current_cut_center);
 		TubePart::coord.insert(TubePart::coord.end(), newCut.begin(), newCut.end());
-	};
+	}
 	// построение КЭ, зная чило слоёв
 	template <class NetType, class CutNetType> void compyteTubeFE(const int k) {
 		size_t el_on_layer = cut->getElemsSize();
@@ -87,6 +90,8 @@ protected:
 					nv[j].material
 				);
 				TubePart::nvtr.push_back(tmp_FE);
+
+				//Добавим плоскости
 			}
 		TubePart::nvtr.shrink_to_fit();
 	}
@@ -104,6 +109,8 @@ protected:
 public:
 	TubePart(){
 		cut = nullptr;
+		directionYnorm = true;
+		directionXnorm = false;;
 	};
 	~TubePart() {};
 	virtual void buildNet() =0;

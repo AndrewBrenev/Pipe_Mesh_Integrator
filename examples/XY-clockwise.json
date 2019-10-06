@@ -1,0 +1,142 @@
+{
+  "incoming": {
+    "objects_coount": 1,
+    "objects": [
+      {
+        "type": "Tube",
+        "action": "build",
+        "parameters": {
+          "straight": {
+            "count": 4,
+            "segments": [
+              {
+                "from": {
+                  "x": -3,
+                  "y": 6,
+                  "z": 0
+                },
+                "to": {
+                  "x": 3,
+                  "y": 6,
+                  "z": 0
+                },
+                "splits": 10
+              },
+              {
+                "from": {
+                  "x": 6,
+                  "y": 3,
+                  "z": 0
+                },
+                "to": {
+                  "x": 6,
+                  "y": -3,
+                  "z": 0
+                },
+                "splits": 10
+              },
+              {
+                "from": {
+                  "x": 3,
+                  "y": -6,
+                  "z": 0
+                },
+                "to": {
+                  "x": -3,
+                  "y": -6,
+                  "z": 0
+                },
+                "splits": 10
+              },
+              {
+                "from": {
+                  "x": -6,
+                  "y": -3,
+                  "z": 0
+                },
+                "to": {
+                  "x": -6,
+                  "y": 3,
+                  "z": 0
+                },
+                "splits": 10
+              }
+            ]
+          },
+          "turns": {
+            "count": 4,
+            "segments": [
+              {
+                "splits": 4,
+                "between": {
+                  "start": 1,
+                  "end": 2
+                },
+                "rotationPoint": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                }  
+              },
+              {
+                "splits": 4,
+                "between": {
+                  "start": 2,
+                  "end": 3
+                },
+                "rotationPoint": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                }
+              },
+              {
+                "splits": 4,
+                "between": {
+                  "start": 3,
+                  "end": 4
+                },
+                "rotationPoint": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                }
+              },
+              {
+                "splits": 3,
+                "between": {
+                  "start": 4,
+                  "end": 1
+                },
+                "rotationPoint": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../external-libs/glass/XY-clockwise/inftry.dat",
+        "nver": "../../external-libs/glass/XY-clockwise/nver.dat",
+        "nvkat": "../../external-libs/glass/XY-clockwise/nvkat.dat",
+        "xyz": "../../external-libs/glass/XY-clockwise/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

@@ -23,14 +23,7 @@ public:
 
 		int iter = 0;
 
-		bool  X, Y, Z;
-		if (StraightPart::end.x - StraightPart::begin.x >= 0) X = true; else X = false;
-		if (StraightPart::end.y - StraightPart::begin.y > 0) Y = true; else Y = false;
-		if (StraightPart::end.z - StraightPart::begin.z >= 0) Z = true; else Z = false;
-		vect<PointType> temp(StraightPart::end.x - StraightPart::begin.x,
-			StraightPart::end.y - StraightPart::begin.y,
-			StraightPart::end.z - StraightPart::begin.z, Z, X, Y);
-		StraightPart::normals.push_back(temp);
+		StraightPart::normals.push_back(StraightPart::getNorm(StraightPart::begin, StraightPart::end));
 
 		//Вычисляем шаг на данном отрезке
 		real dx = (StraightPart::end.x - StraightPart::begin.x) / StraightPart::section_count;

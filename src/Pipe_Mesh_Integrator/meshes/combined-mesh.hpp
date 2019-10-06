@@ -165,10 +165,11 @@ public:
 		if (objectsMeshes.size() > 1) {
 
 			deleteOverlappingFE();
-
-			// Перенумеруем полученные объекты и построим выходную сетку.
-			buildCombinedMesh();
 		}
+
+		// Перенумеруем полученные объекты и построим выходную сетку.
+		buildCombinedMesh();
+		
 		saveResultMesh();
 	};
 };
