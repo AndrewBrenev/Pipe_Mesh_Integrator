@@ -124,7 +124,7 @@ public:
 		nodes_size = 0;
 		el_size = 0;
 	};
-	~IMesh() { coord.clear(); nvtr.clear(); };
+	virtual ~IMesh() { coord.clear(); nvtr.clear(); };
 	size_t getNodesSize() { return nodes_size; };
 	size_t getElemsSize() { return el_size; };
 

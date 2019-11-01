@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="interface.h" />
+    <ClInclude Include="formats\flie-format.hpp" />
+    <ClInclude Include="formats\glass-format.hpp" />
     <ClInclude Include="json-deserializer.hpp" />
     <ClInclude Include="meshes\combined-mesh.hpp" />
+    <ClInclude Include="meshes\interface.h" />
     <ClInclude Include="meshes\pipe-mesh.hpp" />
     <ClInclude Include="meshes\tridimensional-mesh.hpp" />
     <ClInclude Include="parts\bending-part.hpp" />

@@ -27,9 +27,6 @@
     <ClInclude Include="vect.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="interface.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -62,6 +59,15 @@
     </ClInclude>
     <ClInclude Include="sections\rectangle-section.hpp">
       <Filter>Файлы заголовков\sections</Filter>
+    </ClInclude>
+    <ClInclude Include="meshes\interface.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="formats\flie-format.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="formats\glass-format.hpp">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

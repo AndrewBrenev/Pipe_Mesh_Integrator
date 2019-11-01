@@ -142,7 +142,7 @@ private:
 		vector<NetType> nv;
 
 		int number_of_layers = 0;
-		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++) 
+		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++)
 			for (j = 0; j < RoundeSection::section_layers[k].splits; j++)
 			{
 				//Сетка по окружностям
@@ -168,7 +168,7 @@ private:
 				}
 				number_of_layers++;
 			}
-		
+
 		//Внутренний материал
 		for (i = 0; i < n; i++) {
 
@@ -239,25 +239,25 @@ private:
 		j = 0;
 		for (int k = 0; k < RoundeSection::number_of_inner_layers; k++)
 		{
-			for (int l = 0; l < RoundeSection::section_layers[k].splits; l++) 
+			for (int l = 0; l < RoundeSection::section_layers[k].splits; l++)
 			{
 				for (i = 0; i < untin_size; i++)
 				{
-					Temp.x = unitCircle[i].x *layer_R;
-					Temp.z = unitCircle[i].z *layer_R;
+					Temp.x = unitCircle[i].x * layer_R;
+					Temp.z = unitCircle[i].z * layer_R;
 					Temp.id = unitCircle[i].id + untin_size * j;
 					points.push_back(Temp);
 				}
 				layer_R -= RoundeSection::section_layers[k].thickness / RoundeSection::section_layers[k].splits;
-				if (layer_R <= 0)	
+				if (layer_R <= 0)
 					throw runtime_error("The sum of the thicknesses of the layers is greater than or equal to the radius of the pipe! It is incorrect! The program is stopped. Edit the config file and try again!");
 
 				j++;
 			}
 			if (k == (RoundeSection::number_of_inner_layers - 1))
 				for (i = 0; i < untin_size; i++) {
-					Temp.x = unitCircle[i].x *layer_R;
-					Temp.z = unitCircle[i].z *layer_R;
+					Temp.x = unitCircle[i].x * layer_R;
+					Temp.z = unitCircle[i].z * layer_R;
 					Temp.id = unitCircle[i].id + untin_size * j;
 					points.push_back(Temp);
 				}

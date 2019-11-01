@@ -69,7 +69,7 @@ public:
 		meshParams = inputParams;
 	};
 	TridimensionalMesh() {};
-	~TridimensionalMesh() {};
+	virtual ~TridimensionalMesh() {};
 	void buildNet() {
 		if (meshParams["action"] == "build")
 			buildThreeDimensionalParapipedalMesh();

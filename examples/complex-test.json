@@ -356,10 +356,10 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "inftry": "../../external-libs/glass/test/inftry.dat",
-        "nver": "../../external-libs/glass/test/nver.dat",
-        "nvkat": "../../external-libs/glass/test/nvkat.dat",
-        "xyz": "../../external-libs/glass/test/xyz.dat"
+        "inftry": "../../external-libs/glass/complex/inftry.dat",
+        "nver": "../../external-libs/glass/complex/nver.dat",
+        "nvkat": "../../external-libs/glass/complex/nvkat.dat",
+        "xyz": "../../external-libs/glass/complex/xyz.dat"
       }
     },
     "t-matrix": {

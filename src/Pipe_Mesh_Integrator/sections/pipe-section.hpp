@@ -1,7 +1,7 @@
 #ifndef _PIPE_SECTION_HPP_
 #define _PIPE_SECTION_HPP_
 
-#include "interface.h"
+#include "../meshes/interface.h"
 
 template <class PointType, class NetType>
 class PipeSection : public IMesh<PointType, NetType> {

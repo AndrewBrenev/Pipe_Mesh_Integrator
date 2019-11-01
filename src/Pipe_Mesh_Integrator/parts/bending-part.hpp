@@ -83,16 +83,22 @@ public:
 			Res.z = (BendingPart::begin.x - rotationPoint.x) * ((1 - cs) * Nz * Nx - sn * Ny) + (BendingPart::begin.y - rotationPoint.y) * ((1 - cs) * Nz * Ny + sn * Nx) + (BendingPart::begin.z - rotationPoint.z) * (cs + (1 - cs) * Nz * Nz) + rotationPoint.z;
 
 
-			
-				if (section == BendingPart::section_count)
-					BendingPart::calculate2DLayer(BendingPart::end, next_straight_norm);
+			if (section == BendingPart::section_count){
+				size_t last_norm = BendingPart::normals.size() - 1;
+				next_straight_norm.setOrtRotations(
+					BendingPart::normals[last_norm].forvardRoationX,
+					BendingPart::normals[last_norm].forvardRoationY,
+					BendingPart::normals[last_norm].forvardRoationZ);
+				BendingPart::calculate2DLayer(BendingPart::end, next_straight_norm);
+		}
 				else
 				{
 					vect<PointType> nextNorm = BendingPart::getNorm(Res_old, Res);
 					if (section == 1) {
-						PointType nextDirection = nextNorm.getCoord();
-						BendingPart::directionYnorm = (nextDirection.y >= 0) ? true : false;
-						BendingPart::directionXnorm = (nextDirection.x < 0) ? true : false;
+						prev_straight_norm.setOrtRotations(
+							nextNorm.forvardRoationX,
+							nextNorm.forvardRoationY,
+							nextNorm.forvardRoationZ);
 						BendingPart::calculate2DLayer(BendingPart::begin, prev_straight_norm);
 						iter++;
 					}

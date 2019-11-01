@@ -1,0 +1,24 @@
+{
+  "type": "circle",
+  "splits": 4,
+  "inner-material-id": 0,
+  "R": 2,
+  "layers-count": 3,
+  "layers": [
+    {
+      "d": 0.2,
+      "material-id": 2,
+      "splits": 2
+    },
+    {
+      "d": 0.3,
+      "material-id": 1,
+      "splits": 3
+    },
+    {
+      "d": 0.2,
+      "material-id": 2,
+      "splits": 2
+    }
+  ]
+}

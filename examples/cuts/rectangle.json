@@ -1,0 +1,21 @@
+{
+                  "type": "rectangle",
+                  "inner-material-id": 0,
+                  "a-splits": 8,
+                  "b-splits": 4,
+				  "a-side": 2,
+                  "b-side": 1,                  
+                  "layers-count": 2,
+                  "layers": [
+                    {
+                      "d": 0.2,
+                      "material-id": 2,
+                      "splits": 2
+                    },
+                    {
+                      "d": 0.3,
+                      "material-id": 1,
+                      "splits": 3
+                    }
+                  ]
+             } 
