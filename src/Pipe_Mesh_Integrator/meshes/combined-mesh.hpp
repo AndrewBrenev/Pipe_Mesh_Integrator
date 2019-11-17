@@ -9,6 +9,9 @@
 template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 private:
+
+
+
 	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
 

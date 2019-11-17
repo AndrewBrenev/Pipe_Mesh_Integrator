@@ -11,11 +11,12 @@ private:
 	int a_n, b_n;  // Кол-во разбиений по стороне a и b соответственно
 	
 	//Задание конечных элементов на слое
-	vector<NetType> nvtrTubeOnly() {
+	vector<NetType> nvtrTubeOnly() override
+	{
 		vector<NetType> nv;
 
-		int i, j;
-		int a, b, c, d;
+		size_t i, j;
+		size_t a, b, c, d;
 		int material;
 
 		for (i = 0; i < b_n; i++)
@@ -35,15 +36,16 @@ private:
 	};
 
 	//Нахождение координат трубы в сечении
-	vector<PointType> coordTubeOnly() {
+	vector<PointType> coordTubeOnly() override
+	{
 
 		PointType T(0, 0, 0, 0);
 		vector<PointType> points;
 
-		int i, j, k, l = 0;
+		size_t i, j = 0;
 		real a_layer(a), b_layer(b);
-		int number_of_points_on_layer = 2 * (a_n + b_n);
-		int layer_id = 0;
+		size_t number_of_points_on_layer = 2 * (a_n + b_n);
+		size_t layer_id = 0;
 
 		real a_layer_step = a_layer / a_n;
 		real b_layer_step = b_layer / b_n;
@@ -87,9 +89,6 @@ public:
 	
 	~RectangleSection() {};
 
-	int getIdOfExternalNodes() {
-		return 2 * (a_n + b_n);
-	};
 
 };
 

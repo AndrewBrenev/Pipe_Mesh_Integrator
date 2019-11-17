@@ -69,6 +69,7 @@ protected:
 	}
 	// построение КЭ, зная чило слоёв
 	template <class NetType, class CutNetType> void compyteTubeFE(const int k) {
+		
 		size_t el_on_layer = cut->getElemsSize();
 		size_t coor_on_layer = cut->getNodesSize();
 		vector<CutNetType> nv = cut->getSectionNVTR();
@@ -88,6 +89,7 @@ protected:
 					(q - 1) * coor_on_layer + j + 1,
 					nv[j].material
 				);
+				tmp_FE.buildPlanes();
 				TubePart::nvtr.push_back(tmp_FE);
 
 				//Добавим плоскости

@@ -7,15 +7,15 @@ template <class PointType, class NetType>
 class RoundeSection :public PipeSection <PointType, NetType> {
 private:
 
-	real outter_R =1;		// Радиус Внешней окружности
-	int n;					// Число разбиений одной четверти 
+	real outter_R = 1;		// Радиус Внешней окружности
+	size_t n;					// Число разбиений одной четверти 
 	size_t start_ind = 0;		// Кол-во вершин в окружностях = 4*n*number_of_layers или начальный индекс правого верхнего узла внутренней сетки
 	
 	vector<PointType> findPointsOfTheUnitCircle() {
 		vector<PointType> points;
 		PointType Temp;
 
-		int p = n / (int)2;
+		size_t p = n / (int)2;
 		real alfa_step = 90 / n;
 
 		{
@@ -46,7 +46,7 @@ private:
 		}
 
 		//Точки на радиусе
-		for (int k = 1; k <= p; k++)
+		for (size_t k = 1; k <= p; k++)
 			if ((n % 2) == 0 && k == p)
 			{
 				//первая четверть
@@ -132,12 +132,14 @@ private:
 	}
 
 	//Задание конечных элементов на слое
-	vector<NetType> nvtrTubeOnly() {
+	vector<NetType> nvtrTubeOnly() override
+	{
 
 		//Займёмся сеткой
-		int i(0), j(0), material = 0;
+		size_t i(0), j(0);
+		int material = 0;
 
-		int a, b, c, d;
+		size_t a, b, c, d;
 
 		vector<NetType> nv;
 
@@ -154,7 +156,7 @@ private:
 						b = 4 * n * number_of_layers;
 						c = i + 4 * n * (number_of_layers + 1);
 						d = 4 * n * (number_of_layers + 1);
-						NetType A(c, a, d, b, RoundeSection::section_layers[k].material);
+						NetType A(a, b, c, d, RoundeSection::section_layers[k].material);
 						nv.push_back(A);
 					}
 					else {
@@ -178,7 +180,7 @@ private:
 				b = start_ind + (n + 1) * i + j + 1;
 				c = start_ind + (n + 1) * (i + 1) + j;
 				d = start_ind + (n + 1) * (i + 1) + j + 1;
-				NetType A(a, c, b, d, RoundeSection::innner_material_id);
+				NetType A(a, b, c, d, RoundeSection::innner_material_id);
 				nv.push_back(A);
 			}
 
@@ -187,7 +189,7 @@ private:
 			b = number_of_layers * 4 * n + i + 1;
 			c = start_ind + i;
 			d = start_ind + i + 1;
-			NetType A(a, c, b, d, RoundeSection::innner_material_id);
+			NetType A(a, b, c, d, RoundeSection::innner_material_id);
 			nv.push_back(A);
 
 			// по левой стенке
@@ -195,7 +197,7 @@ private:
 			b = start_ind + i * (n + 1) + n;
 			c = number_of_layers * n * 4 + n + i + 1;
 			d = start_ind + (i + 1) * (n + 1) + n;
-			NetType A4(b, d, a, c, RoundeSection::innner_material_id);
+			NetType A4(b, a, d, c, RoundeSection::innner_material_id);
 			nv.push_back(A4);
 
 			//по низу
@@ -203,7 +205,7 @@ private:
 			b = start_ind + (n + 1) * (n + 1) - 1 - i;
 			c = number_of_layers * n * 4 + 2 * n + i + 1;
 			d = start_ind + (n + 1) * (n + 1) - 1 - (i + 1);
-			NetType A5(d, c, b, a, RoundeSection::innner_material_id);
+			NetType A5(d, b, c, a, RoundeSection::innner_material_id);
 			nv.push_back(A5);
 
 			// По правой стенке
@@ -212,7 +214,7 @@ private:
 				4 * n * number_of_layers;
 			c = start_ind + (n + 1) * (i + 1);
 			d = (number_of_layers + 1) * 4 * n - (i + 1);
-			NetType A6(b, d, a, c, RoundeSection::innner_material_id);
+			NetType A6(b, a, d, c, RoundeSection::innner_material_id);
 			nv.push_back(A6);
 		}
 		nv.shrink_to_fit();
@@ -220,9 +222,10 @@ private:
 	};
 
 	//Нахождение координат трубы в сечении
-	vector<PointType> coordTubeOnly() {
+	vector<PointType> coordTubeOnly() override 
+	{
 
-		int i, j;
+		size_t i, j;
 		PointType Temp(0, 0, 0, 0);
 		vector<PointType> points;
 
@@ -293,13 +296,15 @@ public:
 		RoundeSection::section_layers.push_back(def);
 	};
 	
-	RoundeSection(json cut_configs) {
+	RoundeSection(json cut_configs) 
+	{
 		outter_R = cut_configs["R"];
 		n = cut_configs["splits"];
 		RoundeSection::innner_material_id = cut_configs["inner-material-id"];
 		RoundeSection::number_of_inner_layers = cut_configs["layers-count"];
 		RoundeSection::section_layers.resize(RoundeSection::number_of_inner_layers);
-		for (int i = 0; i < RoundeSection::number_of_inner_layers; i++) {
+		for (int i = 0; i < RoundeSection::number_of_inner_layers; i++)
+		{
 			RoundeSection::section_layers[i].material = cut_configs["layers"][i]["material-id"];
 			RoundeSection::section_layers[i].splits = cut_configs["layers"][i]["splits"];
 			RoundeSection::section_layers[i].thickness = cut_configs["layers"][i]["d"];
@@ -307,9 +312,6 @@ public:
 	};
 	~RoundeSection() {};
 
-	int getIdOfExternalNodes() {
-		return 4 * n;
-	};
 };
 
 #endif //_ROUND_SECTION_HPP_

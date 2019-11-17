@@ -6,6 +6,7 @@
 template <class PointType, class NetType>
 class TridimensionalMesh : public IMesh<PointType, NetType> {
 private:
+
 	json meshParams;
 	void buildThreeDimensionalParapipedalMesh() {
 
@@ -53,6 +54,7 @@ private:
 							t_el,
 							meshParams["parameters"]["material-id"]
 						);
+						N.buildPlanes();
 						TridimensionalMesh<PointType, NetType>::nvtr.push_back(N);
 						t_el++;
 					}

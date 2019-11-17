@@ -2,7 +2,7 @@
   "type": "circle",
   "splits": 4,
   "inner-material-id": 0,
-  "R": 2,
+  "R": 1.7,
   "layers-count": 3,
   "layers": [
     {

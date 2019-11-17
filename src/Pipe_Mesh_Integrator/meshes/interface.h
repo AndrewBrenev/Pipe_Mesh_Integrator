@@ -152,7 +152,11 @@ public:
 		for (int i = 0; i < el_size; i++) {
 			for (int j = 0; j < 8; j++)
 				nvtr[i].n[j] += O.id;
+
+			for (int j = 0; j < 6; j++)
+				nvtr[i].planes[j].moveIds(O.id);
 		}
+
 	}
 	
 	
