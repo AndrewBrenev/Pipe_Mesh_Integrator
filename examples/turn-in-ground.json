@@ -1,7 +1,8 @@
 {
   "incoming": {
-    "objects_coount": 2,
+    "objects_count": 2,
     "objects": [
+   	
       {
         "type": "Outer",
         "action": "build",

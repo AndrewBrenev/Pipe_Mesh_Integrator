@@ -49,7 +49,6 @@ protected:
 	
 	// Сдвиг вектора точек на вектор
 	void moveSection(vector<PointType>& tmp, const PointType A) {
-
 		for (int i = 0; i < tmp.size(); i++) {
 			tmp[i].x += A.x;
 			tmp[i].y += A.y;

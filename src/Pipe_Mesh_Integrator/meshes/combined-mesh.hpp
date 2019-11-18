@@ -3,14 +3,13 @@
 
 
 #include "interface.h"
+
 #include "tridimensional-mesh.hpp"
 #include "pipe-mesh.hpp"
 
 template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 private:
-
-
 
 	json outputInfo;
 	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
@@ -121,22 +120,13 @@ private:
 
 	//Подпрограмма вывода результата
 	void saveResultMesh(){
+
 		cout << "Saving Combined Mesh into files: " << endl;
-		if (outputInfo["mesh"]["format"] == "Glass") {
-			string inftry = outputInfo["mesh"]["paths"]["inftry"];
-			string nver = outputInfo["mesh"]["paths"]["nver"];
-			string nvkat = outputInfo["mesh"]["paths"]["nvkat"];
-			string xyz = outputInfo["mesh"]["paths"]["xyz"];
 
-			cout << inftry << endl << nver << endl << nvkat << endl << xyz << endl;
-			const char *output_inftry = inftry.c_str();
-			const char *output_nver = nver.c_str();
-			const char *output_nvkat = nvkat.c_str();
-			const char *output_xyz = xyz.c_str();
+		ReaderCreator<PointType, NetType> readerCreator;
+		auto  meshReader = readerCreator.createFormater(outputInfo["mesh"], this);
+		meshReader->saveMeshToFiles();
 
-		
-		IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles(output_inftry, output_nvkat, output_xyz, output_nver);
-		}
 		cout << "Done! " << endl;
 	}
 public:
@@ -144,8 +134,8 @@ public:
 		
 		outputInfo = input["output"];
 
-		objectsMeshes.reserve(input["incoming"]["objects_coount"]);
-		objectsMeshes.resize(input["incoming"]["objects_coount"]);
+		objectsMeshes.reserve(input["incoming"]["objects_count"]);
+		objectsMeshes.resize(input["incoming"]["objects_count"]);
 	
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			string current_object_type = input["incoming"]["objects"][i]["type"];
