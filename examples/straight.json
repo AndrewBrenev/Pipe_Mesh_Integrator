@@ -1,0 +1,81 @@
+{
+  "incoming": {
+    "objects_count": 2,
+    "objects": [
+      {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "material-id": 1,
+          "X": {
+            "min": -5,
+            "max": 5,
+            "h": 0.5
+          },
+          "Y": {
+            "min": 0,
+            "max": 6,
+            "h": 0.5
+          },
+          "Z": {
+            "min": -5,
+            "max": 5,
+            "h": 1
+          }
+        }
+      },
+      {
+        "type": "Tube",
+        "action": "build",
+        "parameters": {
+      
+          "straight": {
+            "count": 1,
+            "segments": [
+			{
+                "from": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "to": {
+                  "x": 0,
+                  "y": 6,
+                  "z": 0
+                },
+                "splits": 24,
+				 "cut":{
+				 "path":"../../examples/cuts/round-nested.json"
+				 }
+              }
+			]
+          },
+          "turns": {
+            "count": 0,
+            "segments": [
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "mesh": {
+      "format": "Glass",
+      "paths": {
+        "inftry": "../../external-libs/glass/test/inftry.dat",
+        "nver": "../../external-libs/glass/test/nver.dat",
+        "nvkat": "../../external-libs/glass/test/nvkat.dat",
+        "xyz": "../../external-libs/glass/test/xyz.dat"
+      }
+    },
+    "t-matrix": {
+      "format": "CSR",
+      "paths": {
+        "ig": "./T-matrix/ig.txt",
+        "jg": "./T-matrix/jg.txt",
+        "gg": "./T-matrix/gg.txt"
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <iomanip>
+#include <unordered_set>
 
 #include <array>
 #include "../../external-libs/nlohmann/json.hpp"
@@ -85,7 +86,10 @@ public:
 			node[id] = value;
 		}
 	};
-
+	constexpr const size_t* getNodesIds() const
+	{ 
+		return node;
+	}
 	void moveIds(const int& id) {
 		for (int i = 0; i < 4; i++)
 			node[i] += id;
@@ -95,6 +99,37 @@ public:
 		sort(&node[0], &node[4]);
 	};
 };
+
+
+namespace std {
+	template <>
+	struct hash<Plane>
+	{
+		size_t operator()(const Plane& plane) const
+		{
+			auto points = plane.getNodesIds();
+			size_t val{ points[0] + points[1] + points[3] + points[4] };
+
+			//Придумать хэш-функцию для 4-х целых чисел
+
+			return val;
+		};
+	};
+
+	template <>
+	struct equal_to <Plane> { // functor for operator==
+		constexpr bool operator()(const Plane& _Left, const Plane& _Right) const {
+			auto l_points = _Left.getNodesIds();
+			auto r_points = _Right.getNodesIds();
+
+			return l_points[0] == r_points[0] &&
+				l_points[1] == r_points[1] &&
+				l_points[2] == r_points[2] &&
+				l_points[3] == r_points[3];
+		}
+	};
+
+}
 
 class NVTR {
 public:

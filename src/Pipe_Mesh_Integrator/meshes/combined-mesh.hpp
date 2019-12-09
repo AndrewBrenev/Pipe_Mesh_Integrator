@@ -11,11 +11,20 @@ template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 private:
 
+
+	using ObjectPlanes = unordered_set<Plane>;
+	using PlanesFrequency = unordered_map<Plane, uint32_t>;
+
 	json outputInfo;
-	vector<TridimensionalMesh<PointType, NetType> *> objectsMeshes;
+
+	vector<ObjectPlanes> joinablePlanes;
+	vector<PlanesFrequency> planesFrequency;
+
+
+	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
 	//функция возвращает центр КЭ и радиус описывающей окружности
-	pair<PointType, real> countFeCenterPoint(const NetType & meshFE, const int& objId) {
+	pair<PointType, real> countFeCenterPoint(const NetType& meshFE, const int& objId) {
 		real Ox{ 0 }, Oy{ 0 }, Oz{ 0 };
 		PointType A;
 		for (int k = 0; k < 8; k++) {
@@ -32,36 +41,47 @@ private:
 
 		// Радиус описывающей окружности
 		real R{ sqrt(
-			(O.x - A.x)*(O.x - A.x) +
-			(O.y - A.y)*(O.y - A.y) +
-			(O.z - A.z)*(O.z - A.z)
+			(O.x - A.x) * (O.x - A.x) +
+			(O.y - A.y) * (O.y - A.y) +
+			(O.z - A.z) * (O.z - A.z)
 		) };
 
 		return pair<PointType, real>(O, R);
 	}
 
 	bool analyzeFE(const pair<PointType, real>& inner, const pair<PointType, real>& outter) {
-		
-		real distanceBetweenСenters = sqrt((inner.first.x - outter.first.x)*(inner.first.x - outter.first.x) +
-			(inner.first.y - outter.first.y)*(inner.first.y - outter.first.y) +
-			(inner.first.z - outter.first.z)*(inner.first.z - outter.first.z)
+
+		real distanceBetweenСenters = sqrt((inner.first.x - outter.first.x) * (inner.first.x - outter.first.x) +
+			(inner.first.y - outter.first.y) * (inner.first.y - outter.first.y) +
+			(inner.first.z - outter.first.z) * (inner.first.z - outter.first.z)
 		);
 
 		if (distanceBetweenСenters > (inner.second + outter.second))
 			// точно не пересекаются
 			return false;
-		else 
+		else
 			//но это не точно
 			// если ==, то нужна доп обработка, но об этом позже.
-		return true;
+			return true;
+	}
+
+	//Процедура формирования ассоциативного массива, формирующая отношение частоты встречаемости плоскости в КЭ
+	void computePlanesFrequency() {
+
+		joinablePlanes.resize(2);
+
+		//for (auto object : objectsMeshes) {
+			//(*object)->getElemsSize();
+		//}
+
 	}
 
 	//Процедура удаления пересекающихся КЭ в  объектах
 	void deleteOverlappingFE() {
 
-		cout << "--delete overlapping FE..." ; 
+		cout << "--delete overlapping FE...";
 
-		for (int i = 0; i < objectsMeshes.size() -1; i++) {
+		for (int i = 0; i < objectsMeshes.size() - 1; i++) {
 
 			for (int j = 0; j < objectsMeshes[i]->getElemsSize();) {
 				pair<PointType, real> outter = countFeCenterPoint(objectsMeshes[i]->getElem(j), i);
@@ -119,7 +139,7 @@ private:
 	};
 
 	//Подпрограмма вывода результата
-	void saveResultMesh(){
+	void saveResultMesh() {
 
 		cout << "Saving Combined Mesh into files: " << endl;
 
@@ -131,12 +151,12 @@ private:
 	}
 public:
 	CombinedMesh(json input) {
-		
+
 		outputInfo = input["output"];
 
 		objectsMeshes.reserve(input["incoming"]["objects_count"]);
 		objectsMeshes.resize(input["incoming"]["objects_count"]);
-	
+
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			string current_object_type = input["incoming"]["objects"][i]["type"];
 			if (current_object_type == "Tube")
@@ -144,25 +164,26 @@ public:
 			if (current_object_type == "Outer")
 				objectsMeshes[i] = new TridimensionalMesh<PointType, NetType>(input["incoming"]["objects"][i]);
 		}
-		
+
 	};
 	~CombinedMesh() {};
 	void buildNet() {
 
 		cout << "Building the combined mesh: " << endl;
 
-		#pragma omp parallel for
-		for (int i = 0; i < objectsMeshes.size(); i++) 
+#pragma omp parallel for
+		for (int i = 0; i < objectsMeshes.size(); i++)
 			objectsMeshes[i]->buildNet();
-		
+
 		if (objectsMeshes.size() > 1) {
 
+			computePlanesFrequency();
 			deleteOverlappingFE();
 		}
 
 		// Перенумеруем полученные объекты и построим выходную сетку.
 		buildCombinedMesh();
-		
+
 		saveResultMesh();
 	};
 };
