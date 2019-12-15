@@ -3,6 +3,9 @@
 
 int main(int argc, const char** argv)
 {
+
+
+
 	try {
 
 		auto numberOfThreads = omp_get_max_threads();

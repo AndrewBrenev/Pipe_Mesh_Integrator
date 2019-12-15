@@ -17,6 +17,7 @@
 #include <omp.h>
 #include <iomanip>
 #include <unordered_set>
+#include <functional>
 
 #include <array>
 #include "../../external-libs/nlohmann/json.hpp"
@@ -94,7 +95,11 @@ public:
 		for (int i = 0; i < 4; i++)
 			node[i] += id;
 	};
-
+	size_t getNode(const int id) {
+		if (id >= 0 && id <= 3)
+			return node[id];
+		else return -1;
+	}
 	void update() {
 		sort(&node[0], &node[4]);
 	};
@@ -108,11 +113,10 @@ namespace std {
 		size_t operator()(const Plane& plane) const
 		{
 			auto points = plane.getNodesIds();
-			size_t val{ points[0] + points[1] + points[3] + points[4] };
-
-			//Придумать хэш-функцию для 4-х целых чисел
-
-			return val;
+			string number_string = to_string(points[0]) + to_string(points[1]) + to_string(points[2]) + to_string(points[3]);
+			hash<string> value;
+			return value(number_string);
+			
 		};
 	};
 

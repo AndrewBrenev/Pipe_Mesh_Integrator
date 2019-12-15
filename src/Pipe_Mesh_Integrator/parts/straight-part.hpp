@@ -8,7 +8,7 @@ class StraightPart : public TubePart<PointType, NetType> {
 private:
 
 protected:
-	
+
 public:
 	StraightPart(json input_configs) {
 		StraightPart::section_count = input_configs["splits"];
@@ -16,7 +16,7 @@ public:
 		StraightPart::end.setValue(input_configs["to"]["x"], input_configs["to"]["y"], input_configs["to"]["z"]);
 		StraightPart::cut = StraightPart::createCut(input_configs);
 		StraightPart::cut->buildNet();
-	
+
 	};
 	~StraightPart() {};
 	void buildNet() {
@@ -36,9 +36,9 @@ public:
 			real nx = j * dx;
 			real ny = j * dy;
 			real nz = j * dz;
-		
+
 			// находим нужную точку
-			PointType Res( StraightPart::begin.x + nx ,  StraightPart::begin.y + ny,  StraightPart::begin.z + nz);
+			PointType Res(StraightPart::begin.x + nx, StraightPart::begin.y + ny, StraightPart::begin.z + nz);
 
 			// Если мы на пути следования трубы
 			StraightPart::calculate2DLayer(Res, StraightPart::normals[0]);
@@ -50,7 +50,7 @@ public:
 
 		//Сортируем точки
 		std::sort(StraightPart::coord.begin(), StraightPart::coord.end(), StraightPart::sort_coord_vect);
-		
+
 		IMesh<PointType, NetType>::setNodesSize(StraightPart::coord.size());
 		IMesh<PointType, NetType>::setElemsSize(StraightPart::nvtr.size());
 	}

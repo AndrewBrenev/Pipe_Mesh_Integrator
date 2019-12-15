@@ -8,52 +8,41 @@
         "parameters": {
           "material-id": 1,
           "X": {
-            "min": -5,
-            "max": 5,
-            "h": 1
+            "min": -6,
+            "max": 6,
+            "h": 2
           },
           "Y": {
             "min": 0,
-            "max": 6,
-            "h": 1
+            "max": 2,
+            "h": 2
           },
           "Z": {
             "min": -5,
             "max": 5,
-            "h": 1
+            "h": 2
           }
         }
       },
       {
-        "type": "Tube",
+        "type": "Outer",
         "action": "build",
         "parameters": {
-      
-          "straight": {
-            "count": 1,
-            "segments": [
-			{
-                "from": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 0
-                },
-                "to": {
-                  "x": 0,
-                  "y": 6,
-                  "z": 0
-                },
-                "splits": 3,
-				 "cut":{
-				 "path":"../../examples/cuts/round-nested.json"
-				 }
-              }
-			]
+          "material-id": 2,
+          "X": {
+            "min": 0,
+            "max": 2,
+            "h": 2
           },
-          "turns": {
-            "count": 0,
-            "segments": [
-            ]
+          "Y": {
+            "min": 0,
+            "max": 2,
+            "h": 2
+          },
+          "Z": {
+            "min": 0,
+            "max": 2,
+            "h": 2
           }
         }
       }

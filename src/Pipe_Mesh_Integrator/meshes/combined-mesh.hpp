@@ -23,9 +23,32 @@ private:
 
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
+	Plane calculanePlanenorm(const Plane& plane,const vector<PointType> points) {
+		
+
+		// Вычислим плоскость, в которой происходит поворот
+		real Nx, Ny, Nz, D;
+		real a21, a22, a23;
+		real a31, a32, a33;
+
+	//	a21 = BendingPart::begin.x - rotationPoint.x; a22 = BendingPart::begin.y - rotationPoint.y; a23 = BendingPart::begin.z - rotationPoint.z;
+	//	a31 = BendingPart::end.x - rotationPoint.x; a32 = BendingPart::end.y - rotationPoint.y; a33 = BendingPart::end.z - rotationPoint.z;
+
+		// Вектор нормали к плосткости, в которой происходит поворот
+		Nx = a22 * a33 - a32 * a23;
+		Ny = a23 * a31 - a21 * a33;
+		Nz = a21 * a32 - a22 * a31;
+		D = -rotationPoint.x * Nx - rotationPoint.y * Ny - rotationPoint.z * Nz;
+
+		Plane norm(Nx, Ny, Nz, D);
+
+		return norm;
+	}
+
 	//функция возвращает центр КЭ и радиус описывающей окружности
 	pair<PointType, real> countFeCenterPoint(const NetType& meshFE, const int& objId) {
 		real Ox{ 0 }, Oy{ 0 }, Oz{ 0 };
+		
 		PointType A;
 		for (int k = 0; k < 8; k++) {
 			A = objectsMeshes[objId]->getNode(meshFE.n[k] - 1);
@@ -34,19 +57,43 @@ private:
 			Oz += A.z;
 		}
 		Ox /= 8.; Oy /= 8.; Oz /= 8.;
-
-		A = objectsMeshes[objId]->getNode(meshFE.n[0] - 1);
 		PointType O{ Ox,Oy,Oz };
 
+		Ox = 0; Oy = 0; Oz = 0;
+				
+		PointType TmR;
+		Plane curPlane = meshFE.planes[0];
 
-		// Радиус описывающей окружности
-		real R{ sqrt(
+		//Радиус вписанной окружности
+		for (int i = 0; i < 4; i++)
+		{
+			TmR = objectsMeshes[objId]->getNode(curPlane.getNode(i) - 1);
+			Ox += TmR.x;
+			Oy += TmR.y;
+			Oz += TmR.z;
+		}
+		A.x = Ox / 4.;
+		A.y = Oy / 4.;
+		A.z = Oz / 4;
+	
+		real r{ sqrt(
 			(O.x - A.x) * (O.x - A.x) +
 			(O.y - A.y) * (O.y - A.y) +
 			(O.z - A.z) * (O.z - A.z)
 		) };
 
-		return pair<PointType, real>(O, R);
+		// Радиус описывающей окружности
+		 A =  objectsMeshes[objId]->getNode(meshFE.n[0] - 1);
+		
+		 real R{ sqrt(
+			(O.x - A.x) * (O.x - A.x) +
+			(O.y - A.y) * (O.y - A.y) +
+			(O.z - A.z) * (O.z - A.z)
+		) };
+
+		
+		
+		return pair<PointType, real>(O, 0.6*R + 0.4*r);
 	}
 
 	bool analyzeFE(const pair<PointType, real>& inner, const pair<PointType, real>& outter) {
@@ -65,14 +112,65 @@ private:
 			return true;
 	}
 
+	void identifyBoundaryPlanes() {
+
+		joinablePlanes.resize(objectsMeshes.size());
+		joinablePlanes.reserve(objectsMeshes.size());
+
+		vector<PlanesFrequency> new_planesFrequency;
+
+		computePlanesFrequency(new_planesFrequency);
+		
+		
+		for (int i = 0; i < objectsMeshes.size(); i++) {
+			for (auto planeFr : planesFrequency[i])
+			{
+				
+				if (new_planesFrequency[i].find(planeFr.first) != new_planesFrequency[i].end() &&
+					planeFr.second != new_planesFrequency[i].at(planeFr.first))
+					joinablePlanes[i].insert(planeFr.first);
+			}
+
+			//Если не удаляли элементы, то записываем внешние плоскости
+			if (!joinablePlanes[i].size()) {
+				for (auto planeFr : planesFrequency[i])
+				{
+					if (planeFr.second == 1)
+						joinablePlanes[i].insert(planeFr.first);
+				}
+			}
+		}
+
+		
+		
+
+		for (auto fr : planesFrequency)
+			fr.clear();
+		planesFrequency.clear();
+		
+
+	}
+
 	//Процедура формирования ассоциативного массива, формирующая отношение частоты встречаемости плоскости в КЭ
-	void computePlanesFrequency() {
+	void computePlanesFrequency(vector<PlanesFrequency>& frequency) {
 
-		joinablePlanes.resize(2);
+		frequency.reserve(objectsMeshes.size());
+		frequency.resize(objectsMeshes.size());
 
-		//for (auto object : objectsMeshes) {
-			//(*object)->getElemsSize();
-		//}
+		for (int i = 0; i < objectsMeshes.size(); i++) {
+			auto currentElems = objectsMeshes[i]->getElems();
+			for (auto element : currentElems) {
+				for (int j = 0; j < 6; j++) {
+					auto iteratorSearchPlane = frequency[i].find(element.planes[j]);
+					if (iteratorSearchPlane == frequency[i].end()) {
+						
+						frequency[i].insert({ element.planes[j],1 });
+					}
+					else
+						iteratorSearchPlane->second += 1;
+				}
+			}
+		}
 
 	}
 
@@ -108,7 +206,7 @@ private:
 	void buildCombinedMesh() {
 		if (objectsMeshes.size())
 		{
-			cout << "-- renumbering objects meshes" << endl;
+			cout << "-- renumbering objects meshes" ;
 
 			//Полностью сохраним первый объект
 			std::vector<PointType> currentPoints = objectsMeshes[0]->getNodes();
@@ -177,8 +275,10 @@ public:
 
 		if (objectsMeshes.size() > 1) {
 
-			computePlanesFrequency();
+			//computePlanesFrequency(planesFrequency);
 			deleteOverlappingFE();
+
+			//identifyBoundaryPlanes();
 		}
 
 		// Перенумеруем полученные объекты и построим выходную сетку.
