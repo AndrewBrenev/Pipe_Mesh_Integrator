@@ -24,25 +24,36 @@
           }
         }
       },
-      {
-        "type": "Outer",
+     {
+        "type": "Tube",
         "action": "build",
         "parameters": {
-          "material-id": 2,
-          "X": {
-            "min": 0,
-            "max": 2,
-            "h": 2
+          "straight": {
+            "count": 1,
+            "segments": [
+              {
+                "from": {
+                
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  
+                },
+                "to": {
+                 
+                    "x": 0,
+                    "y": 2,
+                    "z": 0
+                  
+                },
+                "splits": 2
+              }
+            ]
           },
-          "Y": {
-            "min": 0,
-            "max": 2,
-            "h": 2
-          },
-          "Z": {
-            "min": 0,
-            "max": 2,
-            "h": 2
+          "turns": {
+            "count": 0,
+            "segments": [
+            ]
           }
         }
       }

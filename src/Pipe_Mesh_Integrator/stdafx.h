@@ -61,12 +61,27 @@ struct Point {
 		y = p2;
 		z = p3;
 	};
+
+	// Изменить координату
+	void setId(const size_t _id) {
+		this->id = _id;
+	};
+	double length() {
+		return sqrt(x * x + y * y + z * z);
+	}
+
+	bool operator==(const Point& other) const
+	{
+		return (this->id == other.id);
+	}
 };
 
 class Plane {
 private:
 	// Глобальные номера вершин, лежащих в плоскости
 	size_t node[4];
+
+	double A, B, C, D;
 public:
 
 	Plane() {
@@ -74,6 +89,7 @@ public:
 		node[1] = 0;
 		node[2] = 0;
 		node[3] = 0;
+		setNormal(1, 1, 1, 0);
 	};
 	Plane(size_t a, size_t b, size_t c, size_t d) {
 		node[0] = a;
@@ -81,19 +97,41 @@ public:
 		node[2] = c;
 		node[3] = d;
 		sort(&node[0], &node[4]);
+		setNormal(1, 1, 1, 0);
 	};
 	void update(const int& id, const size_t& value) {
 		if (id >= 0 && id < 4) {
 			node[id] = value;
 		}
 	};
+	void setNormal(double _A, double _B, double _C, double _D) {
+		this->A = _A;	this->B = _B; this->C = _C; this->D = _D;
+	}
+	void setIds(size_t a, size_t b, size_t c, size_t d) {
+		node[0] = a;
+		node[1] = b;
+		node[2] = c;
+		node[3] = d;
+		sort(&node[0], &node[4]);
+	}
+	void getNormal(double& _A, double& _B, double& _C, double& _D) {
+		_A = this->A;	_B = this->B; _C = this->C; _D = this->D;
+	}
+
+	void invert() {
+		this->A *= -1;
+		this->B *= -1;
+		this->C *= -1;
+	}
+
 	constexpr const size_t* getNodesIds() const
 	{ 
 		return node;
 	}
-	void moveIds(const int& id) {
+	 void moveIds(const int& id)
+	 {
 		for (int i = 0; i < 4; i++)
-			node[i] += id;
+			this->node[i] += id;
 	};
 	size_t getNode(const int id) {
 		if (id >= 0 && id <= 3)
@@ -132,6 +170,16 @@ namespace std {
 				l_points[3] == r_points[3];
 		}
 	};
+
+	template <>
+	struct hash<Point>
+	{
+		std::size_t operator()(const Point& k) const
+		{
+			return k.id;
+		}
+	};
+
 
 }
 

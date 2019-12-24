@@ -20,35 +20,39 @@ private:
 	vector<ObjectPlanes> joinablePlanes;
 	vector<PlanesFrequency> planesFrequency;
 
+	unordered_map<PointType, PointType> terminalNodes;
+
 
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
-	Plane calculanePlanenorm(const Plane& plane,const vector<PointType> points) {
-		
+	Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
 
 		// Вычислим плоскость, в которой происходит поворот
 		real Nx, Ny, Nz, D;
 		real a21, a22, a23;
 		real a31, a32, a33;
 
-	//	a21 = BendingPart::begin.x - rotationPoint.x; a22 = BendingPart::begin.y - rotationPoint.y; a23 = BendingPart::begin.z - rotationPoint.z;
-	//	a31 = BendingPart::end.x - rotationPoint.x; a32 = BendingPart::end.y - rotationPoint.y; a33 = BendingPart::end.z - rotationPoint.z;
+		a21 = B.x - C.x; a22 = B.y - C.y; a23 = B.z - C.z;
+		a31 = A.x - C.x; a32 = A.y - C.y; a33 = A.z - C.z;
 
 		// Вектор нормали к плосткости, в которой происходит поворот
 		Nx = a22 * a33 - a32 * a23;
 		Ny = a23 * a31 - a21 * a33;
 		Nz = a21 * a32 - a22 * a31;
-		D = -rotationPoint.x * Nx - rotationPoint.y * Ny - rotationPoint.z * Nz;
+		double norm = sqrt(Nx * Nx + Ny * Ny + Nz * Nz);
+		Nx /= norm; Ny /= norm; Nz /= norm;
+		D = -C.x * Nx - C.y * Ny - C.z * Nz;
 
-		Plane norm(Nx, Ny, Nz, D);
+		Plane normal;
+		normal.setNormal(Nx, Ny, Nz, D);
 
-		return norm;
+		return normal;
 	}
 
 	//функция возвращает центр КЭ и радиус описывающей окружности
 	pair<PointType, real> countFeCenterPoint(const NetType& meshFE, const int& objId) {
 		real Ox{ 0 }, Oy{ 0 }, Oz{ 0 };
-		
+
 		PointType A;
 		for (int k = 0; k < 8; k++) {
 			A = objectsMeshes[objId]->getNode(meshFE.n[k] - 1);
@@ -60,7 +64,7 @@ private:
 		PointType O{ Ox,Oy,Oz };
 
 		Ox = 0; Oy = 0; Oz = 0;
-				
+
 		PointType TmR;
 		Plane curPlane = meshFE.planes[0];
 
@@ -75,7 +79,7 @@ private:
 		A.x = Ox / 4.;
 		A.y = Oy / 4.;
 		A.z = Oz / 4;
-	
+
 		real r{ sqrt(
 			(O.x - A.x) * (O.x - A.x) +
 			(O.y - A.y) * (O.y - A.y) +
@@ -83,17 +87,17 @@ private:
 		) };
 
 		// Радиус описывающей окружности
-		 A =  objectsMeshes[objId]->getNode(meshFE.n[0] - 1);
-		
-		 real R{ sqrt(
-			(O.x - A.x) * (O.x - A.x) +
-			(O.y - A.y) * (O.y - A.y) +
-			(O.z - A.z) * (O.z - A.z)
-		) };
+		A = objectsMeshes[objId]->getNode(meshFE.n[0] - 1);
 
-		
-		
-		return pair<PointType, real>(O, 0.6*R + 0.4*r);
+		real R{ sqrt(
+		   (O.x - A.x) * (O.x - A.x) +
+		   (O.y - A.y) * (O.y - A.y) +
+		   (O.z - A.z) * (O.z - A.z)
+	   ) };
+
+
+
+		return pair<PointType, real>(O, 0.6 * R + 0.4 * r);
 	}
 
 	bool analyzeFE(const pair<PointType, real>& inner, const pair<PointType, real>& outter) {
@@ -120,12 +124,12 @@ private:
 		vector<PlanesFrequency> new_planesFrequency;
 
 		computePlanesFrequency(new_planesFrequency);
-		
-		
+
+
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			for (auto planeFr : planesFrequency[i])
 			{
-				
+
 				if (new_planesFrequency[i].find(planeFr.first) != new_planesFrequency[i].end() &&
 					planeFr.second != new_planesFrequency[i].at(planeFr.first))
 					joinablePlanes[i].insert(planeFr.first);
@@ -141,17 +145,18 @@ private:
 			}
 		}
 
-		
-		
+
+
 
 		for (auto fr : planesFrequency)
 			fr.clear();
 		planesFrequency.clear();
-		
+
 
 	}
 
-	//Процедура формирования ассоциативного массива, формирующая отношение частоты встречаемости плоскости в КЭ
+	//Процедура формирования ассоциативного массива, характерезующего отношение частоты встречаемости плоскости в сетке
+	// (либо 2, либо 1)
 	void computePlanesFrequency(vector<PlanesFrequency>& frequency) {
 
 		frequency.reserve(objectsMeshes.size());
@@ -163,7 +168,7 @@ private:
 				for (int j = 0; j < 6; j++) {
 					auto iteratorSearchPlane = frequency[i].find(element.planes[j]);
 					if (iteratorSearchPlane == frequency[i].end()) {
-						
+
 						frequency[i].insert({ element.planes[j],1 });
 					}
 					else
@@ -203,10 +208,10 @@ private:
 	}
 
 	//перенумерация объектов, находящихся в objectsMeshes
-	void buildCombinedMesh() {
+	void renumberObjectsNodes() {
 		if (objectsMeshes.size())
 		{
-			cout << "-- renumbering objects meshes" ;
+			cout << "-- renumbering objects meshes";
 
 			//Полностью сохраним первый объект
 			std::vector<PointType> currentPoints = objectsMeshes[0]->getNodes();
@@ -219,8 +224,19 @@ private:
 				currentPoints.clear();
 				currentElems.clear();
 				start_id = CombinedMesh::coord.size();
-				PointType bias(0, 0, 0, start_id);
 
+				// start planes
+				ObjectPlanes new_planes;
+				for (auto plane : joinablePlanes[i]) {
+					plane.moveIds(start_id);
+					new_planes.insert(plane);
+				}
+				joinablePlanes[i].clear();
+				joinablePlanes[i] = new_planes;
+				new_planes.clear();
+				//finish 
+
+				PointType bias(0, 0, 0, start_id);
 				objectsMeshes[i]->moveMesh(bias);
 				std::vector<PointType> currentPoints = objectsMeshes[i]->getNodes();
 				std::vector<NetType> currentElems = objectsMeshes[i]->getElems();
@@ -235,6 +251,181 @@ private:
 
 		}
 	};
+	
+	void calculatePlanesNormals()
+	{
+		Plane tmpPlane;
+		uint32_t a, b, c, d;
+
+		for (int i = 0; i < joinablePlanes.size(); ++i)
+		{
+			ObjectPlanes new_planes;
+
+			for (auto plane : joinablePlanes[i])
+			{
+				a = plane.getNode(0);
+				b = plane.getNode(1);
+				c = plane.getNode(2);
+				d = plane.getNode(3);
+				tmpPlane = calculatePlaneNorm(
+					CombinedMesh::coord[a - 1],
+					CombinedMesh::coord[b - 1],
+					CombinedMesh::coord[c - 1]
+				);
+
+				tmpPlane.setIds(a, b, c, d);
+				new_planes.insert(tmpPlane);
+			}
+
+			joinablePlanes[i].clear();
+			joinablePlanes[i] = new_planes;
+			new_planes.clear();
+		}
+	};
+
+	bool findProectionPoint(const PointType& pointFromTheOtherSide, const PointType& direction, PointType& pointOfIntersection) {
+	
+		double a, b, c, d;
+
+		for (auto plane : joinablePlanes[0]) {
+
+			plane.getNormal(a, b, c, d);
+
+			double tDenominator = a * direction.x + b * direction.y + c * direction.z;
+
+			if (tDenominator > 1e-5) {
+
+				double tNumerator = pointFromTheOtherSide.x * a + pointFromTheOtherSide.y * b + pointFromTheOtherSide.z * c + d;
+
+				double t = -tNumerator / tDenominator;
+				if (t > 0)
+				{
+					PointType intersectPoint(
+						pointFromTheOtherSide.x + t * direction.x,
+						pointFromTheOtherSide.y + t * direction.y,
+						pointFromTheOtherSide.z + t * direction.z);
+
+
+					PointType planeNodeA = CombinedMesh::coord[plane.getNode(0) - 1];
+					PointType planeNodeB = CombinedMesh::coord[plane.getNode(1) - 1];
+					PointType planeNodeC = CombinedMesh::coord[plane.getNode(2) - 1];
+					PointType planeNodeD = CombinedMesh::coord[plane.getNode(3) - 1];
+
+					// Определим принадлежность через сумму углов
+					PointType vectA(planeNodeA.x - intersectPoint.x, planeNodeA.y - intersectPoint.y, planeNodeA.z - intersectPoint.z);
+					PointType vectB(planeNodeB.x - intersectPoint.x, planeNodeB.y - intersectPoint.y, planeNodeB.z - intersectPoint.z);
+					PointType vectC(planeNodeC.x - intersectPoint.x, planeNodeC.y - intersectPoint.y, planeNodeC.z - intersectPoint.z);
+					PointType vectD(planeNodeD.x - intersectPoint.x, planeNodeD.y - intersectPoint.y, planeNodeD.z - intersectPoint.z);
+
+					double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
+					double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
+					double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
+					double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
+
+					double phiAB = acos(cosAB);
+					double phiAC = acos(cosAC);
+					double phiBD = acos(cosBD);
+					double phiCD = acos(cosCD);
+
+					double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
+					if (eps < 1e-5)
+					{
+						pointOfIntersection = intersectPoint;
+						return true;
+					}
+
+				}
+
+			}
+
+		}
+		return false ;
+	}
+
+	void buildNewPointntsMap() {
+		double a, b, c, d;
+		for (auto plane : joinablePlanes[1])
+		{
+			for (int planeNode = 0; planeNode < 4; planeNode++) {
+				PointType vertexPoint = CombinedMesh::coord[plane.getNode(planeNode) - 1];
+				plane.getNormal(a, b, c, d);
+				PointType vertexDirection(a, b, c);
+				PointType mapPoint;
+
+				if (findProectionPoint(vertexPoint, vertexDirection, mapPoint)) {
+					plane.invert();
+					plane.getNormal(a, b, c, d);
+					 vertexDirection.setValue(a, b, c);
+					PointType otherDirection;
+					if (findProectionPoint(vertexPoint, vertexDirection, otherDirection)) {
+						PointType oldDistance(mapPoint.x - vertexPoint.x, mapPoint.y - vertexPoint.y, mapPoint.z - vertexPoint.z);
+						PointType newDistance(otherDirection.x - vertexPoint.x, otherDirection.y - vertexPoint.y, otherDirection.z - vertexPoint.z);
+
+						double firstPath = oldDistance.length();
+						double secondPath = newDistance.length();
+						if(firstPath < secondPath)
+							terminalNodes.insert({ vertexPoint ,mapPoint });
+						else
+							terminalNodes.insert({ vertexPoint ,otherDirection });
+					}
+					else
+						terminalNodes.insert({ vertexPoint ,mapPoint });
+				}
+
+			}
+		}
+	}
+
+	void buildDockingElements() {
+		uint32_t start_node_id = CombinedMesh::coord.size();
+		uint32_t start_elem_id = CombinedMesh::nvtr.size();
+
+		size_t planeNodes[4];
+
+		for (auto plane : joinablePlanes[1]) {
+
+			planeNodes[0] = plane.getNode(0);
+			planeNodes[1] = plane.getNode(1);
+			planeNodes[2] = plane.getNode(2);
+			planeNodes[3] = plane.getNode(3);
+			auto iteratorFirstPlaneNode = terminalNodes.find(CombinedMesh::coord[planeNodes[0] - 1]);
+			auto iteratorSecondPlaneNode = terminalNodes.find(CombinedMesh::coord[planeNodes[1] - 1]);
+			auto iteratorThirdPlaneNode = terminalNodes.find(CombinedMesh::coord[planeNodes[2] - 1]);
+			auto iteratorFourthPlaneNode = terminalNodes.find(CombinedMesh::coord[planeNodes[3] - 1]);
+			
+			// 
+			if (iteratorFirstPlaneNode != terminalNodes.end() &&
+				iteratorSecondPlaneNode != terminalNodes.end() &&
+				iteratorThirdPlaneNode != terminalNodes.end() &&
+				iteratorFourthPlaneNode != terminalNodes.end())
+			{
+				iteratorFirstPlaneNode->second.setId(start_node_id);
+				iteratorSecondPlaneNode->second.setId(start_node_id + 1);
+				iteratorThirdPlaneNode->second.setId(start_node_id + 2);
+				iteratorFourthPlaneNode->second.setId(start_node_id + 3);
+
+				CombinedMesh::coord.push_back(iteratorFirstPlaneNode->second);
+				CombinedMesh::coord.push_back(iteratorSecondPlaneNode->second);
+				CombinedMesh::coord.push_back(iteratorThirdPlaneNode->second);
+				CombinedMesh::coord.push_back(iteratorFourthPlaneNode->second);
+
+				NetType N(
+					planeNodes[0], planeNodes[1], planeNodes[2], planeNodes[3],
+					start_node_id + 1, start_node_id + 2, start_node_id + 3, start_node_id + 4,
+					start_elem_id,
+					1
+				);
+
+				N.buildPlanes();
+				CombinedMesh::nvtr.push_back(N);
+
+				start_elem_id++;
+				start_node_id += 4;
+			}
+		}
+		IMesh<PointType, NetType>::setNodesSize(CombinedMesh::coord.size());
+		IMesh<PointType, NetType>::setElemsSize(CombinedMesh::nvtr.size());
+	}
 
 	//Подпрограмма вывода результата
 	void saveResultMesh() {
@@ -265,6 +456,7 @@ public:
 
 	};
 	~CombinedMesh() {};
+
 	void buildNet() {
 
 		cout << "Building the combined mesh: " << endl;
@@ -275,14 +467,21 @@ public:
 
 		if (objectsMeshes.size() > 1) {
 
-			//computePlanesFrequency(planesFrequency);
+			computePlanesFrequency(planesFrequency);
 			deleteOverlappingFE();
+			identifyBoundaryPlanes();
+			// Перенумеруем полученные объекты и построим выходную сетку.
+			renumberObjectsNodes();
 
-			//identifyBoundaryPlanes();
+			//вычислим нормаль для каждой плоскости
+			calculatePlanesNormals();
+
+			//Для каждой точки построили отображение на плоскость
+			buildNewPointntsMap();
+
+			// Добавим овые элементы
+			buildDockingElements();
 		}
-
-		// Перенумеруем полученные объекты и построим выходную сетку.
-		buildCombinedMesh();
 
 		saveResultMesh();
 	};
