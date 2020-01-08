@@ -117,7 +117,12 @@ public:
 	void getNormal(double& _A, double& _B, double& _C, double& _D) {
 		_A = this->A;	_B = this->B; _C = this->C; _D = this->D;
 	}
-
+	Point getNormal() {
+		return Point(this->A, this->B, this->C);
+	}
+	Point getInvertNormal() {
+		return Point(-this->A, -this->B, -this->C);
+	}
 	void invert() {
 		this->A *= -1;
 		this->B *= -1;

@@ -22,7 +22,6 @@ private:
 
 	unordered_map<PointType, PointType> terminalNodes;
 
-
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
 	Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
@@ -97,7 +96,7 @@ private:
 
 
 
-		return pair<PointType, real>(O, 0.6 * R + 0.4 * r);
+		return pair<PointType, real>(O, 0.3 * R + 0.7 * r);
 	}
 
 	bool analyzeFE(const pair<PointType, real>& inner, const pair<PointType, real>& outter) {
@@ -144,9 +143,6 @@ private:
 				}
 			}
 		}
-
-
-
 
 		for (auto fr : planesFrequency)
 			fr.clear();
@@ -293,18 +289,18 @@ private:
 
 			double tDenominator = a * direction.x + b * direction.y + c * direction.z;
 
-			if (tDenominator > 1e-5) {
+			if (abs(tDenominator) > 1e-6) {
 
 				double tNumerator = pointFromTheOtherSide.x * a + pointFromTheOtherSide.y * b + pointFromTheOtherSide.z * c + d;
 
 				double t = -tNumerator / tDenominator;
 				if (t > 0)
 				{
+
 					PointType intersectPoint(
 						pointFromTheOtherSide.x + t * direction.x,
 						pointFromTheOtherSide.y + t * direction.y,
 						pointFromTheOtherSide.z + t * direction.z);
-
 
 					PointType planeNodeA = CombinedMesh::coord[plane.getNode(0) - 1];
 					PointType planeNodeB = CombinedMesh::coord[plane.getNode(1) - 1];
@@ -328,14 +324,13 @@ private:
 					double phiCD = acos(cosCD);
 
 					double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
-					if (eps < 1e-5)
+					if (eps < 1e-2)
 					{
 						pointOfIntersection = intersectPoint;
 						return true;
 					}
 
 				}
-
 			}
 
 		}
@@ -346,35 +341,44 @@ private:
 		double a, b, c, d;
 		for (auto plane : joinablePlanes[1])
 		{
-			for (int planeNode = 0; planeNode < 4; planeNode++) {
-				PointType vertexPoint = CombinedMesh::coord[plane.getNode(planeNode) - 1];
-				plane.getNormal(a, b, c, d);
-				PointType vertexDirection(a, b, c);
-				PointType mapPoint;
+			PointType vertexDirection = plane.getNormal();
+			PointType invertVertexDirection = plane.getInvertNormal();
 
-				if (findProectionPoint(vertexPoint, vertexDirection, mapPoint)) {
-					plane.invert();
-					plane.getNormal(a, b, c, d);
-					 vertexDirection.setValue(a, b, c);
-					PointType otherDirection;
-					if (findProectionPoint(vertexPoint, vertexDirection, otherDirection)) {
+			PointType otherDirection; PointType mapPoint;
+
+			for (int planeNode = 0; planeNode < 4; planeNode++)
+			{
+				PointType vertexPoint = CombinedMesh::coord[plane.getNode(planeNode) - 1];
+
+				if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
+				{
+
+					if (findProectionPoint(vertexPoint, invertVertexDirection, otherDirection))
+					{
+
 						PointType oldDistance(mapPoint.x - vertexPoint.x, mapPoint.y - vertexPoint.y, mapPoint.z - vertexPoint.z);
 						PointType newDistance(otherDirection.x - vertexPoint.x, otherDirection.y - vertexPoint.y, otherDirection.z - vertexPoint.z);
 
 						double firstPath = oldDistance.length();
 						double secondPath = newDistance.length();
-						if(firstPath < secondPath)
+						if (firstPath < secondPath)
 							terminalNodes.insert({ vertexPoint ,mapPoint });
 						else
+
 							terminalNodes.insert({ vertexPoint ,otherDirection });
 					}
 					else
+						
 						terminalNodes.insert({ vertexPoint ,mapPoint });
 				}
+				else
+					if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
+						terminalNodes.insert({ vertexPoint ,mapPoint });
 
 			}
 		}
 	}
+	
 
 	void buildDockingElements() {
 		uint32_t start_node_id = CombinedMesh::coord.size();
@@ -479,7 +483,7 @@ public:
 			//Для каждой точки построили отображение на плоскость
 			buildNewPointntsMap();
 
-			// Добавим овые элементы
+			// Строимм новые элементы
 			buildDockingElements();
 		}
 
