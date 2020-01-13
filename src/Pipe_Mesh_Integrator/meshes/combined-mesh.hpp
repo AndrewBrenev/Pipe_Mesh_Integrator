@@ -24,6 +24,10 @@ private:
 
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
+	void inserPointMapping(const PointType& fPnt, const PointType& scndPnt, const unordered_map<PointType, PointType>& mapCont) {
+		terminalNodes.insert({ fPnt ,scndPnt });
+	}
+
 	Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
 
 		// Вычислим плоскость, в которой происходит поворот
@@ -248,6 +252,62 @@ private:
 		}
 	};
 	
+	pair<bool, PointType> checkPlaneAndRayIntersection(const PointType& rayBegin, const PointType& rayDirection, const Plane& plane)
+	{
+		double a, b, c, d;
+		
+		plane.getNormal(a, b, c, d);
+
+		double tDenominator = a * rayDirection.x + b * rayDirection.y + c * rayDirection.z;
+
+		if (abs(tDenominator) > 1e-6)
+		{
+
+			double tNumerator = rayBegin.x * a + rayBegin.y * b + rayBegin.z * c + d;
+
+			double t = -tNumerator / tDenominator;
+			if (t > 0)
+			{
+
+				PointType intersectPoint(
+					rayBegin.x + t * rayDirection.x,
+					rayBegin.y + t * rayDirection.y,
+					rayBegin.z + t * rayDirection.z);
+
+				PointType planeNodeA = CombinedMesh::coord[plane.getNode(0) - 1];
+				PointType planeNodeB = CombinedMesh::coord[plane.getNode(1) - 1];
+				PointType planeNodeC = CombinedMesh::coord[plane.getNode(2) - 1];
+				PointType planeNodeD = CombinedMesh::coord[plane.getNode(3) - 1];
+
+				// Определим принадлежность через сумму углов
+				PointType vectA(planeNodeA.x - intersectPoint.x, planeNodeA.y - intersectPoint.y, planeNodeA.z - intersectPoint.z);
+				PointType vectB(planeNodeB.x - intersectPoint.x, planeNodeB.y - intersectPoint.y, planeNodeB.z - intersectPoint.z);
+				PointType vectC(planeNodeC.x - intersectPoint.x, planeNodeC.y - intersectPoint.y, planeNodeC.z - intersectPoint.z);
+				PointType vectD(planeNodeD.x - intersectPoint.x, planeNodeD.y - intersectPoint.y, planeNodeD.z - intersectPoint.z);
+
+				double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
+				double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
+				double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
+				double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
+
+				double phiAB = acos(cosAB);
+				double phiAC = acos(cosAC);
+				double phiBD = acos(cosBD);
+				double phiCD = acos(cosCD);
+
+				double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
+				if (eps < 1e-2)
+				{
+					return pair<bool, PointType>(true, intersectPoint);
+				}
+				else
+					return pair<bool, PointType> (false, intersectPoint);
+			}
+		}
+		PointType nullPoint;
+		return pair<bool, PointType>(false,nullPoint);
+	}
+
 	void calculatePlanesNormals()
 	{
 		Plane tmpPlane;
@@ -280,61 +340,15 @@ private:
 	};
 
 	bool findProectionPoint(const PointType& pointFromTheOtherSide, const PointType& direction, PointType& pointOfIntersection) {
-	
-		double a, b, c, d;
 
 		for (auto plane : joinablePlanes[0]) {
-
-			plane.getNormal(a, b, c, d);
-
-			double tDenominator = a * direction.x + b * direction.y + c * direction.z;
-
-			if (abs(tDenominator) > 1e-6) {
-
-				double tNumerator = pointFromTheOtherSide.x * a + pointFromTheOtherSide.y * b + pointFromTheOtherSide.z * c + d;
-
-				double t = -tNumerator / tDenominator;
-				if (t > 0)
-				{
-
-					PointType intersectPoint(
-						pointFromTheOtherSide.x + t * direction.x,
-						pointFromTheOtherSide.y + t * direction.y,
-						pointFromTheOtherSide.z + t * direction.z);
-
-					PointType planeNodeA = CombinedMesh::coord[plane.getNode(0) - 1];
-					PointType planeNodeB = CombinedMesh::coord[plane.getNode(1) - 1];
-					PointType planeNodeC = CombinedMesh::coord[plane.getNode(2) - 1];
-					PointType planeNodeD = CombinedMesh::coord[plane.getNode(3) - 1];
-
-					// Определим принадлежность через сумму углов
-					PointType vectA(planeNodeA.x - intersectPoint.x, planeNodeA.y - intersectPoint.y, planeNodeA.z - intersectPoint.z);
-					PointType vectB(planeNodeB.x - intersectPoint.x, planeNodeB.y - intersectPoint.y, planeNodeB.z - intersectPoint.z);
-					PointType vectC(planeNodeC.x - intersectPoint.x, planeNodeC.y - intersectPoint.y, planeNodeC.z - intersectPoint.z);
-					PointType vectD(planeNodeD.x - intersectPoint.x, planeNodeD.y - intersectPoint.y, planeNodeD.z - intersectPoint.z);
-
-					double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
-					double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
-					double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
-					double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
-
-					double phiAB = acos(cosAB);
-					double phiAC = acos(cosAC);
-					double phiBD = acos(cosBD);
-					double phiCD = acos(cosCD);
-
-					double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
-					if (eps < 1e-2)
-					{
-						pointOfIntersection = intersectPoint;
-						return true;
-					}
-
-				}
+			auto checkResult = checkPlaneAndRayIntersection(pointFromTheOtherSide, direction, plane);
+			if (checkResult.first) {
+				pointOfIntersection = checkResult.second;
+				return true;
 			}
-
 		}
-		return false ;
+		return false;
 	}
 
 	void buildNewPointntsMap() {

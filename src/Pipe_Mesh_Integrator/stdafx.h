@@ -114,13 +114,15 @@ public:
 		node[3] = d;
 		sort(&node[0], &node[4]);
 	}
-	void getNormal(double& _A, double& _B, double& _C, double& _D) {
+	void getNormal(double& _A, double& _B, double& _C, double& _D)  const
+	{
 		_A = this->A;	_B = this->B; _C = this->C; _D = this->D;
 	}
 	Point getNormal() {
 		return Point(this->A, this->B, this->C);
 	}
-	Point getInvertNormal() {
+	Point getInvertNormal() const
+	{
 		return Point(-this->A, -this->B, -this->C);
 	}
 	void invert() {
@@ -138,7 +140,8 @@ public:
 		for (int i = 0; i < 4; i++)
 			this->node[i] += id;
 	};
-	size_t getNode(const int id) {
+	size_t getNode(const int id) const
+	{
 		if (id >= 0 && id <= 3)
 			return node[id];
 		else return -1;
