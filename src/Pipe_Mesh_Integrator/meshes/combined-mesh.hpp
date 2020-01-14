@@ -24,8 +24,8 @@ private:
 
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
-	void inserPointMapping(const PointType& fPnt, const PointType& scndPnt, const unordered_map<PointType, PointType>& mapCont) {
-		terminalNodes.insert({ fPnt ,scndPnt });
+	void inserPointMapping(const PointType& fPnt, const PointType& scndPnt,  unordered_map<PointType, PointType>& mapCont) {
+		mapCont.insert({ fPnt ,scndPnt });
 	}
 
 	Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
@@ -117,6 +117,44 @@ private:
 			//но это не точно
 			// если ==, то нужна доп обработка, но об этом позже.
 			return true;
+	}
+
+	//ѕроцедура отображени€ 
+	bool buildObjectsMapping(const ObjectPlanes& mappingSource,const ObjectPlanes& mappingReciver, unordered_map<PointType, PointType>& pointsMap)
+	{
+		unordered_set<PointType> mappedSourcePoints;
+		//ƒл€ каждой внешней плоскости
+		for (auto outterPlane : mappingSource)
+			for (int i = 0; i < 4; ++i)
+			{
+
+				PointType currentSourcePoint = CombinedMesh::coord[outterPlane.getNode(i) - 1];
+
+				auto iteratorSourcePointPlaneNode = mappedSourcePoints.find(currentSourcePoint);
+
+				if (iteratorSourcePointPlaneNode == mappedSourcePoints.end())
+				{
+					PointType currentReciverPoint;
+					double minDistance = DBL_MAX;
+					double currentPointsDistanse;
+					PointType closestPoint;
+					for (auto reciverPlane : mappingReciver)
+						for (int j = 0; j < 4; ++j)
+						{
+							currentReciverPoint = CombinedMesh::coord[reciverPlane.getNode(j) - 1];
+							currentPointsDistanse = currentSourcePoint.calculateDistanceToPoint(currentReciverPoint);
+							if (currentPointsDistanse < minDistance)
+							{
+								minDistance = currentPointsDistanse;
+								closestPoint = currentReciverPoint;
+							}
+						}
+					inserPointMapping(closestPoint, currentSourcePoint, pointsMap);
+					mappedSourcePoints.insert(currentSourcePoint);
+				}
+			}
+		
+		return true;
 	}
 
 	void identifyBoundaryPlanes() {
@@ -364,31 +402,33 @@ private:
 			{
 				PointType vertexPoint = CombinedMesh::coord[plane.getNode(planeNode) - 1];
 
-				if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
-				{
-
-					if (findProectionPoint(vertexPoint, invertVertexDirection, otherDirection))
+				if (this->terminalNodes.find(vertexPoint) == this->terminalNodes.end()) {
+					if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
 					{
 
-						PointType oldDistance(mapPoint.x - vertexPoint.x, mapPoint.y - vertexPoint.y, mapPoint.z - vertexPoint.z);
-						PointType newDistance(otherDirection.x - vertexPoint.x, otherDirection.y - vertexPoint.y, otherDirection.z - vertexPoint.z);
+						if (findProectionPoint(vertexPoint, invertVertexDirection, otherDirection))
+						{
 
-						double firstPath = oldDistance.length();
-						double secondPath = newDistance.length();
-						if (firstPath < secondPath)
-							terminalNodes.insert({ vertexPoint ,mapPoint });
+							PointType oldDistance(mapPoint.x - vertexPoint.x, mapPoint.y - vertexPoint.y, mapPoint.z - vertexPoint.z);
+							PointType newDistance(otherDirection.x - vertexPoint.x, otherDirection.y - vertexPoint.y, otherDirection.z - vertexPoint.z);
+
+							double firstPath = oldDistance.length();
+							double secondPath = newDistance.length();
+							if (firstPath < secondPath)
+								terminalNodes.insert({ vertexPoint ,mapPoint });
+							else
+
+								terminalNodes.insert({ vertexPoint ,otherDirection });
+						}
 						else
 
-							terminalNodes.insert({ vertexPoint ,otherDirection });
+							terminalNodes.insert({ vertexPoint ,mapPoint });
 					}
 					else
-						
-						terminalNodes.insert({ vertexPoint ,mapPoint });
-				}
-				else
-					if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
-						terminalNodes.insert({ vertexPoint ,mapPoint });
+						if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
+							terminalNodes.insert({ vertexPoint ,mapPoint });
 
+				}
 			}
 		}
 	}
@@ -493,6 +533,8 @@ public:
 
 			//вычислим нормаль дл€ каждой плоскости
 			calculatePlanesNormals();
+		
+			buildObjectsMapping(joinablePlanes[0], joinablePlanes[1], this->terminalNodes);
 
 			//ƒл€ каждой точки построили отображение на плоскость
 			buildNewPointntsMap();

@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <iomanip>
+#include <memory>
 #include <unordered_set>
 #include <functional>
 
@@ -68,6 +69,13 @@ struct Point {
 	};
 	double length() {
 		return sqrt(x * x + y * y + z * z);
+	}
+
+	double calculateDistanceToPoint(const Point& otherPoint) const
+	{
+		return sqrt((this->x - otherPoint.x) * (this->x - otherPoint.x)
+			+ (this->y - otherPoint.y) * (this->y - otherPoint.y)
+			+ (this->z - otherPoint.z) * (this->z - otherPoint.z));
 	}
 
 	bool operator==(const Point& other) const
