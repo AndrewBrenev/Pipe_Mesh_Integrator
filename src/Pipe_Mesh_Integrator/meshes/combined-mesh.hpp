@@ -7,10 +7,10 @@
 #include "tridimensional-mesh.hpp"
 #include "pipe-mesh.hpp"
 
+
 template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 private:
-
 
 	using ObjectPlanes = unordered_set<Plane>;
 	using PlanesFrequency = unordered_map<Plane, uint32_t>;
@@ -252,13 +252,14 @@ private:
 			cout << "-- renumbering objects meshes";
 
 			//Полностью сохраним первый объект
-			std::vector<PointType> currentPoints = objectsMeshes[0]->getNodes();
-			std::vector<NetType> currentElems = objectsMeshes[0]->getElems();
-			CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
-			CombinedMesh::coord.insert(CombinedMesh::coord.end(), currentPoints.begin(), currentPoints.end());
+			addObjectToCombinedMesh(*(objectsMeshes[0]));
 
+			std::vector<PointType> currentPoints;
+			std::vector<NetType> currentElems;
 			int start_id;
-			for (int i = 1; i < objectsMeshes.size(); i++) {
+
+			for (int i = 1; i < objectsMeshes.size(); ++i)
+			{
 				currentPoints.clear();
 				currentElems.clear();
 				start_id = CombinedMesh::coord.size();
@@ -276,15 +277,12 @@ private:
 
 				PointType bias(0, 0, 0, start_id);
 				objectsMeshes[i]->moveMesh(bias);
-				std::vector<PointType> currentPoints = objectsMeshes[i]->getNodes();
-				std::vector<NetType> currentElems = objectsMeshes[i]->getElems();
-				delete objectsMeshes[i];
-				CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
-				CombinedMesh::coord.insert(CombinedMesh::coord.end(), currentPoints.begin(), currentPoints.end());
 
+				addObjectToCombinedMesh(*(objectsMeshes[i]));
+
+				delete objectsMeshes[i];
 			}
-			CombinedMesh::setNodesSize(CombinedMesh::coord.size());
-			CombinedMesh::setElemsSize(CombinedMesh::nvtr.size());
+
 			cout << "Done!" << endl;
 
 		}
@@ -433,7 +431,17 @@ private:
 		}
 	}
 	
-
+	void addObjectToCombinedMesh(const TridimensionalMesh<PointType, NetType>& outterMesh)
+	{
+	
+		std::vector<PointType> currentPoints = outterMesh.getNodes();
+		std::vector<NetType> currentElems = outterMesh.getElems();
+		CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
+		CombinedMesh::coord.insert(CombinedMesh::coord.end(), currentPoints.begin(), currentPoints.end());
+		CombinedMesh::setNodesSize(CombinedMesh::coord.size());
+		CombinedMesh::setElemsSize(CombinedMesh::nvtr.size());
+	}
+	
 	void buildDockingElements() {
 		uint32_t start_node_id = CombinedMesh::coord.size();
 		uint32_t start_elem_id = CombinedMesh::nvtr.size();
@@ -533,7 +541,7 @@ public:
 
 			//вычислим нормаль для каждой плоскости
 			calculatePlanesNormals();
-		
+
 			buildObjectsMapping(joinablePlanes[0], joinablePlanes[1], this->terminalNodes);
 
 			//Для каждой точки построили отображение на плоскость
@@ -542,6 +550,9 @@ public:
 			// Строимм новые элементы
 			buildDockingElements();
 		}
+		else
+			addObjectToCombinedMesh(*(objectsMeshes[0]));
+		
 
 		saveResultMesh();
 	};
