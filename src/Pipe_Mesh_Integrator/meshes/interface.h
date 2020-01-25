@@ -6,12 +6,19 @@
 template <class A,class B>
 class  FileFormater;
 
+template <class PointType, class NetType>
+class IntersectionRemover;
+
+template <class PointType, class NetType>
+class MeshIntegrator;
+
 template <class PointType, class NetType> 
 class IMesh {
 private:
 
 	friend FileFormater< PointType, NetType>;
-
+	friend IntersectionRemover < PointType, NetType > ;
+	friend MeshIntegrator < PointType, NetType > ;
 protected:
 	std::vector <PointType> coord;
 	std::vector <NetType> nvtr;	
@@ -63,8 +70,8 @@ public:
 			throw runtime_error("Unable to delete elment with id");
 	};
 
-	std::vector<PointType> getNodes() { return coord; };
-	std::vector<NetType> getElems() { return nvtr; }
+	std::vector<PointType> getNodes() const { return coord; };
+	std::vector<NetType> getElems() const { return nvtr; }
 
 	void moveMesh(PointType O) {
 		for (int i = 0; i < nodes_size; i++) {

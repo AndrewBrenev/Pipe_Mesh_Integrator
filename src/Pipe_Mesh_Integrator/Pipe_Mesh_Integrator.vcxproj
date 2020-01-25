@@ -22,6 +22,8 @@
     <ClInclude Include="formats\flie-format.hpp" />
     <ClInclude Include="formats\glass-format.hpp" />
     <ClInclude Include="formats\reader-creator.hpp" />
+    <ClInclude Include="integration\intersection-remover.hpp" />
+    <ClInclude Include="integration\mesh-integrator.hpp" />
     <ClInclude Include="json-deserializer.hpp" />
     <ClInclude Include="meshes\combined-mesh.hpp" />
     <ClInclude Include="meshes\interface.h" />
