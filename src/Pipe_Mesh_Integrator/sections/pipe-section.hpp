@@ -43,6 +43,12 @@ public:
 		}
 
 	};
+
+	virtual unordered_set<Plane> getPlanesFormingMesh() final {
+
+		unordered_set<Plane> meshPlanes;
+		return  meshPlanes;
+	};
 };
 
 #endif //_PIPE-SECTION_HPP_

@@ -6,6 +6,7 @@
 #include "intersection-remover.hpp"
 
 #define NUMBER_OF_PROCESSED_OBJECTS 2
+#define NUMBER_OF_PLANES_FORMING_ELEMENT 6
 
 template <class PointType,class NetType>
 class MeshIntegrator{
@@ -25,30 +26,7 @@ private:
 		mapCont.insert({ fPnt ,scndPnt });
 	};
 
-	Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
 
-		real Nx, Ny, Nz, D;
-		real a21, a22, a23;
-		real a31, a32, a33;
-
-		a21 = B.x - C.x; a22 = B.y - C.y; a23 = B.z - C.z;
-		a31 = A.x - C.x; a32 = A.y - C.y; a33 = A.z - C.z;
-
-		// ¬ектор нормали к плосткости, в которой происходит поворот
-		Nx = a22 * a33 - a32 * a23;
-		Ny = a23 * a31 - a21 * a33;
-		Nz = a21 * a32 - a22 * a31;
-		double norm = sqrt(Nx * Nx + Ny * Ny + Nz * Nz);
-		Nx /= norm; Ny /= norm; Nz /= norm;
-		D = -C.x * Nx - C.y * Ny - C.z * Nz;
-
-		Plane normal;
-		normal.setNormal(Nx, Ny, Nz, D);
-
-		return normal;
-	}
-
-	
 	void buildObjectsMapping(const ObjectPlanes& mappingSource, const ObjectPlanes& mappingReciver, unordered_map<PointType, PointType>& pointsMap)
 	{
 		ObjectPoints sourcePointsSet = selectAllPointsFormingPlane(mappingSource);
@@ -105,9 +83,7 @@ private:
 		computePlanesFrequency(new_planesFrequency);
 
 		for (int i = 0; i < NUMBER_OF_PROCESSED_OBJECTS; i++) {
-			for (auto planeFr : planesFrequency[i])
-			{
-
+			for (auto planeFr : planesFrequency[i])	{
 				if (new_planesFrequency[i].find(planeFr.first) != new_planesFrequency[i].end() &&
 					planeFr.second != new_planesFrequency[i].at(planeFr.first))
 					joinablePlanes[i].insert(planeFr.first);
@@ -115,8 +91,7 @@ private:
 
 			//≈сли не удал€ли элементы, то записываем внешние плоскости
 			if (!joinablePlanes[i].size()) {
-				for (auto planeFr : planesFrequency[i])
-				{
+				for (auto planeFr : planesFrequency[i])	{
 					if (planeFr.second == 1)
 						joinablePlanes[i].insert(planeFr.first);
 				}
@@ -145,7 +120,7 @@ private:
 		auto allMeshElements = mesh->getElems();
 
 		for (auto element : allMeshElements)
-			for (int j = 0; j < 6; j++) {
+			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j) {
 				auto iteratorElementPlane = frequency.find(element.planes[j]);
 				if (iteratorElementPlane == frequency.end())
 					frequency.insert({ element.planes[j],1 });
@@ -182,7 +157,6 @@ private:
 		cout << "Done!" << endl;
 	};
 
-	
 	void calculatePlanesNormals(const IMesh<PointType, NetType>& combinedMesh)
 	{
 		Plane tmpPlane;
@@ -198,7 +172,7 @@ private:
 				b = plane.getNode(1);
 				c = plane.getNode(2);
 				d = plane.getNode(3);
-				tmpPlane = calculatePlaneNorm(
+				tmpPlane = calculatePlaneNorm<PointType>(
 					combinedMesh.coord[a - 1],
 					combinedMesh.coord[b - 1],
 					combinedMesh.coord[c - 1]
@@ -281,7 +255,6 @@ private:
 		PointType nullPoint;
 		return pair<bool, PointType>(false, nullPoint);
 	};
-
 
 	void buildNewPointsMap() {
 		double a, b, c, d;
@@ -380,7 +353,6 @@ private:
 
 	void addObjectToMesh( const IMesh<PointType, NetType>& outterMesh)
 	{
-
 		std::vector<PointType> currentPoints = outterMesh.getNodes();
 		std::vector<NetType> currentElems = outterMesh.getElems();
 		this->combinedMesh.nvtr.insert(this->combinedMesh.nvtr.end(), currentElems.begin(), currentElems.end());
@@ -406,8 +378,6 @@ public:
 	};
 
 	TridimensionalMesh<PointType, NetType> integrateMeshes() {
-
-		
 
 		computePlanesFrequency(planesFrequency);
 

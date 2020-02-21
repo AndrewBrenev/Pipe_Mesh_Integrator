@@ -3,11 +3,11 @@
 
 
 #include "glass-format.hpp"
+#include  "stl-format.hpp"
 
 
 template <class PointType, class NetType>
 class ReaderCreator {
-
 public:
 	ReaderCreator() {};
 	virtual ~ReaderCreator() {};
@@ -23,7 +23,7 @@ public:
 			cout << meshParams["paths"]["inftry"] << endl << meshParams["paths"]["nver"] << endl
 				<< meshParams["paths"]["nvkat"] << endl << meshParams["paths"]["xyz"] << endl;
 
-			 const vector<string> paths{ meshParams["paths"]["inftry"] ,meshParams["paths"]["nvkat"],meshParams["paths"]["xyz"],meshParams["paths"]["nver"] };
+			const vector<string> paths{ meshParams["paths"]["inftry"] ,meshParams["paths"]["nvkat"],meshParams["paths"]["xyz"],meshParams["paths"]["nver"] };
 
 			reader = new GlassFormat <PointType, NetType>(mesh);
 
@@ -31,7 +31,15 @@ public:
 
 		}
 		else
-			throw runtime_error("Unknown input file format");
+			if (meshParams["format"] == "stl")
+			{
+				cout << meshParams["paths"]["path"] << endl;
+				const vector<string> paths{ meshParams["paths"]["path"] };
+				reader = new StlFormat <PointType, NetType>(mesh);
+				reader->setFilePathes(paths);
+			}
+			else
+				throw runtime_error("Unknown input file format");
 
 		return reader;
 

@@ -3,8 +3,8 @@
 
 #include "../stdafx.h"
 
-template <class A,class B>
-class  FileFormater;
+template <class A, class B>
+class FileFormater;
 
 template <class PointType, class NetType>
 class IntersectionRemover;
@@ -15,8 +15,7 @@ class MeshIntegrator;
 template <class PointType, class NetType> 
 class IMesh {
 private:
-
-	friend FileFormater< PointType, NetType>;
+	friend FileFormater < PointType, NetType>;
 	friend IntersectionRemover < PointType, NetType > ;
 	friend MeshIntegrator < PointType, NetType > ;
 protected:
@@ -89,8 +88,9 @@ public:
 		}
 
 	}
-	
+
 	virtual void buildNet() = 0;
+	virtual unordered_set<Plane> getPlanesFormingMesh() = 0;
 };
 
 #endif

@@ -1,8 +1,7 @@
-#ifndef _TRIDIMENSIONAL_MESH_HPP_
-#define _TRIDIMENSIONAL_MESH_HPP_
+#pragma once
 
+#include "interface.h"
 #include "../formats/reader-creator.hpp"
-
 
 template <class PointType, class NetType>
 class TridimensionalMesh : public IMesh<PointType, NetType> {
@@ -74,14 +73,31 @@ public:
 	TridimensionalMesh() {};
 	virtual ~TridimensionalMesh() {};
 
+	unordered_set<Plane> getPlanesFormingMesh() override {
+
+		unordered_set<Plane> meshPlanes;
+
+		for (auto element : TridimensionalMesh<PointType, NetType>::nvtr)
+			for (int j = 0; j < 6; ++j) {
+
+				auto nodes = element.planes[j].getNodesIds();
+				auto newPlane = calculatePlaneNorm<PointType>(
+					TridimensionalMesh<PointType, NetType>::coord[nodes[0] - 1],
+					TridimensionalMesh<PointType, NetType>::coord[nodes[1] - 1],
+					TridimensionalMesh<PointType, NetType>::coord[nodes[2] - 1]);
+				newPlane.setIds(nodes[0] - 1, nodes[1] - 1, nodes[2] - 1, nodes[3] - 1);
+				meshPlanes.insert(newPlane);
+			}
+		return  meshPlanes;
+	};
 	void buildNet() {
 		if (meshParams["action"] == "build")
 			build3DParapipedalMesh();
 		else
-			if (meshParams["action"] == "read") 
+			if (meshParams["action"] == "read")
 			{
 				ReaderCreator<PointType, NetType> readerCreator;
- 				auto  meshReader = readerCreator.createFormater(meshParams["parameters"],this);
+				auto  meshReader = readerCreator.createFormater(meshParams["parameters"], this);
 				meshReader->readMeshFromFiles();
 			}
 			else
@@ -89,4 +105,3 @@ public:
 	};
 };
 
-#endif

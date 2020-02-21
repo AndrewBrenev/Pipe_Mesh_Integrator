@@ -126,7 +126,7 @@ public:
 	{
 		_A = this->A;	_B = this->B; _C = this->C; _D = this->D;
 	}
-	Point getNormal() {
+	Point getNormal() const {
 		return Point(this->A, this->B, this->C);
 	}
 	Point getInvertNormal() const
@@ -157,6 +157,30 @@ public:
 	void update() {
 		sort(&node[0], &node[4]);
 	};
+};
+
+template <class PointType>
+Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType& C) {
+
+	real Nx, Ny, Nz, D;
+	real a21, a22, a23;
+	real a31, a32, a33;
+
+	a21 = B.x - C.x; a22 = B.y - C.y; a23 = B.z - C.z;
+	a31 = A.x - C.x; a32 = A.y - C.y; a33 = A.z - C.z;
+
+	// Вектор нормали к плосткости, в которой происходит поворот
+	Nx = a22 * a33 - a32 * a23;
+	Ny = a23 * a31 - a21 * a33;
+	Nz = a21 * a32 - a22 * a31;
+	double norm = sqrt(Nx * Nx + Ny * Ny + Nz * Nz);
+	Nx /= norm; Ny /= norm; Nz /= norm;
+	D = -C.x * Nx - C.y * Ny - C.z * Nz;
+
+	Plane normal;
+	normal.setNormal(Nx, Ny, Nz, D);
+
+	return normal;
 };
 
 
