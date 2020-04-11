@@ -4,28 +4,29 @@
 #include "../meshes/interface.h"
 #include "../meshes/tridimensional-mesh.hpp"
 #include "intersection-remover.hpp"
-
-#define NUMBER_OF_PROCESSED_OBJECTS 2
-#define NUMBER_OF_PLANES_FORMING_ELEMENT 6
+#include "../analytic-geometry.hpp"
 
 template <class PointType,class NetType>
 class MeshIntegrator{
 private:
-
 	using ObjectPlanes = unordered_set<Plane>;
 	using ObjectPoints =  unordered_set<PointType>;
 	using PlanesFrequency = unordered_map<Plane, uint32_t>;
-
-	
-	IMesh<PointType, NetType>* souceMesh;
-	IMesh<PointType, NetType>* integrableMesh;
+		
+	TridimensionalMesh<PointType, NetType>& souceMesh;
+	TridimensionalMesh<PointType, NetType>& integrableMesh;
 	TridimensionalMesh<PointType, NetType> combinedMesh;
 	IntersectionRemover<PointType, NetType> intersectionRemover{ souceMesh ,integrableMesh };
+
+	vector<ObjectPlanes> joinablePlanes;
+	vector<PlanesFrequency> planesFrequency;
+
+	unordered_map<PointType, PointType> bindingNodesMap;
+	vector<PointType> terminalNodes;
 
 	void inserPointMapping(const PointType& fPnt, const PointType& scndPnt, unordered_map<PointType, PointType>& mapCont) {
 		mapCont.insert({ fPnt ,scndPnt });
 	};
-
 
 	void buildObjectsMapping(const ObjectPlanes& mappingSource, const ObjectPlanes& mappingReciver, unordered_map<PointType, PointType>& pointsMap)
 	{
@@ -115,9 +116,9 @@ private:
 
 	};
 
-	void camputePlanesFrequencyForMesh(IMesh<PointType, NetType>* mesh, PlanesFrequency& frequency) {
+	void camputePlanesFrequencyForMesh(TridimensionalMesh<PointType, NetType>& mesh, PlanesFrequency& frequency) {
 	
-		auto allMeshElements = mesh->getElems();
+		auto allMeshElements = mesh.getElems();
 
 		for (auto element : allMeshElements)
 			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j) {
@@ -133,10 +134,10 @@ private:
 
 		cout << "-- renumbering objects meshes";
 
-		addObjectToMesh( *souceMesh);
+		addObjectToMesh(souceMesh);
 		
 		// ---- интегрируемый объект перенумеруем и сохраним
-		int start_id = souceMesh->getNodesSize();
+		int start_id = souceMesh.getNodesSize();
 
 		// Обработаем плоскости
 		ObjectPlanes samePlanesWithNewIds;
@@ -149,15 +150,15 @@ private:
 		samePlanesWithNewIds.clear();
 		
 		//Перенумеруем интегрируемый объект
-		integrableMesh->moveMesh(Point(0, 0, 0, start_id));
+		integrableMesh.moveMesh(Point(0, 0, 0, start_id));
 
 		
-		addObjectToMesh(*integrableMesh);
+		addObjectToMesh(integrableMesh);
 
 		cout << "Done!" << endl;
 	};
 
-	void calculatePlanesNormals(const IMesh<PointType, NetType>& combinedMesh)
+	void calculatePlanesNormals(const TridimensionalMesh<PointType, NetType>& combinedMesh)
 	{
 		Plane tmpPlane;
 		uint32_t a, b, c, d;
@@ -191,7 +192,7 @@ private:
 	bool findProectionPoint(const PointType& pointFromTheOtherSide, const PointType& direction, PointType& pointOfIntersection) {
 
 		for (auto plane : joinablePlanes[0]) {
-			auto checkResult = checkPlaneAndRayIntersection(pointFromTheOtherSide, direction, plane);
+			auto checkResult = checkPlaneAndRayIntersection(this->combinedMesh, pointFromTheOtherSide, direction, plane);
 			if (checkResult.first) {
 				pointOfIntersection = checkResult.second;
 				return true;
@@ -200,63 +201,7 @@ private:
 		return false;
 	};
 
-	pair<bool, PointType> checkPlaneAndRayIntersection(const PointType& rayBegin, const PointType& rayDirection, const Plane& plane)
-	{
-		double a, b, c, d;
-
-		plane.getNormal(a, b, c, d);
-
-		double tDenominator = a * rayDirection.x + b * rayDirection.y + c * rayDirection.z;
-
-		if (abs(tDenominator) > 1e-6)
-		{
-
-			double tNumerator = rayBegin.x * a + rayBegin.y * b + rayBegin.z * c + d;
-
-			double t = -tNumerator / tDenominator;
-			if (t > 0)
-			{
-
-				PointType intersectPoint(
-					rayBegin.x + t * rayDirection.x,
-					rayBegin.y + t * rayDirection.y,
-					rayBegin.z + t * rayDirection.z);
-
-				PointType planeNodeA = this->combinedMesh.coord[plane.getNode(0) - 1];
-				PointType planeNodeB = this->combinedMesh.coord[plane.getNode(1) - 1];
-				PointType planeNodeC = this->combinedMesh.coord[plane.getNode(2) - 1];
-				PointType planeNodeD = this->combinedMesh.coord[plane.getNode(3) - 1];
-
-				// Определим принадлежность через сумму углов
-				PointType vectA(planeNodeA.x - intersectPoint.x, planeNodeA.y - intersectPoint.y, planeNodeA.z - intersectPoint.z);
-				PointType vectB(planeNodeB.x - intersectPoint.x, planeNodeB.y - intersectPoint.y, planeNodeB.z - intersectPoint.z);
-				PointType vectC(planeNodeC.x - intersectPoint.x, planeNodeC.y - intersectPoint.y, planeNodeC.z - intersectPoint.z);
-				PointType vectD(planeNodeD.x - intersectPoint.x, planeNodeD.y - intersectPoint.y, planeNodeD.z - intersectPoint.z);
-
-				double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
-				double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
-				double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
-				double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
-
-				double phiAB = acos(cosAB);
-				double phiAC = acos(cosAC);
-				double phiBD = acos(cosBD);
-				double phiCD = acos(cosCD);
-
-				double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
-				if (eps < 1e-2)
-				{
-					return pair<bool, PointType>(true, intersectPoint);
-				}
-				else
-					return pair<bool, PointType>(false, intersectPoint);
-			}
-		}
-		PointType nullPoint;
-		return pair<bool, PointType>(false, nullPoint);
-	};
-
-	void buildNewPointsMap() {
+	void bindObjects() {
 		double a, b, c, d;
 		for (auto plane : joinablePlanes[1])
 		{
@@ -269,7 +214,7 @@ private:
 			{
 				PointType vertexPoint = this->combinedMesh.coord[plane.getNode(planeNode) - 1];
 
-				if (this->terminalNodes.find(vertexPoint) == this->terminalNodes.end()) {
+				if (this->bindingNodesMap.find(vertexPoint) == this->bindingNodesMap.end()) {
 					if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
 					{
 
@@ -282,26 +227,43 @@ private:
 							double firstPath = oldDistance.length();
 							double secondPath = newDistance.length();
 							if (firstPath < secondPath)
-								terminalNodes.insert({ vertexPoint ,mapPoint });
+								bindingNodesMap.insert({ vertexPoint ,mapPoint });
 							else
 
-								terminalNodes.insert({ vertexPoint ,otherDirection });
+								bindingNodesMap.insert({ vertexPoint ,otherDirection });
 						}
 						else
 
-							terminalNodes.insert({ vertexPoint ,mapPoint });
+							bindingNodesMap.insert({ vertexPoint ,mapPoint });
 					}
 					else
 						if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
-							terminalNodes.insert({ vertexPoint ,mapPoint });
+							bindingNodesMap.insert({ vertexPoint ,mapPoint });
 
 				}
 			}
 		}
 	};
 
-	void buildDockingElements() {
+	void renumberTerminalNodes() {
 		uint32_t start_node_id = this->combinedMesh.coord.size();
+		uint32_t t_nodes_count = 0;
+
+		for (auto mapElem = bindingNodesMap.begin() ; mapElem != bindingNodesMap.end(); mapElem++)
+			if (!mapElem->second.id) {
+				mapElem->second.setId(start_node_id + t_nodes_count);
+				terminalNodes.push_back(mapElem->second);
+				t_nodes_count++;
+			}
+
+		terminalNodes.shrink_to_fit();
+
+		for (auto node : terminalNodes)
+			this->combinedMesh.coord.push_back(node);
+		this->combinedMesh.setNodesSize(this->combinedMesh.coord.size());
+	};
+
+	void buildDockingElements() {
 		uint32_t start_elem_id = this->combinedMesh.nvtr.size();
 
 		size_t planeNodes[4];
@@ -312,30 +274,22 @@ private:
 			planeNodes[1] = plane.getNode(1);
 			planeNodes[2] = plane.getNode(2);
 			planeNodes[3] = plane.getNode(3);
-			auto iteratorFirstPlaneNode = terminalNodes.find(this->combinedMesh.coord[planeNodes[0] - 1]);
-			auto iteratorSecondPlaneNode = terminalNodes.find(this->combinedMesh.coord[planeNodes[1] - 1]);
-			auto iteratorThirdPlaneNode = terminalNodes.find(this->combinedMesh.coord[planeNodes[2] - 1]);
-			auto iteratorFourthPlaneNode = terminalNodes.find(this->combinedMesh.coord[planeNodes[3] - 1]);
+			auto iteratorFirstPlaneNode = bindingNodesMap.find(this->combinedMesh.coord[planeNodes[0] - 1]);
+			auto iteratorSecondPlaneNode = bindingNodesMap.find(this->combinedMesh.coord[planeNodes[1] - 1]);
+			auto iteratorThirdPlaneNode = bindingNodesMap.find(this->combinedMesh.coord[planeNodes[2] - 1]);
+			auto iteratorFourthPlaneNode = bindingNodesMap.find(this->combinedMesh.coord[planeNodes[3] - 1]);
 
 			// 
-			if (iteratorFirstPlaneNode != terminalNodes.end() &&
-				iteratorSecondPlaneNode != terminalNodes.end() &&
-				iteratorThirdPlaneNode != terminalNodes.end() &&
-				iteratorFourthPlaneNode != terminalNodes.end())
+			if (iteratorFirstPlaneNode != bindingNodesMap.end() &&
+				iteratorSecondPlaneNode != bindingNodesMap.end() &&
+				iteratorThirdPlaneNode != bindingNodesMap.end() &&
+				iteratorFourthPlaneNode != bindingNodesMap.end())
 			{
-				iteratorFirstPlaneNode->second.setId(start_node_id);
-				iteratorSecondPlaneNode->second.setId(start_node_id + 1);
-				iteratorThirdPlaneNode->second.setId(start_node_id + 2);
-				iteratorFourthPlaneNode->second.setId(start_node_id + 3);
-
-				this->combinedMesh.coord.push_back(iteratorFirstPlaneNode->second);
-				this->combinedMesh.coord.push_back(iteratorSecondPlaneNode->second);
-				this->combinedMesh.coord.push_back(iteratorThirdPlaneNode->second);
-				this->combinedMesh.coord.push_back(iteratorFourthPlaneNode->second);
-
+				
 				NetType N(
 					planeNodes[0], planeNodes[1], planeNodes[2], planeNodes[3],
-					start_node_id + 1, start_node_id + 2, start_node_id + 3, start_node_id + 4,
+					iteratorFirstPlaneNode->second.id + 1, iteratorSecondPlaneNode->second.id + 1,
+					iteratorThirdPlaneNode->second.id + 1, iteratorFourthPlaneNode->second.id + 1,
 					start_elem_id,
 					1
 				);
@@ -344,14 +298,12 @@ private:
 				this->combinedMesh.nvtr.push_back(N);
 
 				start_elem_id++;
-				start_node_id += 4;
 			}
 		}
-		this->combinedMesh.setNodesSize(this->combinedMesh.coord.size());
 		this->combinedMesh.setElemsSize(this->combinedMesh.nvtr.size());
 	};
 
-	void addObjectToMesh( const IMesh<PointType, NetType>& outterMesh)
+	void addObjectToMesh( const TridimensionalMesh<PointType, NetType>& outterMesh)
 	{
 		std::vector<PointType> currentPoints = outterMesh.getNodes();
 		std::vector<NetType> currentElems = outterMesh.getElems();
@@ -362,26 +314,21 @@ private:
 	};
 
 public:
-
-	vector<ObjectPlanes> joinablePlanes;
-	vector<PlanesFrequency> planesFrequency;
-
-	unordered_map<PointType, PointType> terminalNodes;
-
-	void setSourseMesh(IMesh<PointType, NetType> * _souceMesh)
+	vector<PointType> getTerminalNodes() const {return terminalNodes; };
+	void setSourseMesh(TridimensionalMesh<PointType, NetType>& _souceMesh)
 	{
 		this->souceMesh = _souceMesh;
 	};
-	void setIntegrableMesh(IMesh<PointType, NetType> * _integrableMesh)
+	void setIntegrableMesh(TridimensionalMesh<PointType, NetType> & _integrableMesh)
 	{
 		this->integrableMesh = _integrableMesh;
 	};
-
 	TridimensionalMesh<PointType, NetType> integrateMeshes() {
 
 		computePlanesFrequency(planesFrequency);
 
 		intersectionRemover.removeOverlappingFE();
+
 
 		identifyBoundaryPlanes();
 
@@ -391,21 +338,23 @@ public:
 		//вычислим нормаль для каждой плоскости
 		calculatePlanesNormals(this->combinedMesh);
 
-		buildObjectsMapping(joinablePlanes[0], joinablePlanes[1], this->terminalNodes);
+		if (intersectionRemover.isMeshesCollided()) {
 
-		//Для каждой точки построили отображение на плоскость
-		buildNewPointsMap();
+			// построим отображение внешних точек интегрируемого объекта на уже существующие вершины
+			buildObjectsMapping(joinablePlanes[0], joinablePlanes[1], this->bindingNodesMap);
 
-		// Строимм новые элементы
-		buildDockingElements();
+			//Для каждой точки построили отображение на плоскость
+			bindObjects();
 
+			// Перенумеровать терминальные узлы
+			renumberTerminalNodes();
+			// Строимм новые элементы
+			buildDockingElements();
+		}
 		return this->combinedMesh;
 	};
 
-	MeshIntegrator(IMesh<PointType, NetType> * _souceMesh, IMesh<PointType, NetType> * _integrableMesh) : souceMesh(_souceMesh), integrableMesh(_integrableMesh)
-	{
-
-	};
+	MeshIntegrator(TridimensionalMesh<PointType, NetType>& _souceMesh, TridimensionalMesh<PointType, NetType>& _integrableMesh) : souceMesh(_souceMesh), integrableMesh(_integrableMesh) {	};
 	MeshIntegrator() {	};
 	~MeshIntegrator() {};
 	};

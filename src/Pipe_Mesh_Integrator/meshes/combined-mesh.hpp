@@ -7,27 +7,35 @@
 #include "tridimensional-mesh.hpp"
 #include "pipe-mesh.hpp"
 
-
 #include "../integration/mesh-integrator.hpp"
-
+#include "../t-matrix.hpp"
+#include "../t-matrix-saver.hpp"
 
 template <class PointType, class NetType>
 class CombinedMesh : public TridimensionalMesh<PointType, NetType> {
 private:
 
 	json outputInfo;
-
+	T_Matrix<PointType, NetType> t_matrix;
 	vector<TridimensionalMesh<PointType, NetType>*> objectsMeshes;
 
 	void combineObjects() {
-		MeshIntegrator<PointType, NetType> integrator(objectsMeshes[0], objectsMeshes[1]);
-		auto integratedMesh = integrator.integrateMeshes();
+		MeshIntegrator<PointType, NetType> integrator((*objectsMeshes[0]), *objectsMeshes[1]);
+ 		auto integratedMesh = integrator.integrateMeshes();
 		addObjectToCombinedMesh(integratedMesh);
+		this->locateMeshPlanes();
+		processTerminalNodes(integrator);
+	}
+
+	void processTerminalNodes(const MeshIntegrator<PointType, NetType>& integrator) {
+		auto tNodes = integrator.getTerminalNodes();	
+
+		t_matrix.formTerminalMatrix(this,IMesh< PointType, NetType>::getNodesSize() - tNodes.size(),tNodes);
+
 	}
 
 	void addObjectToCombinedMesh(const TridimensionalMesh<PointType, NetType>& outterMesh)
 	{
-
 		std::vector<PointType> currentPoints = outterMesh.getNodes();
 		std::vector<NetType> currentElems = outterMesh.getElems();
 		CombinedMesh::nvtr.insert(CombinedMesh::nvtr.end(), currentElems.begin(), currentElems.end());
@@ -35,24 +43,58 @@ private:
 		CombinedMesh::setNodesSize(CombinedMesh::coord.size());
 		CombinedMesh::setElemsSize(CombinedMesh::nvtr.size());
 	}
-
-	void saveResultMesh() {
-
-		cout << "Saving Combined Mesh into files: " << endl;
-
+	
+	void saveMesh() {
 		ReaderCreator<PointType, NetType> readerCreator;
 		auto  meshReader = readerCreator.createFormater(outputInfo["mesh"], this);
 		meshReader->saveMeshToFiles();
+	};
 
-		cout << "Done! " << endl;
+	void saveBoundary() {
+		FirstBoundariesSaver firstBoundariesSaver(this->firstBoundaryNodes);
+		firstBoundariesSaver.saveFirstBoundaryNodesToFile(outputInfo["boundary"]["first"]);
+	};
+
+	void saveTmatrix() {
+		T_MatrixSaver<PointType, NetType> tMatrixSaver(&t_matrix);
+		vector<string> files =
+		{ outputInfo["t-matrix"]["paths"]["params"],outputInfo["t-matrix"]["paths"]["ig"],
+			outputInfo["t-matrix"]["paths"]["jg"],outputInfo["t-matrix"]["paths"]["gg"] };
+		tMatrixSaver.setFilePathes(files);
+		tMatrixSaver.saveMatrixToFiles();
+	};
+
+	void saveResults()
+	{
+		cout << "Saving Combined Mesh into files: " << endl;
+		saveMesh();
+		saveBoundary();
+		//saveTmatrix();
+
+ 		cout << "Done! " << endl;
 	}
+
 public:
 	CombinedMesh(json input) {
 
 		outputInfo = input["output"];
+		int declaredObjectsCount  = input["incoming"]["objects_count"];
+		auto actualObjectsCount = input["incoming"]["objects"].size();
+		int workObjectsCount = declaredObjectsCount;
 
-		objectsMeshes.reserve(input["incoming"]["objects_count"]);
-		objectsMeshes.resize(input["incoming"]["objects_count"]);
+		// Objects count checks
+		if (!actualObjectsCount) throw std::range_error("Empty list of objects!");
+		if (declaredObjectsCount > actualObjectsCount) {
+			cout <<endl <<"Warning: Declared objects count is grater than actual. Programm will work with actual count? but it might lead to incorrect resault!" << endl<<endl;
+			workObjectsCount = actualObjectsCount;
+		}
+		if ( actualObjectsCount > declaredObjectsCount ) 
+			cout << endl<<"Warning: Actual objects count is grater than declared. Programm will work with DECLARED objects count. It might lead to incorrect resault!" << endl;
+		
+		
+		
+		objectsMeshes.reserve(workObjectsCount);
+		objectsMeshes.resize(workObjectsCount);
 
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			string current_object_type = input["incoming"]["objects"][i]["type"];
@@ -76,13 +118,16 @@ public:
 #pragma omp parallel for
 		for (int i = 0; i < objectsMeshes.size(); i++)
 			objectsMeshes[i]->buildNet();
-
+		
+		
 		if (objectsMeshes.size() > 1) 
 			combineObjects();
 		else
 			addObjectToCombinedMesh(*(objectsMeshes[0]));
 		
-		saveResultMesh();
+		this->getFirstBoundaryNodes();
+		
+		saveResults(); 
 	};
 };
 #endif

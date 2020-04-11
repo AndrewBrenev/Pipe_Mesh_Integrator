@@ -22,15 +22,21 @@
     <Filter Include="Файлы заголовков\parts">
       <UniqueIdentifier>{0c26c60e-889b-42cf-9ccb-5ccdf8bca0e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\savers">
+      <UniqueIdentifier>{597e2f5d-7100-4719-9df4-189d63df03ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\savers\formats">
+      <UniqueIdentifier>{0b487e6f-36aa-4efc-95b3-2323d4fe9d4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\integration">
+      <UniqueIdentifier>{943e19b0-32c4-46a1-994e-a1e2cecc0092}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vect.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="json-deserializer.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="meshes\combined-mesh.hpp">
@@ -61,21 +67,39 @@
       <Filter>Файлы заголовков\sections</Filter>
     </ClInclude>
     <ClInclude Include="meshes\interface.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\meshes</Filter>
     </ClInclude>
-    <ClInclude Include="formats\flie-format.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="formats\glass-format.hpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="formats\stl-format.hpp">
+      <Filter>Файлы заголовков\savers\formats</Filter>
     </ClInclude>
     <ClInclude Include="formats\reader-creator.hpp">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\savers\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="json-deserializer.hpp">
+      <Filter>Файлы заголовков\savers\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="formats\flie-format.hpp">
+      <Filter>Файлы заголовков\savers\formats</Filter>
     </ClInclude>
     <ClInclude Include="integration\intersection-remover.hpp">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\integration</Filter>
     </ClInclude>
     <ClInclude Include="integration\mesh-integrator.hpp">
+      <Filter>Файлы заголовков\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="formats\glass-format.hpp">
+      <Filter>Файлы заголовков\savers\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="t-matrix.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="first-boundaries-saver.hpp">
+      <Filter>Файлы заголовков\savers</Filter>
+    </ClInclude>
+    <ClInclude Include="t-matrix-saver.hpp">
+      <Filter>Файлы заголовков\savers</Filter>
+    </ClInclude>
+    <ClInclude Include="analytic-geometry.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -72,6 +72,9 @@
         "xyz": "../../external-libs/glass/test/xyz.dat"
       }
     },
+	"boundary":{
+	"first":"boundary.txt"
+	},
     "t-matrix": {
       "format": "CSR",
       "paths": {

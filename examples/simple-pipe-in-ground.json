@@ -1,7 +1,29 @@
 {
   "incoming": {
-    "objects_count": 1,
+    "objects_count": 2,
     "objects": [
+	   {
+        "type": "Outer",
+        "action": "build",
+        "parameters": {
+          "material-id": 1,
+          "X": {
+            "min": -10,
+            "max": 10,
+            "h": 2
+          },
+          "Y": {
+            "min": 0,
+            "max": 1,
+            "h": 1
+          },
+          "Z": {
+            "min": -5,
+            "max": 5,
+            "h": 2
+          }
+        }
+      },
         {
         "type": "Tube",
         "action": "build",
@@ -12,18 +34,18 @@
               {
                 "from": {
                     "x": 0,
-                    "y": 0,
+                    "y": -0.1,
                     "z": 0
                 },
                 "to": {
                     "x": 0,
-                    "y": 1, 
+                    "y": 1.1, 
                     "z": 0
                 },
-                "splits": 3,
+                "splits": 1,
                 "cut": {
                   "type": "circle",
-                  "splits": 2,
+                  "splits": 4,
                   "inner-material-id": 0,
                   "R": 1,
                   "layers-count": 1,
@@ -36,6 +58,7 @@
                   ]
                 }
               }
+	
             ]
           },
           "turns": {
@@ -49,6 +72,7 @@
   },
   "output": {
     "mesh": {
+  "format": "stl",
       "format": "Glass",
       "paths": {
         "inftry": "../../external-libs/glass/test/inftry.dat",
@@ -58,7 +82,7 @@
       }
     },
 	"boundary":{
-	"first":"../../external-libs/glass/test/boundary.txt"
+	"first":"boundary.txt"
 	},
     "t-matrix": {
       "format": "CSR",

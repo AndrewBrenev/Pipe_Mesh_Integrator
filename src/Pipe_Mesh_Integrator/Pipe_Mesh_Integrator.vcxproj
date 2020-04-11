@@ -19,9 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="analytic-geometry.hpp" />
+    <ClInclude Include="first-boundaries-saver.hpp" />
+    <ClInclude Include="t-matrix-saver.hpp" />
     <ClInclude Include="formats\flie-format.hpp" />
     <ClInclude Include="formats\glass-format.hpp" />
     <ClInclude Include="formats\reader-creator.hpp" />
+    <ClInclude Include="formats\stl-format.hpp" />
     <ClInclude Include="integration\intersection-remover.hpp" />
     <ClInclude Include="integration\mesh-integrator.hpp" />
     <ClInclude Include="json-deserializer.hpp" />
@@ -36,6 +40,7 @@
     <ClInclude Include="sections\round-section.hpp" />
     <ClInclude Include="sections\rectangle-section.hpp" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="t-matrix.hpp" />
     <ClInclude Include="vect.hpp" />
   </ItemGroup>
   <ItemGroup>

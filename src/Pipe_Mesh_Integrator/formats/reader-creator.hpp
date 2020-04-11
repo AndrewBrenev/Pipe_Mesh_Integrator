@@ -5,6 +5,9 @@
 #include "glass-format.hpp"
 #include  "stl-format.hpp"
 
+#include "../first-boundaries-saver.hpp"
+#include "../t-matrix-saver.hpp"
+
 
 template <class PointType, class NetType>
 class ReaderCreator {

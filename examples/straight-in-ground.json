@@ -110,6 +110,7 @@
     "t-matrix": {
       "format": "CSR",
       "paths": {
+	  "params":"./T-matrix/params.txt",
         "ig": "./T-matrix/ig.txt",
         "jg": "./T-matrix/jg.txt",
         "gg": "./T-matrix/gg.txt"

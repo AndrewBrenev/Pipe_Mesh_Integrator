@@ -57,8 +57,8 @@ public:
 	size_t getNodesSize() { return nodes_size; };
 	size_t getElemsSize() { return el_size; };
 
-	PointType getNode(u_int i) { return coord[i]; };
-	NetType getElem(u_int i) { return nvtr[i]; };
+	PointType getNode(u_int i) const { return coord[i]; };
+	NetType getElem(u_int i) const { return nvtr[i]; };
 
 	void deleteElem(const uint32_t id) {
 		if (id < el_size) {

@@ -18,8 +18,6 @@ public:
 
 template <class PointType, class NetType>
 class TubePart : public TridimensionalMesh<PointType, NetType> {
-private:
-
 protected:
 
 	sort_coord_vector <PointType> sort_coord_vect;	//Класс для сортировки
@@ -119,6 +117,7 @@ protected:
 			return new RoundeSection<PointType, NVTR_2D>();
 	}
 public:
+
 	TubePart(){
 		cut = nullptr;
 	};

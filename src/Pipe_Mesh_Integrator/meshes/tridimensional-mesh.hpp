@@ -2,12 +2,49 @@
 
 #include "interface.h"
 #include "../formats/reader-creator.hpp"
+#define EMPTY_ELEMENT_VALUE  18446744073709551615
 
 template <class PointType, class NetType>
 class TridimensionalMesh : public IMesh<PointType, NetType> {
 protected: 
+	unordered_set<Plane> meshPlanes;
+	unordered_set<Edge> meshEdges;
+	vector<size_t> firstBoundaryNodes;
+
 	json meshParams;
 private:
+
+	template <typename T ,typename ContainerT> 
+	void insertValueIntoContainer(T& value, ContainerT& container)
+	{
+		auto elementIterator = container.find(value);
+		if (elementIterator == container.end())
+			container.insert(value);
+	};
+
+	void locateBoundaryNodes() {
+		vector<size_t> nodesFrequency(TridimensionalMesh<PointType, NetType>::coord.size());
+		firstBoundaryNodes.resize(TridimensionalMesh<PointType, NetType>::coord.size(), EMPTY_ELEMENT_VALUE);
+		
+		for (auto element : TridimensionalMesh<PointType, NetType>::nvtr)
+			for (int j = 0; j < 8; ++j)
+				nodesFrequency[element.n[j] - 1] += 1;
+
+		for (size_t i = 0, j = 0; i < nodesFrequency.size(); ++i)
+			if (nodesFrequency[i] <= 4) {
+				firstBoundaryNodes[j] = i;
+				j++;
+			}
+
+		for (size_t i = 0, j = 0; i < firstBoundaryNodes.size();)
+			if (firstBoundaryNodes[i] != EMPTY_ELEMENT_VALUE)
+				++i;
+			else
+				firstBoundaryNodes.erase(firstBoundaryNodes.begin() + i);
+			
+
+		firstBoundaryNodes.shrink_to_fit();
+	};
 	void build3DParapipedalMesh() {
 
 		cout << "Building Tridementional Outter Mesh" << endl;
@@ -44,12 +81,12 @@ private:
 					{
 						NetType N(
 							(k + 1) * (nX + 1) + (i + 1) + j * el_layer + 1,
-							k * (nX + 1) + (i + 1) + j * el_layer + 1,
 							(k + 1) * (nX + 1) + i + j * el_layer + 1,
+							k * (nX + 1) + (i + 1) + j * el_layer + 1,
 							k * (nX + 1) + i + j * el_layer + 1,
 							(k + 1) * (nX + 1) + (i + 1) + (j + 1) * el_layer + 1,
-							k * (nX + 1) + (i + 1) + (j + 1) * el_layer + 1,
 							(k + 1) * (nX + 1) + i + (j + 1) * el_layer + 1,
+							k * (nX + 1) + (i + 1) + (j + 1) * el_layer + 1,
 							k * (nX + 1) + i + (j + 1) * el_layer + 1,
 							t_el,
 							meshParams["parameters"]["material-id"]
@@ -66,6 +103,19 @@ private:
 
 		cout << "Done!" << endl;
 	};
+	void locateMeshEdges() {
+		for (auto plane : meshPlanes) {
+
+			Edge firstEdge(plane.getNode(0), plane.getNode(1)), secondEdge(plane.getNode(0), plane.getNode(2)),
+				thirdEdge(plane.getNode(1), plane.getNode(3)), fourthEdge(plane.getNode(2), plane.getNode(3));
+
+			insertValueIntoContainer(firstEdge, meshEdges);
+			insertValueIntoContainer(secondEdge, meshEdges);
+			insertValueIntoContainer(thirdEdge, meshEdges);
+			insertValueIntoContainer(fourthEdge, meshEdges);
+
+		}
+	};
 public:
 	TridimensionalMesh(json inputParams) {
 		meshParams = inputParams;
@@ -73,13 +123,11 @@ public:
 	TridimensionalMesh() {};
 	virtual ~TridimensionalMesh() {};
 
-	unordered_set<Plane> getPlanesFormingMesh() override {
-
+	virtual unordered_set<Plane> getPlanesFormingMesh() override {
 		unordered_set<Plane> meshPlanes;
-
 		for (auto element : TridimensionalMesh<PointType, NetType>::nvtr)
-			for (int j = 0; j < 6; ++j) {
-
+			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j)
+			{
 				auto nodes = element.planes[j].getNodesIds();
 				auto newPlane = calculatePlaneNorm<PointType>(
 					TridimensionalMesh<PointType, NetType>::coord[nodes[0] - 1],
@@ -90,6 +138,26 @@ public:
 			}
 		return  meshPlanes;
 	};
+
+	void locateMeshPlanes() {
+		for (auto element : this->nvtr)
+			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j)
+				insertValueIntoContainer(element.planes[j], meshPlanes);
+	};
+	
+	unordered_set<Edge> getMeshEdges() {
+		if (meshEdges.empty())
+			locateMeshEdges();
+		return meshEdges;
+	}
+	vector<size_t> getFirstBoundaryNodes()
+	{
+		if (!firstBoundaryNodes.size())
+			locateBoundaryNodes();
+
+		return firstBoundaryNodes;
+	}
+
 	void buildNet() {
 		if (meshParams["action"] == "build")
 			build3DParapipedalMesh();
