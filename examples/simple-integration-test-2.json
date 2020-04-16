@@ -50,7 +50,7 @@
 				"cut":{
 				 
   "type": "circle",
-  "splits": 3,
+  "splits": 6,
   "inner-material-id": 0,
   "R": 0.6,
   "layers-count": 1,

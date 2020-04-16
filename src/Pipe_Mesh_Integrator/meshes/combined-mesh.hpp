@@ -23,13 +23,12 @@ private:
 		MeshIntegrator<PointType, NetType> integrator((*objectsMeshes[0]), *objectsMeshes[1]);
  		auto integratedMesh = integrator.integrateMeshes();
 		addObjectToCombinedMesh(integratedMesh);
-		this->locateMeshPlanes();
-		processTerminalNodes(integrator);
+		this->locateMeshPlanes();  
+		//processTerminalNodes(integrator);
 	}
 
 	void processTerminalNodes(const MeshIntegrator<PointType, NetType>& integrator) {
-		auto tNodes = integrator.getTerminalNodes();	
-
+		auto tNodes = integrator.getTerminalNodes();
 		t_matrix.formTerminalMatrix(this,IMesh< PointType, NetType>::getNodesSize() - tNodes.size(),tNodes);
 
 	}
@@ -115,9 +114,11 @@ public:
 
 		cout << "Building the combined mesh: " << endl;
 
-#pragma omp parallel for
-		for (int i = 0; i < objectsMeshes.size(); i++)
+//#pragma omp parallel for
+		for (int i = 0; i < objectsMeshes.size(); i++) {
 			objectsMeshes[i]->buildNet();
+			objectsMeshes[i]->calculatePlanes();
+		}
 		
 		
 		if (objectsMeshes.size() > 1) 

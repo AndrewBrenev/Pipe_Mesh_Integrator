@@ -123,20 +123,18 @@ public:
 	TridimensionalMesh() {};
 	virtual ~TridimensionalMesh() {};
 
-	virtual unordered_set<Plane> getPlanesFormingMesh() override {
-		unordered_set<Plane> meshPlanes;
-		for (auto element : TridimensionalMesh<PointType, NetType>::nvtr)
+	void calculatePlanes() {
+		for (int i = 0; i < this->getElemsSize(); i++) {
+			this->nvtr[i].calculatePlanesNormals <PointType>(*this);
 			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j)
-			{
-				auto nodes = element.planes[j].getNodesIds();
-				auto newPlane = calculatePlaneNorm<PointType>(
-					TridimensionalMesh<PointType, NetType>::coord[nodes[0] - 1],
-					TridimensionalMesh<PointType, NetType>::coord[nodes[1] - 1],
-					TridimensionalMesh<PointType, NetType>::coord[nodes[2] - 1]);
-				newPlane.setIds(nodes[0] - 1, nodes[1] - 1, nodes[2] - 1, nodes[3] - 1);
-				meshPlanes.insert(newPlane);
-			}
-		return  meshPlanes;
+				meshPlanes.insert(this->nvtr[i].planes[j]);
+		}
+	};
+
+	virtual unordered_set<Plane> getPlanesFormingMesh() override {
+		if (!meshPlanes.size())
+			this->calculatePlanes();
+		return meshPlanes;
 	};
 
 	void locateMeshPlanes() {

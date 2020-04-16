@@ -158,6 +158,7 @@ private:
 		cout << "Done!" << endl;
 	};
 
+	// useless procedure
 	void calculatePlanesNormals(const TridimensionalMesh<PointType, NetType>& combinedMesh)
 	{
 		Plane tmpPlane;
@@ -210,10 +211,14 @@ private:
 
 			PointType otherDirection; PointType mapPoint;
 
-			for (int planeNode = 0; planeNode < 4; planeNode++)
+			for (int planeNode = 0; planeNode < NUMBER_OF_NODES_FORMING_PLANE; planeNode++)
 			{
 				PointType vertexPoint = this->combinedMesh.coord[plane.getNode(planeNode) - 1];
 
+				if (this->bindingNodesMap.find(vertexPoint) == this->bindingNodesMap.end() &&
+					findProectionPoint(vertexPoint, vertexDirection, mapPoint))
+					bindingNodesMap.insert({ vertexPoint ,mapPoint });
+				/* Вариант с взятием инвертированногой плоскости
 				if (this->bindingNodesMap.find(vertexPoint) == this->bindingNodesMap.end()) {
 					if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
 					{
@@ -240,7 +245,7 @@ private:
 						if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
 							bindingNodesMap.insert({ vertexPoint ,mapPoint });
 
-				}
+				}*/
 			}
 		}
 	};
@@ -250,7 +255,7 @@ private:
 		uint32_t t_nodes_count = 0;
 
 		for (auto mapElem = bindingNodesMap.begin() ; mapElem != bindingNodesMap.end(); mapElem++)
-			if (!mapElem->second.id) {
+			if ( mapElem->second.id == 0) {
 				mapElem->second.setId(start_node_id + t_nodes_count);
 				terminalNodes.push_back(mapElem->second);
 				t_nodes_count++;
@@ -336,7 +341,7 @@ public:
 		renumberAndCombineMeshes();
 
 		//вычислим нормаль для каждой плоскости
-		calculatePlanesNormals(this->combinedMesh);
+		//calculatePlanesNormals(this->combinedMesh);
 
 		if (intersectionRemover.isMeshesCollided()) {
 

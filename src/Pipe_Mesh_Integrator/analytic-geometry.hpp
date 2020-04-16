@@ -25,33 +25,6 @@ Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType
 	return normal;
 };
 
-template <class PointType>
-bool checkPointBelongToPlane(const Plane& plane, const PointType* planeNodes, const PointType& point) {
-	   
-	// Определим принадлежность через сумму углов
-	PointType vectA(planeNodes[0].x - point.x, planeNodes[0].y - point.y, planeNodes[0].z - point.z);
-	PointType vectB(planeNodes[1].x - point.x, planeNodes[1].y - point.y, planeNodes[1].z - point.z);
-	PointType vectC(planeNodes[2].x - point.x, planeNodes[2].y - point.y, planeNodes[2].z - point.z);
-	PointType vectD(planeNodes[3].x - point.x, planeNodes[3].y - point.y, planeNodes[3].z - point.z);
-
-	double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
-	double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
-	double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
-	double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
-
-	double phiAB = acos(cosAB);
-	double phiAC = acos(cosAC);
-	double phiBD = acos(cosBD);
-	double phiCD = acos(cosCD);
-
-	double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
-
-	return (eps < 1e-2) ? true : false;
-}
-
-template <class PointType, class NetType>
-class TridimensionalMesh;
-
 template <class PointType,class NetType>
 bool checkPointForBelongingToEdge(const TridimensionalMesh<PointType, NetType>& meshToOperate,const Edge edge, PointType x) {
 
@@ -72,7 +45,29 @@ bool checkPointForBelongingToEdge(const TridimensionalMesh<PointType, NetType>& 
 		return false;
 }
 
+template <class PointType>
+bool checkPointBelongToPlane(const Plane& plane, const PointType* planeNodes, const PointType& point) {
 
+	// Определим принадлежность через сумму углов
+	PointType vectA(planeNodes[0].x - point.x, planeNodes[0].y - point.y, planeNodes[0].z - point.z);
+	PointType vectB(planeNodes[1].x - point.x, planeNodes[1].y - point.y, planeNodes[1].z - point.z);
+	PointType vectC(planeNodes[2].x - point.x, planeNodes[2].y - point.y, planeNodes[2].z - point.z);
+	PointType vectD(planeNodes[3].x - point.x, planeNodes[3].y - point.y, planeNodes[3].z - point.z);
+
+	double cosAB = (vectA.x * vectB.x + vectA.y * vectB.y + vectA.z * vectB.z) / (vectA.length() * vectB.length());
+	double cosAC = (vectA.x * vectC.x + vectA.y * vectC.y + vectA.z * vectC.z) / (vectA.length() * vectC.length());
+	double cosBD = (vectB.x * vectD.x + vectB.y * vectD.y + vectB.z * vectD.z) / (vectB.length() * vectD.length());
+	double cosCD = (vectC.x * vectD.x + vectC.y * vectD.y + vectC.z * vectD.z) / (vectC.length() * vectD.length());
+
+	double phiAB = acos(cosAB);
+	double phiAC = acos(cosAC);
+	double phiBD = acos(cosBD);
+	double phiCD = acos(cosCD);
+
+	double eps = abs(2 * M_PI - (phiAB + phiAC + phiBD + phiCD));
+
+	return (eps < 1e-2) ? true : false;
+}
 
 template <class PointType, class NetType>
 pair<bool, PointType> checkPlaneAndRayIntersection(const TridimensionalMesh<PointType, NetType>& mesh, const PointType& rayBegin, const PointType& rayDirection, const Plane& plane)
@@ -110,3 +105,21 @@ pair<bool, PointType> checkPlaneAndRayIntersection(const TridimensionalMesh<Poin
 	PointType nullPoint;
 	return pair<bool, PointType>(false, nullPoint);
 };
+
+template <class PointType>
+bool isPlaneAndRayIntersection(const PointType& rayBegin, const PointType& rayDirection, const Plane& plane)
+{
+	double a, b, c, d;
+	plane.getNormal(a, b, c, d);
+
+	double tDenominator = a * rayDirection.x + b * rayDirection.y + c * rayDirection.z;
+
+	if (abs(tDenominator) > 1e-6)
+	{
+		double tNumerator = rayBegin.x * a + rayBegin.y * b + rayBegin.z * c + d;
+
+		double t = -tNumerator / tDenominator;
+		return (t >= 0) ? true : false;
+	}
+	return false;
+}

@@ -20,37 +20,18 @@ private:
 	bool checkBoxCollider( NetType  sourceFE,  NetType  integrableFE) const {
 		bool colliderFlag = false;
 		int intersectionCount = 0;
-		PointType aPoint, bPoint, cPoint, dPoint;
-
-		for (int i = 0; i < NUMBER_OF_PLANES_FORMING_ELEMENT && !colliderFlag; i++) {
-
-			aPoint = souceMesh.getNode(sourceFE.planes[i].getNode(0) - 1);
-			bPoint = souceMesh.getNode(sourceFE.planes[i].getNode(1) - 1);
-			cPoint = souceMesh.getNode(sourceFE.planes[i].getNode(2) - 1);
-			sourceFE.planes[i].calculateNorm(aPoint, bPoint, cPoint);
-
+		PointType rayDirection(1,0,0);
+		PointType tmpNode;
+		for (int i = 0; i < NUMBER_OF_NODES_FORMING_ELEMENT && !colliderFlag; i++) {
 			intersectionCount = 0;
+			tmpNode = integrableMesh.getNode(integrableFE.n[i] - 1);
 			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; j++) {
-				 aPoint = integrableMesh.getNode(integrableFE.planes[j].getNode(0) - 1);
-				 bPoint = integrableMesh.getNode(integrableFE.planes[j].getNode(1) - 1);
-				 cPoint = integrableMesh.getNode(integrableFE.planes[j].getNode(2) - 1);
-				 dPoint = integrableMesh.getNode(integrableFE.planes[j].getNode(3) - 1);
-				PointType centerPoint(
-					(aPoint.x + bPoint.x + cPoint.x + dPoint.x) / 4.,
-					(aPoint.y + bPoint.y + cPoint.y + dPoint.y) / 4.,
-					(aPoint.z + bPoint.z + cPoint.z + dPoint.z) / 4.);
-
-				auto planeNorm = calculatePlaneNorm<PointType>(aPoint, bPoint, cPoint);
-				PointType norm = planeNorm.getNormal();
-
-				auto intersection = checkPlaneAndRayIntersection<PointType, NetType>(souceMesh, centerPoint, norm, sourceFE.planes[i]);
+				auto intersection = checkPlaneAndRayIntersection<PointType, NetType>(souceMesh, tmpNode, rayDirection, sourceFE.planes[j]);
 				if (intersection.first) intersectionCount++;
 			}
-			if (intersectionCount % 2 != 0) 
+			if (intersectionCount % 2 != 0)
 				colliderFlag = true;
-
 		}
-
 		return colliderFlag;
 	};
 
@@ -148,8 +129,8 @@ public:
 			int k = 0;
 			for (; k < innerElSize && !deleteFlag; k++) {
 				pair<PointType, real> inner = countFeCenterPoint(integrableMesh.getElem(k), false);
-				//extraFlag = checkBoxCollider(souceMesh.getElem(j), integrableMesh.getElem(k));
 				deleteFlag = checkSphereCollider(inner, outter) && checkBoxCollider(souceMesh.getElem(j), integrableMesh.getElem(k));
+				//deleteFlag = checkSphereCollider(inner, outter);
 			}
 
 			if (deleteFlag) {

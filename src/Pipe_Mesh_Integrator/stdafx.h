@@ -25,6 +25,7 @@
 
 
 #define NUMBER_OF_PROCESSED_OBJECTS 2
+#define NUMBER_OF_NODES_FORMING_PLANE 4
 #define NUMBER_OF_PLANES_FORMING_ELEMENT 6
 #define NUMBER_OF_NODES_FORMING_ELEMENT 8
 
@@ -146,7 +147,6 @@ public:
 		a21 = B.x - C.x; a22 = B.y - C.y; a23 = B.z - C.z;
 		a31 = A.x - C.x; a32 = A.y - C.y; a33 = A.z - C.z;
 
-		// ¬ектор нормали к плосткости, в которой происходит поворот
 		Nx = a22 * a33 - a32 * a23;
 		Ny = a23 * a31 - a21 * a33;
 		Nz = a21 * a32 - a22 * a31;
@@ -154,7 +154,7 @@ public:
 		this->A = Nx / norm;
 		this->B = Ny / norm;
 		this->C = Nz / norm;
-		this->D = -C.x * Nx - C.y * Ny - C.z * Nz;
+		this->D = -C.x * this->A - C.y * this->B - C.z * this->C;
 	};
 	void setNormal(double _A, double _B, double _C, double _D) {
 		this->A = _A;	this->B = _B; this->C = _C; this->D = _D;
@@ -181,6 +181,7 @@ public:
 		this->A *= -1;
 		this->B *= -1;
 		this->C *= -1;
+		this->D *= -1;
 	}
 
 	constexpr const size_t* getNodesIds() const
@@ -209,6 +210,7 @@ namespace std {
 		size_t operator()(const Plane& plane) const
 		{
 			auto points = plane.getNodesIds();
+			//sort(&points[0], &points[4]);
 			string number_string = to_string(points[0]) + to_string(points[1]) + to_string(points[2]) + to_string(points[3]);
 			hash<string> value;
 			return value(number_string);
@@ -257,6 +259,12 @@ namespace std {
 	};
 }
 
+template <class PointType, class NetType>
+class TridimensionalMesh;
+
+template <class PointType>
+bool isPlaneAndRayIntersection(const PointType& rayBegin, const PointType& rayDirection, const Plane& plane);
+
 class NVTR {
 public:
 	//массив глобальных номаров вершин  Ё
@@ -281,12 +289,34 @@ public:
 		id = i; material = ma;
 	};
 	void buildPlanes() {
-		planes[0] = Plane(n[0], n[1], n[2], n[3]);
-		planes[1] = Plane(n[4], n[5], n[6], n[7]);
-		planes[2] = Plane(n[0], n[1], n[4], n[5]);
-		planes[3] = Plane(n[1], n[3], n[5], n[7]);
-		planes[4] = Plane(n[2], n[3], n[6], n[7]);
-		planes[5] = Plane(n[0], n[2], n[4], n[6]);
+		planes[0] = Plane(n[0], n[1], n[2], n[3]);  //	Front
+		planes[1] = Plane(n[4], n[5], n[6], n[7]);	//	Back
+		planes[2] = Plane(n[1], n[0], n[5], n[4]);	//	Top
+		planes[3] = Plane(n[3], n[2], n[7], n[6]);	//	Bottom
+		planes[4] = Plane(n[4], n[0], n[6], n[2]);	//	Right
+		planes[5] = Plane(n[5], n[1], n[7], n[3]);	//	Left
+	}
+
+	template<typename PointType>
+	void calculatePlanesNormals(TridimensionalMesh<PointType, NVTR>& mesh) {
+		PointType nodes[NUMBER_OF_NODES_FORMING_ELEMENT];
+
+		for (int i = 0; i < NUMBER_OF_NODES_FORMING_ELEMENT; i++)
+			nodes[i] = mesh.getNode(n[i] - 1);
+
+		planes[0].calculateNorm(nodes[0], nodes[1], nodes[2]);
+		planes[1].calculateNorm(nodes[4], nodes[5], nodes[6]);
+		planes[2].calculateNorm(nodes[1], nodes[0], nodes[5]);
+		planes[3].calculateNorm(nodes[2], nodes[3], nodes[6]);
+		planes[4].calculateNorm(nodes[4], nodes[0], nodes[2]);
+		planes[5].calculateNorm(nodes[1], nodes[3], nodes[5]);
+
+		if (isPlaneAndRayIntersection <PointType>(nodes[0], planes[0].getNormal(), planes[1]))	planes[0].invert();
+		if (isPlaneAndRayIntersection <PointType>(nodes[1], planes[1].getNormal(), planes[0]))	planes[1].invert();
+		if (isPlaneAndRayIntersection <PointType>(nodes[2], planes[2].getNormal(), planes[3]))	planes[2].invert();
+		if (isPlaneAndRayIntersection <PointType>(nodes[3], planes[3].getNormal(), planes[2]))	planes[3].invert();
+		if (isPlaneAndRayIntersection <PointType>(nodes[4], planes[4].getNormal(), planes[5]))	planes[4].invert();
+		if (isPlaneAndRayIntersection <PointType>(nodes[5], planes[5].getNormal(), planes[4]))	planes[5].invert();
 	}
 };
 
