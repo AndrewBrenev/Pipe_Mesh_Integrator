@@ -29,9 +29,9 @@ public:
         fprintf(file, "%d %d\n", t_matrix->getMeshNodesCount(), columsCount);
         fclose(file);
 
-        FILE* ig_file = fopen(params.c_str(), "w");
-        FILE* jg_file = fopen(params.c_str(), "w");
-        FILE* gg_file = fopen(params.c_str(), "w");
+        FILE* ig_file = fopen(ig.c_str(), "w");
+        FILE* jg_file = fopen(jg.c_str(), "w");
+        FILE* gg_file = fopen(gg.c_str(), "w");
 
         int ig_counter = 0;
         for (int i = 0; i < columsCount; ++i) {

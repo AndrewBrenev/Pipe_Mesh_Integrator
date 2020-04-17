@@ -34,35 +34,33 @@ TridimensionalMesh<PointType, NetType>* meshToOperate;
 		PointType A = meshToOperate->getNode(edge.getFirst() - 1);
 		PointType B = meshToOperate->getNode(edge.getSecond() - 1);
 
-		double a_value = A.calculateDistanceToPoint(tPoint) / A.calculateDistanceToPoint(A);
-		double b_value = B.calculateDistanceToPoint(tPoint) / A.calculateDistanceToPoint(A);
+		double a_value = A.calculateDistanceToPoint(tPoint) / A.calculateDistanceToPoint(B);
+		double b_value = B.calculateDistanceToPoint(tPoint) / A.calculateDistanceToPoint(B);
 		return make_pair(a_value, b_value);
 	}
 
-	void createTerminaledges() {
+	void createTerminalEdges() {
 	};
 	void findEdgeContainingTnodes() {
 		auto meshEdges = meshToOperate->getMeshEdges();
-		for (auto tNode : terminalMatrix)
+		for (int i = 0; i < terminalMatrix.size(); i++)
 		{
-			PointType tPoint = meshToOperate->getNode(tNode.id);
+			PointType tPoint = meshToOperate->getNode(terminalMatrix[i].id);
 			bool edgeFound = false;
 			for (auto edge = meshEdges.begin(); edge != meshEdges.end() && !edgeFound; edge++)
 				if (checkPointForBelongingToEdge<PointType, NetType>(*meshToOperate, *edge, tPoint)) {
 					auto distances = calculateTvalue(*edge, tPoint);
-					tNode.terminalRows.push_back(make_pair(edge->getFirst() - 1, distances.first));
-					tNode.terminalRows.push_back(make_pair(edge->getSecond() - 1, distances.second));
+					terminalMatrix[i].terminalRows.push_back(make_pair(edge->getFirst() - 1, distances.first));
+					terminalMatrix[i].terminalRows.push_back(make_pair(edge->getSecond() - 1, distances.second));
 					edgeFound = true;
 				}
 
-
-
 			if (!edgeFound)
-				unedgedNodes.push_back(tNode);
+				unedgedNodes.push_back(terminalMatrix[i]);
 		}
 
 		if (unedgedNodes.size())
-			createTerminaledges();
+			createTerminalEdges();
 
 	};
 
@@ -80,6 +78,10 @@ public:
 		findEdgeContainingTnodes();
 
 	};
+
+	bool meshHasTnodes() {
+		return !terminalMatrix.empty();
+	}
 	size_t getMeshNodesCount() { return nodesSize; };
 	size_t getTerminalNodesCount() { return terminalMatrix.size(); };
 	T_Point getColumn(size_t j) {

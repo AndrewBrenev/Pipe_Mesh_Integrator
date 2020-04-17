@@ -25,24 +25,26 @@ Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType
 	return normal;
 };
 
+bool checPointBelongingToSegment(real p, real a, real b) {
+	if (a - b) {
+		if (a<b){
+			return (p >= a && p <= b) ? true : false;
+		}
+		else 
+			return (p >= b && p <= a) ? true : false;
+	}
+	else return true;
+}
+
 template <class PointType,class NetType>
-bool checkPointForBelongingToEdge(const TridimensionalMesh<PointType, NetType>& meshToOperate,const Edge edge, PointType x) {
+bool checkPointForBelongingToEdge(const TridimensionalMesh<PointType, NetType>& meshToOperate, const Edge edge, PointType x) {
 
 	PointType A = meshToOperate.getNode(edge.getFirst() - 1);
 	PointType B = meshToOperate.getNode(edge.getSecond() - 1);
 
-	PointType dirVector(A.x - B.x, A.y - B.y, A.z - B.z);
-	double lambda(0);
-	double lX = (x.x - B.x) / dirVector.x,
-		lY = (x.y - B.y) / dirVector.y,
-		lZ = (x.z - B.z) / dirVector.z;
-
-	if (abs(lX - lY) < math_eps && abs(lX - lZ) < math_eps && abs(lZ - lY) < math_eps) {
-		lambda = lX;
-		return (lambda > 0 && lambda < 1);
-	}
-	else
-		return false;
+	return checPointBelongingToSegment(x.x, A.x, B.x)
+		&& checPointBelongingToSegment(x.y, A.y, B.y)
+		&& checPointBelongingToSegment(x.z, A.z, B.z);
 }
 
 template <class PointType>

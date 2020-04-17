@@ -197,7 +197,7 @@ private:
 			b = start_ind + i * (n + 1) + n;
 			c = number_of_layers * n * 4 + n + i + 1;
 			d = start_ind + (i + 1) * (n + 1) + n;
-			NetType A4(b, a, d, c, RoundeSection::innner_material_id);
+			NetType A4(a, c, b, d, RoundeSection::innner_material_id);
 			nv.push_back(A4);
 
 			//по низу
@@ -205,7 +205,7 @@ private:
 			b = start_ind + (n + 1) * (n + 1) - 1 - i;
 			c = number_of_layers * n * 4 + 2 * n + i + 1;
 			d = start_ind + (n + 1) * (n + 1) - 1 - (i + 1);
-			NetType A5(d, b, c, a, RoundeSection::innner_material_id);
+			NetType A5(a, c, b, d, RoundeSection::innner_material_id);
 			nv.push_back(A5);
 
 			// По правой стенке
@@ -214,7 +214,7 @@ private:
 				4 * n * number_of_layers;
 			c = start_ind + (n + 1) * (i + 1);
 			d = (number_of_layers + 1) * 4 * n - (i + 1);
-			NetType A6(b, a, d, c, RoundeSection::innner_material_id);
+			NetType A6(d, b, c, a, RoundeSection::innner_material_id);
 			nv.push_back(A6);
 		}
 		nv.shrink_to_fit();

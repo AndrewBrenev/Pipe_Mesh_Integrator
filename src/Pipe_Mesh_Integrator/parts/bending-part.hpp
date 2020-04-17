@@ -119,8 +119,6 @@ public:
 		IMesh<PointType, NetType>::setNodesSize(BendingPart::coord.size());
 		IMesh<PointType, NetType>::setElemsSize(BendingPart::nvtr.size());
 
-		//IMesh<PointType, NetType>::writeMeshInGlassFormatIntoFiles("../../Glass/Test/inftry.dat", "../../Glass/Test/nvkat.dat",
-		//	"../../Glass/Test/xyz.dat", "../../Glass/Test/nver.dat");
 	};
 	
 };

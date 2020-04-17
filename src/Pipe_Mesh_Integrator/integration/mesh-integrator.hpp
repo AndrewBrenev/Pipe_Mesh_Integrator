@@ -158,38 +158,6 @@ private:
 		cout << "Done!" << endl;
 	};
 
-	// useless procedure
-	void calculatePlanesNormals(const TridimensionalMesh<PointType, NetType>& combinedMesh)
-	{
-		Plane tmpPlane;
-		uint32_t a, b, c, d;
-
-		for (int i = 0; i < joinablePlanes.size(); ++i)
-		{
-			ObjectPlanes new_planes;
-
-			for (auto plane : joinablePlanes[i])
-			{
-				a = plane.getNode(0);
-				b = plane.getNode(1);
-				c = plane.getNode(2);
-				d = plane.getNode(3);
-				tmpPlane = calculatePlaneNorm<PointType>(
-					combinedMesh.coord[a - 1],
-					combinedMesh.coord[b - 1],
-					combinedMesh.coord[c - 1]
-				);
-
-				tmpPlane.setIds(a, b, c, d);
-				new_planes.insert(tmpPlane);
-			}
-
-			joinablePlanes[i].clear();
-			joinablePlanes[i] = new_planes;
-			new_planes.clear();
-		}
-	};
-
 	bool findProectionPoint(const PointType& pointFromTheOtherSide, const PointType& direction, PointType& pointOfIntersection) {
 
 		for (auto plane : joinablePlanes[0]) {
@@ -207,9 +175,7 @@ private:
 		for (auto plane : joinablePlanes[1])
 		{
 			PointType vertexDirection = plane.getNormal();
-			PointType invertVertexDirection = plane.getInvertNormal();
-
-			PointType otherDirection; PointType mapPoint;
+			PointType mapPoint;
 
 			for (int planeNode = 0; planeNode < NUMBER_OF_NODES_FORMING_PLANE; planeNode++)
 			{
@@ -218,34 +184,6 @@ private:
 				if (this->bindingNodesMap.find(vertexPoint) == this->bindingNodesMap.end() &&
 					findProectionPoint(vertexPoint, vertexDirection, mapPoint))
 					bindingNodesMap.insert({ vertexPoint ,mapPoint });
-				/* Вариант с взятием инвертированногой плоскости
-				if (this->bindingNodesMap.find(vertexPoint) == this->bindingNodesMap.end()) {
-					if (findProectionPoint(vertexPoint, vertexDirection, mapPoint))
-					{
-
-						if (findProectionPoint(vertexPoint, invertVertexDirection, otherDirection))
-						{
-
-							PointType oldDistance(mapPoint.x - vertexPoint.x, mapPoint.y - vertexPoint.y, mapPoint.z - vertexPoint.z);
-							PointType newDistance(otherDirection.x - vertexPoint.x, otherDirection.y - vertexPoint.y, otherDirection.z - vertexPoint.z);
-
-							double firstPath = oldDistance.length();
-							double secondPath = newDistance.length();
-							if (firstPath < secondPath)
-								bindingNodesMap.insert({ vertexPoint ,mapPoint });
-							else
-
-								bindingNodesMap.insert({ vertexPoint ,otherDirection });
-						}
-						else
-
-							bindingNodesMap.insert({ vertexPoint ,mapPoint });
-					}
-					else
-						if (findProectionPoint(vertexPoint, invertVertexDirection, mapPoint))
-							bindingNodesMap.insert({ vertexPoint ,mapPoint });
-
-				}*/
 			}
 		}
 	};
@@ -339,10 +277,7 @@ public:
 
 		// Перенумеруем полученные объекты и построим выходную сетку.
 		renumberAndCombineMeshes();
-
-		//вычислим нормаль для каждой плоскости
-		//calculatePlanesNormals(this->combinedMesh);
-
+		 
 		if (intersectionRemover.isMeshesCollided()) {
 
 			// построим отображение внешних точек интегрируемого объекта на уже существующие вершины
@@ -359,6 +294,9 @@ public:
 		return this->combinedMesh;
 	};
 
+	bool meshHasTnodes() {
+		return !terminalNodes.empty();
+	}
 	MeshIntegrator(TridimensionalMesh<PointType, NetType>& _souceMesh, TridimensionalMesh<PointType, NetType>& _integrableMesh) : souceMesh(_souceMesh), integrableMesh(_integrableMesh) {	};
 	MeshIntegrator() {	};
 	~MeshIntegrator() {};

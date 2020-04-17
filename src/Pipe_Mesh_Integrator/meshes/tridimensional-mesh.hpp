@@ -123,7 +123,7 @@ public:
 	TridimensionalMesh() {};
 	virtual ~TridimensionalMesh() {};
 
-	void calculatePlanes() {
+	void locateMeshPlanes() {
 		for (int i = 0; i < this->getElemsSize(); i++) {
 			this->nvtr[i].calculatePlanesNormals <PointType>(*this);
 			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j)
@@ -133,16 +133,10 @@ public:
 
 	virtual unordered_set<Plane> getPlanesFormingMesh() override {
 		if (!meshPlanes.size())
-			this->calculatePlanes();
+			this->locateMeshPlanes();
 		return meshPlanes;
 	};
 
-	void locateMeshPlanes() {
-		for (auto element : this->nvtr)
-			for (int j = 0; j < NUMBER_OF_PLANES_FORMING_ELEMENT; ++j)
-				insertValueIntoContainer(element.planes[j], meshPlanes);
-	};
-	
 	unordered_set<Edge> getMeshEdges() {
 		if (meshEdges.empty())
 			locateMeshEdges();

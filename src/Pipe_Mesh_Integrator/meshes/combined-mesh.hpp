@@ -21,16 +21,16 @@ private:
 
 	void combineObjects() {
 		MeshIntegrator<PointType, NetType> integrator((*objectsMeshes[0]), *objectsMeshes[1]);
- 		auto integratedMesh = integrator.integrateMeshes();
+		auto integratedMesh = integrator.integrateMeshes();
 		addObjectToCombinedMesh(integratedMesh);
-		this->locateMeshPlanes();  
-		//processTerminalNodes(integrator);
+		this->locateMeshPlanes();
+		if (integrator.meshHasTnodes())
+			processTerminalNodes(integrator);
 	}
 
 	void processTerminalNodes(const MeshIntegrator<PointType, NetType>& integrator) {
 		auto tNodes = integrator.getTerminalNodes();
 		t_matrix.formTerminalMatrix(this,IMesh< PointType, NetType>::getNodesSize() - tNodes.size(),tNodes);
-
 	}
 
 	void addObjectToCombinedMesh(const TridimensionalMesh<PointType, NetType>& outterMesh)
@@ -68,9 +68,10 @@ private:
 		cout << "Saving Combined Mesh into files: " << endl;
 		saveMesh();
 		saveBoundary();
-		//saveTmatrix();
+		if (t_matrix.meshHasTnodes())
+			saveTmatrix();
 
- 		cout << "Done! " << endl;
+		cout << "Done! " << endl;
 	}
 
 public:
@@ -114,14 +115,14 @@ public:
 
 		cout << "Building the combined mesh: " << endl;
 
-//#pragma omp parallel for
+#pragma omp parallel for
 		for (int i = 0; i < objectsMeshes.size(); i++) {
 			objectsMeshes[i]->buildNet();
-			objectsMeshes[i]->calculatePlanes();
+			objectsMeshes[i]->locateMeshPlanes();
 		}
 		
 		
-		if (objectsMeshes.size() > 1) 
+ 		if (objectsMeshes.size() > 1) 
 			combineObjects();
 		else
 			addObjectToCombinedMesh(*(objectsMeshes[0]));

@@ -164,7 +164,6 @@ public:
 		node[1] = b;
 		node[2] = c;
 		node[3] = d;
-		//	sort(&node[0], &node[4]);
 	}
 	void getNormal(double& _A, double& _B, double& _C, double& _D)  const
 	{
@@ -209,8 +208,13 @@ namespace std {
 	{
 		size_t operator()(const Plane& plane) const
 		{
-			auto points = plane.getNodesIds();
-			//sort(&points[0], &points[4]);
+			size_t points[4];
+			auto planePoints = plane.getNodesIds();
+			points[0] = planePoints[0];
+			points[1] = planePoints[1];
+			points[2] = planePoints[2];
+			points[3] = planePoints[3];
+			sort(&points[0], &points[4]);
 			string number_string = to_string(points[0]) + to_string(points[1]) + to_string(points[2]) + to_string(points[3]);
 			hash<string> value;
 			return value(number_string);
@@ -221,13 +225,20 @@ namespace std {
 	template <>
 	struct equal_to <Plane> { // functor for operator==
 		constexpr bool operator()(const Plane& _Left, const Plane& _Right) const {
+
 			auto l_points = _Left.getNodesIds();
 			auto r_points = _Right.getNodesIds();
 
-			return l_points[0] == r_points[0] &&
-				l_points[1] == r_points[1] &&
-				l_points[2] == r_points[2] &&
-				l_points[3] == r_points[3];
+			bool globalFlag(true);
+			
+			for (int i = 0; i < NUMBER_OF_NODES_FORMING_PLANE && globalFlag; i++) {
+				bool flag = false;
+				for (int j = 0; j < NUMBER_OF_NODES_FORMING_PLANE && !flag; j++)
+					if (l_points[i] == r_points[j])
+						flag = true;
+				globalFlag = globalFlag && flag;
+			}
+			return globalFlag;
 		}
 	};
 

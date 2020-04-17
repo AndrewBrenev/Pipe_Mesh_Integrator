@@ -50,7 +50,7 @@
 				"cut":{
 				 
   "type": "circle",
-  "splits": 6,
+  "splits": 2,
   "inner-material-id": 0,
   "R": 0.6,
   "layers-count": 1,
@@ -58,7 +58,7 @@
     {
       "d": 0.2,
       "material-id": 2,
-      "splits": 2
+      "splits": 1
     }
   ]
 }
@@ -91,6 +91,7 @@
     "t-matrix": {
       "format": "CSR",
       "paths": {
+	  "params": "./T-matrix/params.txt",
         "ig": "./T-matrix/ig.txt",
         "jg": "./T-matrix/jg.txt",
         "gg": "./T-matrix/gg.txt"
