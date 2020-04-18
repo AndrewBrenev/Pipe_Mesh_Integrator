@@ -15,7 +15,7 @@
           "Y": {
             "min": 0,
             "max": 2,
-            "h": 2
+            "h": 0.5
           },
           "Z": {
             "min": -5,
@@ -46,11 +46,11 @@
                     "z": 0
                   
                 },
-                "splits": 1,
+                "splits": 4,
 				"cut":{
 				 
   "type": "circle",
-  "splits": 2,
+  "splits": 4,
   "inner-material-id": 0,
   "R": 0.6,
   "layers-count": 1,
@@ -58,7 +58,7 @@
     {
       "d": 0.2,
       "material-id": 2,
-      "splits": 1
+      "splits": 2
     }
   ]
 }
