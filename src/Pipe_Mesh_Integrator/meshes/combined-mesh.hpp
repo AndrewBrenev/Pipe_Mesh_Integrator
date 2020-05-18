@@ -22,6 +22,10 @@ private:
 	void combineObjects() {
 		MeshIntegrator<PointType, NetType> integrator((*objectsMeshes[0]), *objectsMeshes[1]);
 		auto integratedMesh = integrator.integrateMeshes();
+
+		//get second boundaries
+		this->secondBoundaryPlanes = integrator.getTypeOutterPlanes();
+
 		addObjectToCombinedMesh(integratedMesh);
 		this->locateMeshPlanes();
 		if (integrator.meshHasTnodes())
@@ -52,6 +56,9 @@ private:
 	void saveBoundary() {
 		FirstBoundariesSaver firstBoundariesSaver(this->firstBoundaryNodes);
 		firstBoundariesSaver.saveFirstBoundaryNodesToFile(outputInfo["boundary"]["first"]);
+
+		SecondBoundariesSaver secondBoundariesSaver(this->secondBoundaryPlanes);
+		secondBoundariesSaver.saveSecondBoundaryNodesToFile(outputInfo["boundary"]["second"]);
 	};
 
 	void saveTmatrix() {

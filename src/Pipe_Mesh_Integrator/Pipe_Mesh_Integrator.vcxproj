@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="analytic-geometry.hpp" />
     <ClInclude Include="first-boundaries-saver.hpp" />
+    <ClInclude Include="second-boundaries-saver.hpp" />
     <ClInclude Include="t-matrix-saver.hpp" />
     <ClInclude Include="formats\flie-format.hpp" />
     <ClInclude Include="formats\glass-format.hpp" />

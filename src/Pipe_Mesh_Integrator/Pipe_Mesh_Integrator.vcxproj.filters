@@ -102,6 +102,9 @@
     <ClInclude Include="analytic-geometry.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="second-boundaries-saver.hpp">
+      <Filter>Файлы заголовков\savers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

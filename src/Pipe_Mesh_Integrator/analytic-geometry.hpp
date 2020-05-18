@@ -27,13 +27,14 @@ Plane calculatePlaneNorm(const PointType& A, const PointType& B, const PointType
 
 bool checPointBelongingToSegment(real p, real a, real b) {
 	if (a - b) {
-		if (a<b){
+		if (a < b) {
 			return (p >= a && p <= b) ? true : false;
 		}
-		else 
+		else
 			return (p >= b && p <= a) ? true : false;
 	}
-	else return true;
+	else
+		return (a == p) ? true : false;
 }
 
 template <class PointType,class NetType>
@@ -42,9 +43,11 @@ bool checkPointForBelongingToEdge(const TridimensionalMesh<PointType, NetType>& 
 	PointType A = meshToOperate.getNode(edge.getFirst() - 1);
 	PointType B = meshToOperate.getNode(edge.getSecond() - 1);
 
-	return checPointBelongingToSegment(x.x, A.x, B.x)
+	return  (x != A && x != B) ?
+		checPointBelongingToSegment(x.x, A.x, B.x)
 		&& checPointBelongingToSegment(x.y, A.y, B.y)
-		&& checPointBelongingToSegment(x.z, A.z, B.z);
+		&& checPointBelongingToSegment(x.z, A.z, B.z) :
+		false;
 }
 
 template <class PointType>

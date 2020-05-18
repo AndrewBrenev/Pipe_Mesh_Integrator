@@ -14,7 +14,6 @@ public:
 
 	void saveFirstBoundaryNodesToFile(const string& filePath)
 	{
-		//inftry
 		FILE* b = fopen(filePath.c_str(), "w");
 		fprintf(b, "%d\n", nodesIds.size());
 		for (size_t node : nodesIds)

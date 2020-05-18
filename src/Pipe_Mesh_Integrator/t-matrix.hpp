@@ -61,9 +61,7 @@ TridimensionalMesh<PointType, NetType>* meshToOperate;
 
 		if (unedgedNodes.size())
 			createTerminalEdges();
-
 	};
-
 
 public:
 	T_Matrix() {};
@@ -76,7 +74,6 @@ public:
 		setTerminalNodes(tNodes);
 
 		findEdgeContainingTnodes();
-
 	};
 
 	bool meshHasTnodes() {

@@ -87,6 +87,11 @@ struct Point {
 	{
 		return (this->id == other.id);
 	}
+
+	bool operator!=(const Point& other) const
+	{
+		return (this->x != other.x || this->y != other.y || this->z != other.z);
+	}
 };
 
 struct T_Point

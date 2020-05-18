@@ -50,9 +50,9 @@
 				"cut":{
 				 
   "type": "circle",
-  "splits": 4,
+  "splits": 5,
   "inner-material-id": 0,
-  "R": 0.6,
+  "R": 0.8,
   "layers-count": 1,
   "layers": [
     {
@@ -79,22 +79,23 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "inftry": "../../external-libs/glass/test/inftry.dat",
-        "nver": "../../external-libs/glass/test/nver.dat",
-        "nvkat": "../../external-libs/glass/test/nvkat.dat",
-        "xyz": "../../external-libs/glass/test/xyz.dat"
+        "inftry": "../../output/mesh/inftry.dat",
+        "nver": "../../output/mesh/nver.dat",
+        "nvkat": "../../output/mesh/nvkat.dat",
+        "xyz": "../../output/mesh/xyz.dat"
       }
     },
 	"boundary":{
-	"first":"boundary.txt"
+	"first":"../../output/first_boundary.txt",
+	"second":"../../output/second_boundary.txt"
 	},
     "t-matrix": {
       "format": "CSR",
       "paths": {
-	  "params": "./T-matrix/params.txt",
-        "ig": "./T-matrix/ig.txt",
-        "jg": "./T-matrix/jg.txt",
-        "gg": "./T-matrix/gg.txt"
+	  "params": "../../output/t-matrix/params.txt",
+        "ig": "../../output/t-matrix/ig.txt",
+        "jg": "../../output/t-matrix/jg.txt",
+        "gg": "../../output/t-matrix/gg.txt"
       }
     }
   }

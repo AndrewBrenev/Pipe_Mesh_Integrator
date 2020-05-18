@@ -18,6 +18,7 @@ private:
 	TridimensionalMesh<PointType, NetType> combinedMesh;
 	IntersectionRemover<PointType, NetType> intersectionRemover{ souceMesh ,integrableMesh };
 
+	vector<Plane> outterTubePlanes;
 	vector<ObjectPlanes> joinablePlanes;
 	vector<PlanesFrequency> planesFrequency;
 
@@ -266,6 +267,10 @@ public:
 	{
 		this->integrableMesh = _integrableMesh;
 	};
+	ObjectPlanes getTypeOutterPlanes() {
+		return joinablePlanes[1];
+	}
+
 	TridimensionalMesh<PointType, NetType> integrateMeshes() {
 
 		computePlanesFrequency(planesFrequency);

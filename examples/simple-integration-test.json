@@ -13,9 +13,9 @@
             "h": 2
           },
           "Y": {
-            "min": -0.1,
-            "max": 2.1,
-            "h": 2.2
+            "min": 0,
+            "max": 2,
+            "h": 2
           },
           "Z": {
             "min": -5,
@@ -46,7 +46,7 @@
                     "z": 0
                   
                 },
-                "splits": 2,
+                "splits": 1,
 				"cut":{
 				 "path":"../../examples/cuts/round-minipoligon.json"
 				 }
@@ -66,21 +66,22 @@
     "mesh": {
       "format": "Glass",
       "paths": {
-        "inftry": "../../external-libs/glass/test/inftry.dat",
-        "nver": "../../external-libs/glass/test/nver.dat",
-        "nvkat": "../../external-libs/glass/test/nvkat.dat",
-        "xyz": "../../external-libs/glass/test/xyz.dat"
+        "inftry": "../../output/mesh/inftry.dat",
+        "nver": "../../output/mesh/nver.dat",
+        "nvkat": "../../output/mesh/nvkat.dat",
+        "xyz": "../../output/mesh/xyz.dat"
       }
     },
 	"boundary":{
-	"first":"boundary.txt"
+	"first":"../../output/boundary.txt"
 	},
     "t-matrix": {
       "format": "CSR",
       "paths": {
-        "ig": "./T-matrix/ig.txt",
-        "jg": "./T-matrix/jg.txt",
-        "gg": "./T-matrix/gg.txt"
+	  "params": "../../output/t-matrix/params.txt",
+        "ig": "../../output/t-matrix/ig.txt",
+        "jg": "../../output/t-matrix/jg.txt",
+        "gg": "../../output/t-matrix/gg.txt"
       }
     }
   }

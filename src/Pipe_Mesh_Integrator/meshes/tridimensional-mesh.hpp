@@ -9,7 +9,9 @@ class TridimensionalMesh : public IMesh<PointType, NetType> {
 protected: 
 	unordered_set<Plane> meshPlanes;
 	unordered_set<Edge> meshEdges;
+
 	vector<size_t> firstBoundaryNodes;
+	unordered_set<Plane> secondBoundaryPlanes;
 
 	json meshParams;
 private:
@@ -44,6 +46,13 @@ private:
 			
 
 		firstBoundaryNodes.shrink_to_fit();
+	};
+
+	void locateBoundaryPlanes() {
+		unordered_map<Plane, uint32_t> planeFrequency;
+		for (auto plane : meshPlanes) {
+		
+		}
 	};
 	void build3DParapipedalMesh() {
 
